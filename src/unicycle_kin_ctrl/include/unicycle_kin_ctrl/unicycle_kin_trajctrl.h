@@ -13,20 +13,17 @@ class unicycle_kin_trajctrl
   private: 
     ros::NodeHandle Handle;
 
-    /* ROS topics */
     ros::Subscriber vehicleState_subscriber;
     ros::Publisher vehicleCommand_publisher, controllerState_publisher;
 
-    /* Parameters from ROS parameter server */
-    double P_dist, K;
+    // parameters from ROS parameter server
+    double P_dist;
+    double K;
 
-    /* ROS topic callbacks */
     void vehicleState_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg);
 
-    /* Node periodic task */
     void PeriodicTask(void);
     
-    /* Node state variables */
     unicycle_kin_fblin* controller;
     double xref, yref, dxref, dyref;
     double xP, yP, xPref, yPref;
@@ -34,13 +31,9 @@ class unicycle_kin_trajctrl
 
   public:
     float RunPeriod;
-
     void Prepare(void);
-    
     void RunPeriodically(float Period);
-    
     void Shutdown(void);
-
 };
 
 #endif /* UNICYCLE_KIN_TRAJCTRL_H_ */
