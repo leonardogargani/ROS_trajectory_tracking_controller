@@ -1,0 +1,12 @@
+<launch>
+  <!--- Run unicycle simulator node -->
+  <node pkg="unicycle_kin_sim" type="unicycle_kin_sim" respawn="false" name="unicycle_kin_sim" output="screen">
+    <rosparam file="$(find unicycle_kin_sim)/config/unicycle_kin_sim.yaml" command="load" />
+    <rosparam param="/use_sim_time">true</rosparam>
+  </node> 
+
+  <!--- Run linerizing controller node -->
+  <node pkg="unicycle_kin_ctrl" type="unicycle_kin_linctrl" respawn="false" name="unicycle_kin_linctrl" output="screen">
+    <rosparam file="$(find unicycle_kin_ctrl)/config/unicycle_kin_linctrl.yaml" command="load" />
+  </node> 
+</launch>

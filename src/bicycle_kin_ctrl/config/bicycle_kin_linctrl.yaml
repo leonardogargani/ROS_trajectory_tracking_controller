@@ -1,0 +1,8 @@
+# Controller configuration parameters
+  /bicycle_kin_linctrl/run_period: 0.01          # Node execution period
+
+# Controller parameters
+  /bicycle_kin_linctrl/P_dist: 0.1               # Distance of point P from odometric center
+  /bicycle_kin_linctrl/l: 0.26                   # Bicycle length
+
+

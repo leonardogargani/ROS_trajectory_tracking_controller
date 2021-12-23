@@ -1,0 +1,7 @@
+# Controller configuration parameters
+  /unicycle_kin_trajctrl/run_period: 0.01          # Node execution period
+
+# Controller parameters
+  /unicycle_kin_trajctrl/P_dist: 0.1               # Distance of point P from odometric center
+  /unicycle_kin_trajctrl/K: 0.1                    # PD trajectory tracking controller gain
+

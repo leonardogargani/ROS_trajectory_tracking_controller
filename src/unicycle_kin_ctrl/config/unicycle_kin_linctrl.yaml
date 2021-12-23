@@ -1,0 +1,7 @@
+# Controller configuration parameters
+  /unicycle_kin_linctrl/run_period: 0.01          # Node execution period
+
+# Controller parameters
+  /unicycle_kin_linctrl/P_dist: 0.1               # Distance of point P from odometric center
+
+
