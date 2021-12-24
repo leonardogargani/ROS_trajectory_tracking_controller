@@ -5,7 +5,7 @@
     <rosparam param="/use_sim_time">true</rosparam>
   </node> 
 
-  <!--- Run linerizing controller node -->
+  <!--- linearizing controller node -->
   <node pkg="unicycle_kin_ctrl" type="unicycle_kin_trajctrl" respawn="false" name="unicycle_kin_trajctrl" output="screen">
     <rosparam file="$(find unicycle_kin_ctrl)/config/unicycle_kin_trajctrl.yaml" command="load" />
   </node> 

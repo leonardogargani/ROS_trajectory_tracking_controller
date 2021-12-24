@@ -5,4 +5,4 @@
 build/
 devel/
 .catkin_workspace
-
+*.bag
