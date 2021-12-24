@@ -1,0 +1,11 @@
+<launch>
+  <!--- unicycle simulator node -->
+  <node pkg="unicycle_kin_sim" type="unicycle_kin_sim" respawn="false" name="unicycle_kin_sim" output="screen">
+    <rosparam file="$(find unicycle_kin_sim)/config/unicycle_kin_sim.yaml" command="load" />
+    <rosparam param="/use_sim_time">true</rosparam>
+  </node> 
+
+  <!--- test unicycle simulator node -->
+  <node pkg="unicycle_kin_sim" type="test_eight_unicycle_kin" respawn="false" name="test_eight_unicycle_kin" output="screen">
+  </node> 
+</launch>
