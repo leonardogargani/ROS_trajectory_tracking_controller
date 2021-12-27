@@ -37,6 +37,7 @@ catkin_make
 
 The following instructions let you perform and visualize a simulation.
 
+
 ### Linear control
 
 This simulation shows the behavior of the controller in response to some simple velocity input commands.
@@ -63,6 +64,7 @@ Wait about 30 seconds so that the simulation can be performed.
 python plot_result_linctrl.py unicycle_kin_linctrl.bag
 ```
 
+
 ### Trajectory control
 
 This simulation shows the behavior of the controller when an 8-shaped trajectory is set.
@@ -75,7 +77,7 @@ roslaunch unicycle_kin_ctrl unicycle_kin_trajctrl.launch
 **[terminal #2]** Enter the *script/* folder and record the simulation:
 ```bash
 cd ~/ROS_trajectory_tracking_controller/src/unicycle_kin_ctrl/script
-rosbag record -a -O unicycle_kin_trjctrl.bag
+rosbag record -a -O unicycle_kin_trajctrl.bag
 ```
 
 Wait about 30 seconds so that the simulation can be performed.
@@ -86,6 +88,6 @@ Wait about 30 seconds so that the simulation can be performed.
 
 **[terminal #2]** Visualize the results:
 ```bash
-python plot_result_trajctrl.py unicycle_kin_trjctrl.bag
+python plot_result_trajctrl.py unicycle_kin_trajctrl.bag
 ```
 
