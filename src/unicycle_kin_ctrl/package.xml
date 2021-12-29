@@ -1,11 +1,14 @@
 <?xml version="1.0"?>
 <package format="2">
+  
   <name>unicycle_kin_ctrl</name>
   <version>0.0.1</version>
+
   <description>
     Trajectory tracking controller for a unicycle robot, using a kinematic model, with
     feedback linearization, trajectory tracking, and velocity feedforward.
   </description>
+  
   <maintainer email="leonardo.gargani@mail.polimi.it">Leonardo Gargani</maintainer>
 
   <license>TODO</license>
@@ -20,4 +23,5 @@
 
   <export>
   </export>
+
 </package>
