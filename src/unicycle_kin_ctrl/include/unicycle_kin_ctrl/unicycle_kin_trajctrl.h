@@ -18,7 +18,8 @@ class unicycle_kin_trajctrl
 
     // parameters from ROS parameter server
     double P_dist;
-    double K;
+    double Kp;
+    double Ki;
 
     void vehicleState_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg);
 

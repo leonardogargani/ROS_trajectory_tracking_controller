@@ -3,5 +3,6 @@
 
 # controller parameters
 /unicycle_kin_trajctrl/P_dist: 0.1               # distance of point P from odometric center
-/unicycle_kin_trajctrl/K: 0.1                    # PD trajectory tracking controller gain
+/unicycle_kin_trajctrl/Kp: 0.1                   # PI trajectory tracking controller proportional gain
+/unicycle_kin_trajctrl/Ki: 0.1                   # PI trajectory tracking controller integral gain
 

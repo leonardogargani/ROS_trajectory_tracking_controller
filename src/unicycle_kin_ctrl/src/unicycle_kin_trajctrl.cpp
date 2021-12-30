@@ -15,8 +15,12 @@ void unicycle_kin_trajctrl::Prepare(void)
     if (false == Handle.getParam(FullParamName, P_dist))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    FullParamName = ros::this_node::getName() + "/K";
-    if (false == Handle.getParam(FullParamName, K))
+    FullParamName = ros::this_node::getName() + "/Kp";
+    if (false == Handle.getParam(FullParamName, Kp))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
+    FullParamName = ros::this_node::getName() + "/Ki";
+    if (false == Handle.getParam(FullParamName, Ki))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
     vehicleState_subscriber = Handle.subscribe("/robot_state", 1, &unicycle_kin_trajctrl::vehicleState_MessageCallback, this);
@@ -74,8 +78,8 @@ void unicycle_kin_trajctrl::PeriodicTask(void)
     controller->output_transformation(xP, yP);
 
     // trajectory tracking law
-    vPx = dxref + K * (xPref - xP);
-    vPy = dyref + K * (yPref - yP);
+    vPx = dxref + Kp * (xPref - xP) + Ki * (xPref - xP) * RunPeriod;
+    vPy = dyref + Kp * (yPref - yP) + Ki * (yPref - yP) * RunPeriod;
 
     // linearization law
     controller->control_transformation(vPx, vPy, v, omega);;
