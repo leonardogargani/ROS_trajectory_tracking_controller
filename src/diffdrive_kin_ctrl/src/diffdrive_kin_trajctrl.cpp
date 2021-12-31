@@ -23,6 +23,14 @@ void diffdrive_kin_trajctrl::Prepare(void)
     if (false == Handle.getParam(FullParamName, Ki))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
+    FullParamName = ros::this_node::getName() + "/d";
+    if (false == Handle.getParam(FullParamName, d))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
+    FullParamName = ros::this_node::getName() + "/r";
+    if (false == Handle.getParam(FullParamName, r))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
     vehicleState_subscriber = Handle.subscribe("/robot_state", 1, &diffdrive_kin_trajctrl::vehicleState_MessageCallback, this);
     vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
     controllerState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/controller_state", 1);
@@ -82,13 +90,17 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     vPy = dyref + Kp * (yPref - yP) + Ki * (yPref - yP) * RunPeriod;
 
     // linearization law
-    controller->control_transformation(vPx, vPy, v, omega);;
+    controller->control_transformation(vPx, vPy, v, omega);
 
+    // pass from unicycle to differential drive
+    omega_r = (v + omega * d / 2) / r;
+    omega_l = (v - omega * d / 2) / r;
+    
     // publish vehicle commands
     std_msgs::Float64MultiArray vehicleCommandMsg;
     vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
-    vehicleCommandMsg.data.push_back(v);
-    vehicleCommandMsg.data.push_back(omega);
+    vehicleCommandMsg.data.push_back(omega_r);
+    vehicleCommandMsg.data.push_back(omega_l);
     vehicleCommand_publisher.publish(vehicleCommandMsg);
 
     // publish controller state
@@ -102,7 +114,7 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     controllerStateMsg.data.push_back(yP);
     controllerStateMsg.data.push_back(vPx);
     controllerStateMsg.data.push_back(vPy);
-    controllerStateMsg.data.push_back(v);
-    controllerStateMsg.data.push_back(omega);
+    controllerStateMsg.data.push_back(omega_r);
+    controllerStateMsg.data.push_back(omega_l);
     controllerState_publisher.publish(controllerStateMsg);
 }

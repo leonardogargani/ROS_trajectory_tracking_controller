@@ -14,15 +14,15 @@ public:
 
     void integrate();
     
-    void setReferenceCommands(double linear_velocity, double angular_velocity);
+    void setReferenceCommands(double angular_velocity_r, double angular_velocity_l);
     
     void getPose(double &x, double &y, double &theta) { x = state[0]; y = state[1]; theta = state[2]; };
-    void getCommands(double &linear_velocity, double &angular_velocity) { linear_velocity = V; angular_velocity = omega; };
+    void getCommands(double &angular_velocity_r, double &angular_velocity_l) { angular_velocity_r = omega_r; angular_velocity_l = omega_l; };
     void getTime(double &time) { time = t; };
 
 private:
     double t, dt;
-    double V, omega;
+    double omega_r, omega_l;
 
     state_type state;
     runge_kutta_dopri5 <state_type> stepper;

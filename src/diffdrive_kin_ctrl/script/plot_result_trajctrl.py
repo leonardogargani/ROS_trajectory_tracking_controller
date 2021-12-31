@@ -10,8 +10,8 @@ vehicleState_time = []
 vehicleState_x = []
 vehicleState_y = []
 vehicleState_theta = []
-vehicleState_linearvelocity = []
-vehicleState_angularvelocity = []
+vehicleState_angularvelocity_r = []
+vehicleState_angularvelocity_l = []
 
 # State published by the controller
 controllerState_time = []
@@ -23,8 +23,8 @@ controllerState_xP = []
 controllerState_yP = []
 controllerState_vPx = []
 controllerState_vPy = []
-controllerState_linearvelocity = []
-controllerState_angularvelocity = []
+controllerState_angularvelocity_r = []
+controllerState_angularvelocity_l = []
 controllerState_xPerr = []
 controllerState_yPerr = []
 
@@ -34,8 +34,8 @@ for topic, msg, t in bag.read_messages():
         vehicleState_x.append(msg.data[1])
         vehicleState_y.append(msg.data[2])
         vehicleState_theta.append(msg.data[3])
-        vehicleState_linearvelocity.append(msg.data[4])
-        vehicleState_angularvelocity.append(msg.data[5])
+        vehicleState_angularvelocity_r.append(msg.data[4])
+        vehicleState_angularvelocity_l.append(msg.data[5])
 
     if topic == "/controller_state":
         controllerState_time.append(msg.data[0])
@@ -47,8 +47,8 @@ for topic, msg, t in bag.read_messages():
         controllerState_yP.append(msg.data[6])
         controllerState_vPx.append(msg.data[7])
         controllerState_vPy.append(msg.data[8])
-        controllerState_linearvelocity.append(msg.data[9])
-        controllerState_angularvelocity.append(msg.data[10])
+        controllerState_angularvelocity_r.append(msg.data[9])
+        controllerState_angularvelocity_l.append(msg.data[10])
         controllerState_xPerr.append(msg.data[3]-msg.data[5])
         controllerState_yPerr.append(msg.data[4]-msg.data[6])
 
@@ -66,13 +66,13 @@ plt.legend(loc="best")
 
 plt.figure(2)
 plt.subplot(211)
-plt.plot(vehicleState_time,vehicleState_linearvelocity)
+plt.plot(vehicleState_time,vehicleState_angularvelocity_r)
 plt.xlabel("Time [s]")
-plt.ylabel("Linear velocity [m/s]")
+plt.ylabel("Right angular velocity [rad/s]")
 plt.subplot(212)
-plt.plot(vehicleState_time,vehicleState_angularvelocity)
+plt.plot(vehicleState_time,vehicleState_angularvelocity_l)
 plt.xlabel("Time [s]")
-plt.ylabel("Angular velocity [rad/s]")
+plt.ylabel("Left angular velocity [rad/s]")
 
 plt.figure(3)
 plt.subplot(311)

@@ -55,7 +55,7 @@ void diffdrive_kin_sim::Shutdown(void)
 
 void diffdrive_kin_sim::vehicleCommand_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg)
 {
-    // input command: t, msg->data[0]; linear velocity, msg->data[1]; angular velocity, msg->data[2]
+    // input command: t, msg->data[0]; right angular velocity, msg->data[1]; left angular velocity, msg->data[2]
     simulator->setReferenceCommands(msg->data.at(1), msg->data.at(2));
 }
 
@@ -66,14 +66,14 @@ void diffdrive_kin_sim::PeriodicTask(void)
     double x, y, theta;
     simulator->getPose(x, y, theta);
 
-    double linvelocity_act, angvelocity_act;
-    simulator->getCommands(linvelocity_act, angvelocity_act);
+    double omega_r_act, omega_l_act;
+    simulator->getCommands(omega_r_act, omega_l_act);
 
     double time;
     simulator->getTime(time);
 
     // print simulation time every 5 sec
-    if (std::fabs(std::fmod(time,5.0)) < 1.0e-3)
+    if (std::fabs(std::fmod(time, 5.0)) < 1.0e-3)
     {
         ROS_INFO("Simulator time: %d seconds", (int) time);
     }
@@ -84,8 +84,8 @@ void diffdrive_kin_sim::PeriodicTask(void)
     vehicleStateMsg.data.push_back(x);
     vehicleStateMsg.data.push_back(y);
     vehicleStateMsg.data.push_back(theta);
-    vehicleStateMsg.data.push_back(linvelocity_act);
-    vehicleStateMsg.data.push_back(angvelocity_act);
+    vehicleStateMsg.data.push_back(omega_r_act);
+    vehicleStateMsg.data.push_back(omega_l_act);
     vehicleState_publisher.publish(vehicleStateMsg);
 
     // publish clock

@@ -20,6 +20,8 @@ class diffdrive_kin_trajctrl
     double P_dist;
     double Kp;
     double Ki;
+    double d;     // distance between the two wheels
+    double r;     // radius of the wheels
 
     void vehicleState_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg);
 
@@ -28,7 +30,7 @@ class diffdrive_kin_trajctrl
     diffdrive_kin_fblin* controller;
     double xref, yref, dxref, dyref;
     double xP, yP, xPref, yPref;
-    double vPx, vPy, v, omega;
+    double vPx, vPy, v, omega, omega_r, omega_l;
 
   public:
     float RunPeriod;

@@ -2,7 +2,12 @@
 
 #include <boost/math/special_functions/sign.hpp>
 
-diffdrive_kin_ode::diffdrive_kin_ode(double deltaT) : dt(deltaT), t(0.0), state(3), V(0.0), omega(0.0)
+
+#define WHEELS_DISTANCE 0.15
+#define WHEELS_RADIUS 0.03
+
+
+diffdrive_kin_ode::diffdrive_kin_ode(double deltaT) : dt(deltaT), t(0.0), state(3), omega_r(0.0), omega_l(0.0)
 {
     // initial state values (state = [x,y,theta])
     state[0] = 0.0;
@@ -17,10 +22,10 @@ void diffdrive_kin_ode::setInitialState(double x0, double y0, double theta0)
     state[2] = theta0;
 }
 
-void diffdrive_kin_ode::setReferenceCommands(double velocity, double angular_velocity)
+void diffdrive_kin_ode::setReferenceCommands(double angular_velocity_r, double angular_velocity_l)
 {
-    V = velocity;
-    omega = angular_velocity;
+    omega_r = angular_velocity_r;
+    omega_l = angular_velocity_l;
 }
 
 void diffdrive_kin_ode::integrate()
@@ -42,7 +47,7 @@ void diffdrive_kin_ode::vehicle_ode(const state_type &state, state_type &dstate,
     const double theta = state[2];
 
     // vehicle equations
-    dstate[0] = V * std::cos(theta); // dx
-    dstate[1] = V * std::sin(theta); // dy
-    dstate[2] = omega;               // dtheta
+    dstate[0] = (omega_r + omega_l) / 2 * WHEELS_RADIUS * std::cos(theta);      // dx
+    dstate[1] = (omega_r + omega_l) / 2 * WHEELS_RADIUS * std::sin(theta);      // dy
+    dstate[2] = (omega_r - omega_l) / WHEELS_DISTANCE * WHEELS_RADIUS;          // dtheta
 }

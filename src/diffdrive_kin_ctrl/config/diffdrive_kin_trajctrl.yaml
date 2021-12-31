@@ -6,3 +6,6 @@
 /diffdrive_kin_trajctrl/Kp: 0.1                   # PI trajectory tracking controller proportional gain
 /diffdrive_kin_trajctrl/Ki: 0.1                   # PI trajectory tracking controller integral gain
 
+/diffdrive_kin_trajctrl/d: 0.15                   # distance between the two wheels
+/diffdrive_kin_trajctrl/r: 0.03                   # radius of the wheels
+

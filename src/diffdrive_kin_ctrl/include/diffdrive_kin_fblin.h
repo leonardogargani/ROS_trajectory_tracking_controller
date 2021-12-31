@@ -13,7 +13,8 @@ class diffdrive_kin_fblin
         void control_transformation(double vPx, double vPy, double& v, double& omega);
         void output_transformation(double& xP, double& yP);
         void reference_transformation(double xref, double yref, double& xPref, double& yPref);
-    
+        // void unicycle_to_diffdrive_transformation(double v, double omega, double& omega_r, double& omega_l);
+
     private:
         double P_dist;
         double x, y, theta;
