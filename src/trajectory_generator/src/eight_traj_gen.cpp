@@ -1,0 +1,46 @@
+#include "trajectory_generator/eight_traj_gen.h"
+
+#include <unistd.h>
+
+
+ros::NodeHandle Handle;
+
+
+bool GenerateDesiredPath(trajectory_generator::GenerateDesiredPathService::Request &req,
+                                            trajectory_generator::GenerateDesiredPathService::Response &res)
+{
+    std::string FullParamName;
+
+    double a;
+    double w;
+
+    FullParamName = ros::this_node::getName() + "/a";
+    if (false == Handle.getParam(FullParamName, a))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
+    FullParamName = ros::this_node::getName() + "/w";
+    if (false == Handle.getParam(FullParamName, w))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
+    for (uint t = 0; t < 100000; t++) {
+        res.xref.push_back(a * std::sin(w * t));
+        res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
+    }
+
+    ROS_INFO("Service server: sending back response.");
+    return true;
+}
+
+
+
+int main(int argc, char **argv)
+{
+    ros::init(argc, argv, NAME_OF_THIS_NODE);
+
+    ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
+
+    ros::ServiceServer service = Handle.advertiseService("get_desired_path", GenerateDesiredPath);
+    ros::spin();
+
+    return (0);
+}
