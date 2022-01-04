@@ -4,6 +4,8 @@
 #include "ros/ros.h"
 #include <std_msgs/Float64MultiArray.h>
 #include <diffdrive_kin_fblin.h>
+#include "diffdrive_kin_ctrl/GenerateDesiredPathService.h"
+#include <vector>
 
 #define NAME_OF_THIS_NODE "diffdrive_kin_trajctrl"
 
@@ -15,6 +17,9 @@ class diffdrive_kin_trajctrl
 
     ros::Subscriber vehicleState_subscriber;
     ros::Publisher vehicleCommand_publisher, controllerState_publisher;
+
+    ros::ServiceClient client;
+    diffdrive_kin_ctrl::GenerateDesiredPathService srv;
 
     // parameters from ROS parameter server
     double P_dist;
@@ -28,9 +33,10 @@ class diffdrive_kin_trajctrl
     void PeriodicTask(void);
     
     diffdrive_kin_fblin* controller;
-    double xref, yref, dxref, dyref;
     double xP, yP, xPref, yPref;
     double vPx, vPy, v, omega, omega_r, omega_l;
+
+    std::vector<double> xref_vector, yref_vector, dxref_vector, dyref_vector;
 
   public:
     float RunPeriod;

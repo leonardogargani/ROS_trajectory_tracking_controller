@@ -37,15 +37,22 @@ void diffdrive_kin_trajctrl::Prepare(void)
 
     controller = new diffdrive_kin_fblin(P_dist);
 
-    // QUERY THE SERVICE SERVER FOR THE PATH, AND STORE IT INTO A VECTOR
 
-
-
-
-
-
+    client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
+
+    while (!client.call(srv)) {
+        // query the service server until it gives a response
+        // (while waiting, do nothing)
+    }
+
+    for (uint t = 0; t < srv.response.xref.size(); t++) {
+        xref_vector.push_back(srv.response.xref[t]);
+        yref_vector.push_back(srv.response.yref[t]);            
+    }
+    ROS_INFO("Path has been generated and received.");
+
 }
 
 void diffdrive_kin_trajctrl::RunPeriodically(float Period)
@@ -76,29 +83,17 @@ void diffdrive_kin_trajctrl::vehicleState_MessageCallback(const std_msgs::Float6
 
 void diffdrive_kin_trajctrl::PeriodicTask(void)
 {
+    int t = ros::Time::now().toSec();
 
+    // handle the end of the desired trajectory: in such a case do nothing
+    if (t + 1 > xref_vector.size()) {
+        return;
+    }
 
-    // MOVE THE FOLLOWING LINES IN AN AD HOC NODE!!!
-    //  (it publishes the trajectory as two arrays of float64 through a service)
-
-
-    // 8-shaped trajectory generation
-    // trajectory parameters (these parameters should be moved to the parameter server)
-    const double a = 1.0;
-    const double w = 1.0;
-
-    // trajectory computation
-    xref = a * std::sin(w * ros::Time::now().toSec());
-    dxref = w * a * std::cos(w * ros::Time::now().toSec());
-    yref = a * std::sin(w * ros::Time::now().toSec()) * std::cos(w * ros::Time::now().toSec());
-    dyref = w * a * (std::pow(std::cos(w * ros::Time::now().toSec()), 2.0) 
-                        - std::pow(std::sin(w * ros::Time::now().toSec()), 2.0));
-
-
-    // dxref = (xref[t+1] - xref[t]) / dt
-    // dyref = (yref[t+1] - yref[t]) / dt
-
-
+    double xref = xref_vector[t];
+    double yref = yref_vector[t];
+    double dxref = (xref_vector[t + 1] - xref_vector[t]) / 1;       // dt = (t+1) - t = 1
+    double dyref = (yref_vector[t + 1] - yref_vector[t]) / 1;
 
     // compute the control action
     // transform trajectory to point P

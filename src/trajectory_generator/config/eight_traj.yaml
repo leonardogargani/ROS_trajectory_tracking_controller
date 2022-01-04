@@ -1,4 +1,0 @@
-# 8-shaped trajectory
-/trajectory_generator/a: 1.0          // parameter for the trajectory
-/trajectory_generator/w: 1.0          // parameter for the trajectory
-

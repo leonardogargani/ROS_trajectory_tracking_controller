@@ -1,0 +1,4 @@
+# 8-shaped trajectory
+/eight_traj_gen/a: 1.0          // parameter for the trajectory
+/eight_traj_gen/w: 1.0          // parameter for the trajectory
+

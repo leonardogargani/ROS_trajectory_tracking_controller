@@ -1,15 +1,13 @@
-#include "trajectory_generator/eight_traj_gen.h"
+#include "eight_traj_gen.h"
 
 #include <unistd.h>
 
 
-ros::NodeHandle Handle;
-
-
-bool GenerateDesiredPath(trajectory_generator::GenerateDesiredPathService::Request &req,
-                                            trajectory_generator::GenerateDesiredPathService::Response &res)
+bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request &req,
+                                            diffdrive_kin_ctrl::GenerateDesiredPathService::Response &res)
 {
     std::string FullParamName;
+    ros::NodeHandle Handle;
 
     double a;
     double w;
@@ -39,7 +37,9 @@ int main(int argc, char **argv)
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 
-    ros::ServiceServer service = Handle.advertiseService("get_desired_path", GenerateDesiredPath);
+    ros::NodeHandle Handle;
+
+    ros::ServiceServer service = Handle.advertiseService("generate_desired_path_service", GenerateDesiredPath);
     ros::spin();
 
     return (0);
