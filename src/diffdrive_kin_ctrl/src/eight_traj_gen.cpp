@@ -20,10 +20,22 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
     if (false == Handle.getParam(FullParamName, w))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    for (uint t = 0; t < 100000; t++) {
+    /*for (uint t = 0; t < 100000; t++) {
         res.xref.push_back(a * std::sin(w * t));
         res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
+    }*/
+    
+    float t = 0;
+
+    res.xref.push_back(0);
+    res.yref.push_back(0);
+    while(t < 3000000){
+        res.xref.push_back(a * std::sin(w * t));
+        res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
+    	  t = t + 0.3;
     }
+
+	 ROS_INFO("Size in traj_gen: %d", res.xref.size());
 
     ROS_INFO("Service server: sending back response.");
     return true;

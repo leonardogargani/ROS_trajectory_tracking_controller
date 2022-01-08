@@ -1,5 +1,5 @@
 # controller configuration parameters
-/diffdrive_kin_trajctrl/run_period: 0.01          # node execution period
+/diffdrive_kin_trajctrl/run_period: 0.01         # node execution period
 
 # controller parameters
 /diffdrive_kin_trajctrl/P_dist: 0.1               # distance of point P from odometric center
