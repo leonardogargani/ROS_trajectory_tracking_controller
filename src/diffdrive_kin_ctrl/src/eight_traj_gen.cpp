@@ -35,7 +35,7 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
     	  t = t + 0.3;
     }
 
-	 ROS_INFO("Size in traj_gen: %d", res.xref.size());
+	 ROS_INFO("Size in traj_gen: %lu", res.xref.size());
 
     ROS_INFO("Service server: sending back response.");
     return true;

@@ -48,7 +48,7 @@ void diffdrive_kin_trajctrl::Prepare(void)
         ROS_INFO("Waiting for service");
     }
 
-	 ROS_INFO("Size in kin_trajctrl: %d", srv.response.xref.size());
+	 ROS_INFO("Size in kin_trajctrl: %lu", srv.response.xref.size());
 	 ROS_INFO("Starting point -- x: %.2f -- y: %.2f", srv.response.xref[0], srv.response.yref[0]);
 
     for (uint t = 0; t < srv.response.xref.size(); t++) {
