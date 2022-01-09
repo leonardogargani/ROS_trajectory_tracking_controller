@@ -87,11 +87,17 @@ void diffdrive_kin_trajctrl::vehicleState_MessageCallback(const std_msgs::Float6
 
 void diffdrive_kin_trajctrl::PeriodicTask(void)
 {
-    int t = ros::Time::now().toSec();
+    //int t = ros::Time::now().toSec();
+    long unsigned int t_ns = ros::Time::now().toNSec();
+    int t = (int)(t_ns / 10000000);
+    //ROS_WARN("t_ns = %lu", t_ns);
+    //ROS_WARN("t = %d", t);
 
     // handle the end of the desired trajectory: in such a case do nothing
     if (t + 1 > xref_vector.size()) {
+        ROS_WARN("Path vector totally consumed");
         return;
+        //this->Shutdown();
     }
 
     double xref = xref_vector[t];
