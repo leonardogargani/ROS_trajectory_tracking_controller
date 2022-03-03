@@ -37,32 +37,6 @@ catkin_make
 
 The following instructions let you perform and visualize a simulation.
 
-### Trajectory control for unicycle
-
-This simulation shows the behavior of the controller when an 8-shaped trajectory is set.
-
-**[terminal #1]** Start the simulation:
-```bash
-roslaunch unicycle_kin_ctrl unicycle_kin_trajctrl.launch
-```
-
-**[terminal #2]** Enter the *script/* folder and record the simulation:
-```bash
-cd ~/ROS_trajectory_tracking_controller/src/unicycle_kin_ctrl/script
-rosbag record -a -O unicycle_kin_trajctrl.bag
-```
-
-Wait about 30 seconds so that the simulation can be performed.
-
-**[terminal #2]** Stop the recording with `Ctrl-C`.
-
-**[terminal #1]** Stop the simulation with `Ctrl-C`.
-
-**[terminal #2]** Visualize the results:
-```bash
-python plot_result_trajctrl.py unicycle_kin_trajctrl.bag
-```
-
 ### Trajectory control for differential drive
 
 This simulation shows the behavior of the controller when an 8-shaped trajectory is set.
@@ -89,3 +63,11 @@ Wait about 30 seconds so that the simulation can be performed.
 python plot_result_trajctrl.py diffdrive_kin_trajctrl.bag
 ```
 
+### Compare two simulations
+
+If you wish, you can also compare the results of two different simulations.
+
+Given two bag files named bag_1.bag and bag_2.bag, visualize the comparison:
+```bash
+python plot_result_comparison.py bag_1.bag bag_2.bag
+```
