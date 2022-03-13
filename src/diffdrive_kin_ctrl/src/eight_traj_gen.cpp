@@ -22,15 +22,17 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
 
     float t = 0;
 
-    while(t < 1000000){
+    while(t < 10){
         res.xref.push_back(a * std::sin(w * t));
         res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
-    	t += 0.001;
+    	  t += 0.001;
+    	  //t += 1;
     }
 
-	ROS_INFO("Size in traj_gen: %lu", res.xref.size());
+	 ROS_INFO("Size in traj_gen: %lu", res.xref.size());
 
     ROS_INFO("Service server: sending back response.");
+
     return true;
 }
 

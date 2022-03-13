@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 
+
 void diffdrive_kin_trajctrl::Prepare(void)
 {
     std::string FullParamName;
@@ -23,6 +24,12 @@ void diffdrive_kin_trajctrl::Prepare(void)
     if (false == Handle.getParam(FullParamName, Ki))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
+	//AGGIUNTO ---
+    FullParamName = ros::this_node::getName() + "/Kd";
+    if (false == Handle.getParam(FullParamName, Kd))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+	// ---
+
     FullParamName = ros::this_node::getName() + "/d";
     if (false == Handle.getParam(FullParamName, d))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
@@ -34,6 +41,7 @@ void diffdrive_kin_trajctrl::Prepare(void)
     vehicleState_subscriber = Handle.subscribe("/robot_state", 1, &diffdrive_kin_trajctrl::vehicleState_MessageCallback, this);
     vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
     controllerState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/controller_state", 1);
+    
 
     controller = new diffdrive_kin_fblin(P_dist);
 
@@ -75,6 +83,7 @@ void diffdrive_kin_trajctrl::RunPeriodically(float Period)
 void diffdrive_kin_trajctrl::Shutdown(void)
 {
     delete controller;
+    
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 }
 
@@ -90,12 +99,17 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     //int t = ros::Time::now().toSec();
     long unsigned int t_ns = ros::Time::now().toNSec();
     int t = (int)(t_ns / 10000000);
-    //ROS_WARN("t_ns = %lu", t_ns);
-    //ROS_WARN("t = %d", t);
+
+    ROS_WARN("t_ns = %lu", t_ns);
+    ROS_WARN("t = %d", t);
 
     // handle the end of the desired trajectory: in such a case do nothing
     if (t + 1 > xref_vector.size()) {
         ROS_WARN("Path vector totally consumed");
+        
+        ros::shutdown();
+        //this->Shutdown();
+        //exit(0);
         return;
         //this->Shutdown();
     }
@@ -104,15 +118,38 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     double yref = yref_vector[t];
     double dxref = (xref_vector[t + 1] - xref_vector[t]) / 1;       // dt = (t+1) - t = 1
     double dyref = (yref_vector[t + 1] - yref_vector[t]) / 1;
+    
+
 
     // compute the control action
     // transform trajectory to point P
     controller->reference_transformation(xref, yref, xPref, yPref);
     controller->output_transformation(xP, yP);
+    
+     //AGGIUNTO ---
+    double error_x = xPref - xP;
+    double derivative_x = (error_x - prev_error_x) / RunPeriod;
+    prev_error_x = error_x;
+    
+    double error_y = yPref - yP;
+    double derivative_y = (error_y - prev_error_y) / RunPeriod;
+    prev_error_y = error_y;
+    
+    //Modificato secondo quello visto su wikipedia, PID controller
+    //integral_x = integral_x + (error_x * RunPeriod);
+    //integral_y = integral_y + (error_y * RunPeriod);
+    // ---
 
     // trajectory tracking law
-    vPx = dxref + Kp * (xPref - xP) + Ki * (xPref - xP) * RunPeriod;
-    vPy = dyref + Kp * (yPref - yP) + Ki * (yPref - yP) * RunPeriod;
+    //vPx = dxref + Kp * (xPref - xP) + Ki * (xPref - xP) * RunPeriod;
+    //vPy = dyref + Kp * (yPref - yP) + Ki * (yPref - yP) * RunPeriod;
+    
+    vPx = dxref + Kp * (xPref - xP) + Ki * (xPref - xP) * RunPeriod + derivative_x * Kd;
+    vPy = dyref + Kp * (yPref - yP) + Ki * (yPref - yP) * RunPeriod + derivative_y * Kd;
+
+	 //Modificato secondo quello visto su wikipedia, PID controller --> non convince fino in fondo
+    //vPx = dxref + Kp * (xPref - xP) + Ki * integral_x + derivative_x * Kd;
+    //vPy = dyref + Kp * (yPref - yP) + Ki * integral_y + derivative_y * Kd;
 
     // linearization law
     controller->control_transformation(vPx, vPy, v, omega);
@@ -140,6 +177,6 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     controllerStateMsg.data.push_back(vPx);
     controllerStateMsg.data.push_back(vPy);
     controllerStateMsg.data.push_back(omega_r);
-    controllerStateMsg.data.push_back(omega_l);
+    controllerStateMsg.data.push_back(omega_l);    
     controllerState_publisher.publish(controllerStateMsg);
 }

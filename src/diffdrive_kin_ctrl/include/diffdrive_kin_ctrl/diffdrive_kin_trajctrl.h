@@ -25,6 +25,11 @@ class diffdrive_kin_trajctrl
     double P_dist;
     double Kp;
     double Ki;
+    
+    //AGGIUNTO ---
+    double Kd;
+    // ---
+    
     double d;     // distance between the two wheels
     double r;     // radius of the wheels
 
@@ -36,7 +41,15 @@ class diffdrive_kin_trajctrl
     double xP, yP, xPref, yPref;
     double vPx, vPy, v, omega, omega_r, omega_l;
 
-    std::vector<double> xref_vector, yref_vector, dxref_vector, dyref_vector;
+    std::vector<double> xref_vector, yref_vector, dxref_vector, dyref_vector; 
+    
+    //AGGIUNTO ---
+    double prev_error_x = 0;
+    double prev_error_y = 0;
+    
+    double integral_x = 0;
+    double integral_y = 0;
+    // ---
 
   public:
     float RunPeriod;
