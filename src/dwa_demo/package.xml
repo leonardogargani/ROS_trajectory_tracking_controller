@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+  
+  <name>dwa_demo</name>
+  <version>0.0.1</version>
+
+  <description>
+    Demo of ROS implementation of DWA planner (dwa_local_planner).
+  </description>
+  
+  <maintainer email="leonardo.gargani@mail.polimi.it">Leonardo Gargani</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <export>
+  </export>
+
+</package>

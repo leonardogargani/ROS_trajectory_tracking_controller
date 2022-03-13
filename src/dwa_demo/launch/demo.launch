@@ -1,0 +1,15 @@
+<launch>
+
+  <node pkg="dwa_demo" type="demo" respawn="false" name="demo" output="screen">
+    <rosparam param="/use_sim_time">true</rosparam>
+  </node>
+  
+  <node name="costmap_node" pkg="costmap_2d" type="costmap_2d_node" >
+    <rosparam file="$(find dwa_demo)/config/costmap_params.yaml" command="load" ns="costmap" />
+  </node>
+
+  <node name="map_node" pkg="map_server" type="map_server" args="$(find dwa_demo)/config/map_server_params.yaml" respawn="false">
+    <param name="frame_id" value="/odom" />
+  </node>
+
+</launch>
