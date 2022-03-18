@@ -20,6 +20,10 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
 
+  <depend>dwa_local_planner</depend>
+  <depend>costmap_2d</depend>
+  <depend>tf2_ros</depend>
+
   <export>
   </export>
 

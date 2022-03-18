@@ -8,16 +8,13 @@ int main(int argc, char **argv)
 
     ros::init(argc, argv, "dwa_demo");
 
-    std::cout << "hello" << std::endl;
-
-    // ...
-
     tf2_ros::Buffer tfBuffer(ros::Duration(10));
     tf2_ros::TransformListener tfListener(tfBuffer);
-    costmap_2d::Costmap2DROS costmap("my_costmap", tfBuffer);
+        
+    costmap_2d::Costmap2DROS my_costmap("my_costmap", tfBuffer);
 
     dwa_local_planner::DWAPlannerROS dp;
-    dp.initialize("my_dwa_planner", &tfBuffer, &costmap);
+    dp.initialize("my_dwa_planner", &tfBuffer, &my_costmap);
 
     return (0);
 
