@@ -6,3 +6,16 @@ build/
 devel/
 .catkin_workspace
 *.bag
+
+# LaTeX
+material/presentation/*.toc
+material/presentation/*.gz
+material/presentation/*.snm
+material/presentation/*.out
+material/presentation/*.nav
+material/presentation/*.log
+material/presentation/*.aux
+material/presentation/*.dvi
+material/presentation/*.ps
+
+
