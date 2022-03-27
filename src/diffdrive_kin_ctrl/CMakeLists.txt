@@ -23,7 +23,7 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES diffdrive_kin_ctrl
+  #LIBRARIES diffdrive_kin_ctrl
   CATKIN_DEPENDS roscpp std_msgs message_runtime
 )
 

@@ -19,4 +19,12 @@
     <param name="frame_id" value="/odom" />
   </node>
 
+
+
+  <!--- trajectory generator node -->
+  <node pkg="diffdrive_kin_ctrl" type="eight_traj_gen" respawn="false" name="eight_traj_gen" output="screen">
+    <rosparam file="$(find diffdrive_kin_ctrl)/config/eight_traj.yaml" command="load" />
+  </node>
+
+
 </launch>

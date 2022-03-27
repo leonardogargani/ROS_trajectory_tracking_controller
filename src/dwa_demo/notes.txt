@@ -13,7 +13,6 @@ People who used DWA standalone
 
 
 
-
 From https://wiki.ros.org/dwa_local_planner:
 - Published Topics:
     - ~<name>/global_plan (nav_msgs/Path)
@@ -32,8 +31,4 @@ From the nav_core image [looking at the local_planner circle]:
 Navigation stack
 ----------------
 - https://wiki.ros.org/navigation/Tutorials
-
-
-
-Create an .md file where summarizing the DWA paper - read it this week.
 
