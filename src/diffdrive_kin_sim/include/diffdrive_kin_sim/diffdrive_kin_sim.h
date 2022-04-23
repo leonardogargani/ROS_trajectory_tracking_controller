@@ -18,6 +18,8 @@ private:
     ros::Publisher vehicleState_publisher;
     ros::Publisher clock_publisher;
 
+    ros::Publisher odom_publisher;
+
     /// parameters from ROS parameter server
     double dt;
     double x0, y0, theta0;

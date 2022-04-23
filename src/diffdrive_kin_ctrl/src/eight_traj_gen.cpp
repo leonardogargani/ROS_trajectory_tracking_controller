@@ -25,8 +25,7 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
     while(t < 10){
         res.xref.push_back(a * std::sin(w * t));
         res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
-    	  t += 0.001;
-    	  //t += 1;
+    	t += 0.001;
     }
 
 	 ROS_INFO("Size in traj_gen: %lu", res.xref.size());

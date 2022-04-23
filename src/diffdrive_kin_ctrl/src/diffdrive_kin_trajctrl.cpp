@@ -24,11 +24,9 @@ void diffdrive_kin_trajctrl::Prepare(void)
     if (false == Handle.getParam(FullParamName, Ki))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-	//AGGIUNTO ---
     FullParamName = ros::this_node::getName() + "/Kd";
     if (false == Handle.getParam(FullParamName, Kd))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-	// ---
 
     FullParamName = ros::this_node::getName() + "/d";
     if (false == Handle.getParam(FullParamName, d))
@@ -100,12 +98,12 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     long unsigned int t_ns = ros::Time::now().toNSec();
     int t = (int)(t_ns / 10000000);
 
-    ROS_WARN("t_ns = %lu", t_ns);
-    ROS_WARN("t = %d", t);
+    //ROS_WARN("t_ns = %lu", t_ns);
+    //ROS_WARN("t = %d", t);
 
     // handle the end of the desired trajectory: in such a case do nothing
     if (t + 1 > xref_vector.size()) {
-        ROS_WARN("Path vector totally consumed");
+        ROS_INFO("Path vector totally consumed");
         
         ros::shutdown();
         //this->Shutdown();
