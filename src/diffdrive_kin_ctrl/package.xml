@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
 <package format="2">
-  
-  <name>diffdrive_kin_ctrl</name>
-  <version>0.0.1</version>
 
-  <description>
-    Trajectory tracking controller for a diffdrive robot, using a kinematic model, with
-    feedback linearization, trajectory tracking, and velocity feedforward.
-  </description>
-  
-  <maintainer email="leonardo.gargani@mail.polimi.it">Leonardo Gargani</maintainer>
+    <name>diffdrive_kin_ctrl</name>
+    <version>0.0.1</version>
 
-  <license>TODO</license>
+    <description>
+        Trajectory tracking controller for a diffdrive robot, using a kinematic model, with
+        feedback linearization, trajectory tracking, and velocity feedforward.
+    </description>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>std_msgs</build_export_depend>
-  <exec_depend>roscpp</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
+    <maintainer email="leonardo.gargani@mail.polimi.it">Leonardo Gargani</maintainer>
 
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
+    <license>TODO</license>
 
-  <export>
-  </export>
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>roscpp</build_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_export_depend>roscpp</build_export_depend>
+    <build_export_depend>std_msgs</build_export_depend>
+    <exec_depend>roscpp</exec_depend>
+    <exec_depend>std_msgs</exec_depend>
+
+    <build_depend>message_generation</build_depend>
+    <exec_depend>message_runtime</exec_depend>
+
+    <export>
+    </export>
 
 </package>

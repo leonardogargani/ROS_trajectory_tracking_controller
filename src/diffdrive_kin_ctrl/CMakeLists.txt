@@ -3,9 +3,9 @@ project(diffdrive_kin_ctrl)
 
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
-  genmsg
+    roscpp
+    std_msgs
+    genmsg
 )
 
 
@@ -22,15 +22,15 @@ generate_messages(
 
 
 catkin_package(
-  INCLUDE_DIRS include
-  #LIBRARIES diffdrive_kin_ctrl
-  CATKIN_DEPENDS roscpp std_msgs message_runtime
+    INCLUDE_DIRS include
+    #LIBRARIES diffdrive_kin_ctrl
+    CATKIN_DEPENDS roscpp std_msgs message_runtime
 )
 
 
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+    include
+    ${catkin_INCLUDE_DIRS}
 )
 
 

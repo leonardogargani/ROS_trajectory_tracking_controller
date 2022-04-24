@@ -14,10 +14,12 @@ diffdrive_kin_fblin::diffdrive_kin_fblin(double P_dist)
     theta = 0.0;
 }
 
+
 diffdrive_kin_fblin::~diffdrive_kin_fblin()
 {
     // destructor: do nothing
 }
+
 
 void diffdrive_kin_fblin::control_transformation(double vPx, double vPy, double& v, double& omega)
 {
@@ -25,11 +27,13 @@ void diffdrive_kin_fblin::control_transformation(double vPx, double vPy, double&
     omega = (vPy * std::cos(theta) - vPx * std::sin(theta)) / P_dist;
 }
 
+
 void diffdrive_kin_fblin::output_transformation(double& xP, double& yP)
 {
     xP = x + P_dist * std::cos(theta);
     yP = y + P_dist * std::sin(theta);
 }
+
 
 void diffdrive_kin_fblin::reference_transformation(double xref, double yref, double& xPref, double& yPref)
 {

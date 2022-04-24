@@ -10,12 +10,12 @@
 
 class eight_traj_gen
 {
-  private:
+private:
     bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request &req,
-                              diffdrive_kin_ctrl::GenerateDesiredPathService::Response &res);
+                                diffdrive_kin_ctrl::GenerateDesiredPathService::Response &res);
 
-  public:
-    
+public:
+  
 };
 
 #endif /* EIGHT_TRAJ_GEN_H_ */

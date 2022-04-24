@@ -1,19 +1,19 @@
 <launch>
 
-  <!--- differential drive simulator node -->
-  <node pkg="diffdrive_kin_sim" type="diffdrive_kin_sim" respawn="false" name="diffdrive_kin_sim" output="screen">
-    <rosparam file="$(find diffdrive_kin_sim)/config/diffdrive_kin_sim.yaml" command="load" />
-    <rosparam param="/use_sim_time">true</rosparam>
-  </node>
+    <!--- differential drive simulator node -->
+    <node pkg="diffdrive_kin_sim" type="diffdrive_kin_sim" respawn="false" name="diffdrive_kin_sim" output="screen">
+        <rosparam file="$(find diffdrive_kin_sim)/config/diffdrive_kin_sim.yaml" command="load" />
+        <rosparam param="/use_sim_time">true</rosparam>
+    </node>
 
-  <!--- linearizing controller node -->
-  <node pkg="diffdrive_kin_ctrl" type="diffdrive_kin_trajctrl" respawn="false" name="diffdrive_kin_trajctrl" output="screen">
-    <rosparam file="$(find diffdrive_kin_ctrl)/config/diffdrive_kin_trajctrl.yaml" command="load" />
-  </node>
+    <!--- linearizing controller node -->
+    <node pkg="diffdrive_kin_ctrl" type="diffdrive_kin_trajctrl" respawn="false" name="diffdrive_kin_trajctrl" output="screen">
+        <rosparam file="$(find diffdrive_kin_ctrl)/config/diffdrive_kin_trajctrl.yaml" command="load" />
+    </node>
 
-  <!--- trajectory generator node -->
-  <node pkg="diffdrive_kin_ctrl" type="eight_traj_gen" respawn="false" name="eight_traj_gen" output="screen">
-    <rosparam file="$(find diffdrive_kin_ctrl)/config/eight_traj.yaml" command="load" />
-  </node>
+    <!--- trajectory generator node -->
+    <node pkg="diffdrive_kin_ctrl" type="eight_traj_gen" respawn="false" name="eight_traj_gen" output="screen">
+        <rosparam file="$(find diffdrive_kin_ctrl)/config/eight_traj.yaml" command="load" />
+    </node>
   
 </launch>

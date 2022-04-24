@@ -1,18 +1,15 @@
 # controller configuration parameters
-/diffdrive_kin_trajctrl/run_period: 0.01 #valore originale 0.01         # node execution period
+/diffdrive_kin_trajctrl/run_period: 0.01          # node execution period
 
 # controller parameters
 /diffdrive_kin_trajctrl/P_dist: 0.1               # distance of point P from odometric center
 
+# PID parameters for trajectory tracking
+/diffdrive_kin_trajctrl/Kp: 0.8                   # PID trajectory tracking controller proportional gain
+/diffdrive_kin_trajctrl/Ki: 0.8                   # PID trajectory tracking controller integral gain
+/diffdrive_kin_trajctrl/Kd: 0.0                   # PID trajectory tracking controller derivative gain
 
-#/diffdrive_kin_trajctrl/Kp: 0.1 #valore originale                  # PI trajectory tracking controller proportional gain
-#/diffdrive_kin_trajctrl/Ki: 0.1 #valore originale                   # PI trajectory tracking controller integral gain
-
-/diffdrive_kin_trajctrl/Kp: 0.8                     # PI trajectory tracking controller proportional gain
-/diffdrive_kin_trajctrl/Ki: 0.8                   # PI trajectory tracking controller integral gain
-/diffdrive_kin_trajctrl/Kd: 0.0                   # PI trajectory tracking controller derivative gain
-
-
+# differential drive parameters
 /diffdrive_kin_trajctrl/d: 0.15                   # distance between the two wheels
 /diffdrive_kin_trajctrl/r: 0.03                   # radius of the wheels
 
