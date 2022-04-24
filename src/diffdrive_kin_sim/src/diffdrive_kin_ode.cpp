@@ -15,6 +15,7 @@ diffdrive_kin_ode::diffdrive_kin_ode(double deltaT) : dt(deltaT), t(0.0), state(
     state[2] = 0.0;
 }
 
+
 void diffdrive_kin_ode::setInitialState(double x0, double y0, double theta0)
 {
     state[0] = x0;
@@ -22,11 +23,13 @@ void diffdrive_kin_ode::setInitialState(double x0, double y0, double theta0)
     state[2] = theta0;
 }
 
+
 void diffdrive_kin_ode::setReferenceCommands(double angular_velocity_r, double angular_velocity_l)
 {
     omega_r = angular_velocity_r;
     omega_l = angular_velocity_l;
 }
+
 
 void diffdrive_kin_ode::integrate()
 {
@@ -36,6 +39,7 @@ void diffdrive_kin_ode::integrate()
 
     t += dt;
 }
+
 
 void diffdrive_kin_ode::vehicle_ode(const state_type &state, state_type &dstate, double t)
 {

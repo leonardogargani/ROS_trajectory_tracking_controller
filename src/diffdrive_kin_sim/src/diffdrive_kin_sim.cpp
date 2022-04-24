@@ -37,11 +37,12 @@ void diffdrive_kin_sim::Prepare(void)
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
 
+
 void diffdrive_kin_sim::RunPeriodically(void)
 {
     ROS_INFO("Node %s running.", ros::this_node::getName().c_str());
 
-    // wait other nodes start
+    // wait other nodes to start
     sleep(1.0);
 
     while (ros::ok()) {
@@ -51,17 +52,20 @@ void diffdrive_kin_sim::RunPeriodically(void)
     }
 }
 
+
 void diffdrive_kin_sim::Shutdown(void)
 {
     delete simulator;
     ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 }
 
+
 void diffdrive_kin_sim::vehicleCommand_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg)
 {
     // input command: t, msg->data[0]; right angular velocity, msg->data[1]; left angular velocity, msg->data[2]
     simulator->setReferenceCommands(msg->data.at(1), msg->data.at(2));
 }
+
 
 void diffdrive_kin_sim::PeriodicTask(void)
 {
@@ -92,9 +96,7 @@ void diffdrive_kin_sim::PeriodicTask(void)
     vehicleStateMsg.data.push_back(omega_l_act);
     vehicleState_publisher.publish(vehicleStateMsg);
 
-
     // publish an Odometry message on the odom topic using: x, y, theta(?), v & w (from omega_r_act, omega_l_act, d, r)
-    // [set also the frame_id, and check the result with rviz]
     double r = 0.03;
     double d = 0.15;
     
@@ -121,9 +123,6 @@ void diffdrive_kin_sim::PeriodicTask(void)
     odometry_message.twist.twist.angular.z = w;
 
     odom_publisher.publish(odometry_message);
-    
-    
-
 
     // publish clock
     rosgraph_msgs::Clock clockMsg;

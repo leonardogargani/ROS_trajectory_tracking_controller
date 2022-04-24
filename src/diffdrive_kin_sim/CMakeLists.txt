@@ -3,23 +3,23 @@ project(diffdrive_kin_sim)
 
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
-  nav_msgs
-  tf2_ros
+    roscpp
+    std_msgs
+    nav_msgs
+    tf2_ros
 )
 
 
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES diffdrive_kin_sim
-  CATKIN_DEPENDS roscpp std_msgs nav_msgs tf2_ros
+    INCLUDE_DIRS include
+    LIBRARIES diffdrive_kin_sim
+    CATKIN_DEPENDS roscpp std_msgs nav_msgs tf2_ros
 )
 
 
 include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+    include
+    ${catkin_INCLUDE_DIRS}
 )
 
 

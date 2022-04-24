@@ -5,6 +5,7 @@ using namespace boost::numeric::odeint;
 
 typedef std::vector<double> state_type;
 
+
 class diffdrive_kin_ode
 {
 public:
