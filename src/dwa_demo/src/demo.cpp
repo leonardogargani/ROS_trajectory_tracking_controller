@@ -2,7 +2,6 @@
 #include <costmap_2d/costmap_2d_ros.h>
 #include <dwa_local_planner/dwa_planner_ros.h>
 
-// Qui includo cose utili, problemi nell'includere il service (problemi di dipendenze fra packages).
 #include <geometry_msgs/PoseStamped.h>
 #include "diffdrive_kin_ctrl/GenerateDesiredPathService.h"
 
@@ -17,10 +16,11 @@ int main(int argc, char **argv)
         
     costmap_2d::Costmap2DROS my_costmap("my_costmap", tfBuffer);
 
+    my_costmap.start();
+
     dwa_local_planner::DWAPlannerROS dp;
     dp.initialize("my_dwa_planner", &tfBuffer, &my_costmap);
     
-    // DA QUI COSE NUOVE
     
     /*
      * Come usare DWA con un nostra path come reference (dal service).
@@ -42,14 +42,9 @@ int main(int argc, char **argv)
        La fine del path forse la si trova con isGoalReached().
     */
     
-    // Definisco un vettore di PoseStamped, forse qui un aiuto:
-    // https://answers.ros.org/question/64547/how-to-subscribe-vectorgeometry_msgsposestamped-type-topic/
-    /* geometry_msgs::PoseStamped refPath; */
-    
-    // Da qui definisco gli elementi per usare il service che genera il path di riferimento a otto.
+
     ros::ServiceClient client;
     diffdrive_kin_ctrl::GenerateDesiredPathService srv;
-    std::vector<double> xref_vector, yref_vector;
     ros::NodeHandle Handle;
     
     client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
@@ -58,41 +53,51 @@ int main(int argc, char **argv)
         ROS_INFO("Waiting for service");
     }
     
-    for (uint t = 0; t < srv.response.xref.size(); t++) {
-        xref_vector.push_back(srv.response.xref[t]);
-        yref_vector.push_back(srv.response.yref[t]);            
-    }
-    
     ROS_INFO("DEMO.CPP -> Path has been generated and received.");
-    
-    // Creo il vettore di PoseStamped usando le xref e yref --> pseudocodice, così non va
-    /*for (uint i = 0; i < xref_vector.size(); i++){
-    	refPath.add(xref_vector[i], yref_vector[i]);
+
+    std::vector<geometry_msgs::PoseStamped> orig_global_plan;
+    geometry_msgs::PoseStamped tmp_pose_stamped;
+
+    for (uint t = 0; t < srv.response.xref.size(); t++) {
+        tmp_pose_stamped.pose.position.x = srv.response.xref[t];
+        tmp_pose_stamped.pose.position.y = srv.response.yref[t];
+
+        tmp_pose_stamped.header.frame_id = "base_link";
+        orig_global_plan.push_back(tmp_pose_stamped);
     }
-    
-    // Imposto il path.
-    setPlan(refPath);
-    
-    // Definisco variabili utili per seguire la traiettoria
-    geometry_msgs::PoseStamped currPos;
-    geometry_msgs::Twist newLinAngVel;
-    
-    uint i = 0;
-    
-    //Inizializza currPos con position, orientation e velocity di partenza.
-    currPos = ....
-    
-    // Uso un while per scorrere tutti i punti del path di riferimento.
-    while(i < refPath.size()){
-    	
-    	dwaComputeVelocityCommands(currPos, newLinAngVel);
-    	
-    	//Chiama diffdrive_kin_ode o qualcosa di simile per calcolare il nuovo stato (x, y, theta) che si ha con le nuove velocità.
-    	
-    }*/
-     
-     
-     
+
+    if (dp.setPlan(orig_global_plan)) {
+        ROS_INFO("DWA set plan: SUCCESS");
+    } else {
+        ROS_ERROR("DWA set plan: FAILED");
+    }
+
+    // create twist message to be populated by the local planner
+    geometry_msgs::Twist dwa_cmd_vel;
+
+    geometry_msgs::PoseStamped l_global_pose;
+    my_costmap.getRobotPose(l_global_pose);
+
+    while(!dp.isGoalReached()) {
+
+        // update global costmap
+        my_costmap.updateMap();
+
+        // compute velocity commands using DWA
+        if (dp.dwaComputeVelocityCommands(l_global_pose, dwa_cmd_vel)) {
+            ROS_INFO("DWA compute cmd_vel: SUCCESS");
+        } else {
+            ROS_ERROR("DWA compute cmd_vel: FAILED");
+        }
+
+    }
+
+
+    // dwaComputeVelocityCommands -> odom_helper_.getRobotVel (line 196)
+ 
+
+
+
 
     return (0);
 
