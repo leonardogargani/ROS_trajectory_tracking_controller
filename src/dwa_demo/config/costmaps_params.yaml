@@ -2,7 +2,7 @@
 # source: https://github.com/ros-planning/navigation/blob/melodic-devel/costmap_2d/launch/example_params.yaml
 #
 
-my_costmap:
+my_global_costmap:
     global_frame: map   # topic where the map_server publishes in (maybe?)
     robot_base_frame: base_link
     update_frequency: 5.0
@@ -27,3 +27,16 @@ my_costmap:
     inflation_radius: 0.55
     cost_scaling_factor: 10.0
     lethal_cost_threshold: 100
+
+
+
+my_local_costmap:
+    global_frame: odom
+    robot_base_frame: base_link
+    update_frequency: 5.0
+    publish_frequency: 1.0
+    
+    plugins:
+        - {name: static_layer, type: "costmap_2d::StaticLayer"}
+    static_layer:
+        map_topic: "/map"
