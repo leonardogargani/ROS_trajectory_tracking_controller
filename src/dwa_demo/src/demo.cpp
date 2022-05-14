@@ -54,24 +54,24 @@ int main(int argc, char **argv)
 
     // create twist message to be populated by the local planner
     geometry_msgs::Twist dwa_cmd_vel;
-    dwa_cmd_vel.angular.x = -1;
+    /*dwa_cmd_vel.angular.x = -1;
     dwa_cmd_vel.angular.y = -1;
     dwa_cmd_vel.angular.z = -1;
     dwa_cmd_vel.linear.x = -1;
     dwa_cmd_vel.linear.y = -1;
-    dwa_cmd_vel.linear.z = -1;
+    dwa_cmd_vel.linear.z = -1;*/
     geometry_msgs::PoseStamped l_global_pose;
 
     while(!dp.isGoalReached()) {
 
-        ROS_INFO("pt.2a");
+        //ROS_INFO("pt.2a");
         my_global_costmap.getRobotPose(l_global_pose);
 
         // update global costmap
         my_local_costmap.updateMap();
         my_global_costmap.updateMap();
 
-        ROS_INFO("pt.2b");
+        //ROS_INFO("pt.2b");
 
         // compute velocity commands using DWA
         //if (dp.dwaComputeVelocityCommands(l_global_pose, dwa_cmd_vel) == true) {
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 
     }
 
-    ROS_INFO("pt.3");
+    //ROS_INFO("pt.3");
 
     // dwaComputeVelocityCommands -> odom_helper_.getRobotVel (line 196)
 

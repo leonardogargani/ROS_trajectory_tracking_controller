@@ -7,15 +7,15 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     tf2_ros
     costmap_2d
-    dwa_local_planner
     diffdrive_kin_ctrl
     message_generation
+    base_local_planner
 )
 
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES dwa_demo
-    CATKIN_DEPENDS roscpp std_msgs tf2_ros costmap_2d dwa_local_planner diffdrive_kin_ctrl
+    CATKIN_DEPENDS roscpp std_msgs tf2_ros costmap_2d diffdrive_kin_ctrl base_local_planner
 )
 
 
@@ -25,7 +25,7 @@ include_directories(
 )
 
 
-add_executable(demo src/demo.cpp)
+add_executable(demo src/demo.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
 target_link_libraries(demo ${catkin_LIBRARIES})
 add_dependencies(demo ${catkin_EXPORTED_TARGETS})
 
