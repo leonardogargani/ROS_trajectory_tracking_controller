@@ -5,6 +5,8 @@
 #include <geometry_msgs/PoseStamped.h>
 #include "diffdrive_kin_ctrl/GenerateDesiredPathService.h"
 
+#include <std_msgs/Float64MultiArray.h>
+
 
 int main(int argc, char **argv)
 {
@@ -27,6 +29,9 @@ int main(int argc, char **argv)
     diffdrive_kin_ctrl::GenerateDesiredPathService srv;
     ros::NodeHandle Handle;
     
+   	ros::Publisher vehicleCommand_publisher;
+    vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
+    
     client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
     
     while (!client.call(srv)) {
@@ -38,7 +43,8 @@ int main(int argc, char **argv)
     std::vector<geometry_msgs::PoseStamped> orig_global_plan;
     geometry_msgs::PoseStamped tmp_pose_stamped;
 
-    for (uint t = 0; t < srv.response.xref.size(); t++) {
+    //for (uint t = 1; t < srv.response.xref.size(); t++) {
+    for (uint t = 500; t < 1500; t++) {
         tmp_pose_stamped.pose.position.x = srv.response.xref[t];
         tmp_pose_stamped.pose.position.y = srv.response.yref[t];
 
@@ -81,38 +87,26 @@ int main(int argc, char **argv)
             ROS_ERROR("DWA compute cmd_vel: FAILED");
         }
         
+        
+        ROS_INFO("DWA_CMD_X: %.4f | DWA_CMD_Z: %.4f | (v_y = %.4f, v_z = %.4f)",
+          dwa_cmd_vel.linear.x, dwa_cmd_vel.angular.z, dwa_cmd_vel.linear.y, dwa_cmd_vel.linear.z);
+       
+       	float d = 0.15;
+      	float r = 0.03;
 
-        // https://answers.ros.org/question/376753/dwa-local-planner-as-a-stand-alone-c-library/
-        // rosrun rqt_logger_level rqt_logger_level
 
+      	float omega_r = ((float)dwa_cmd_vel.linear.x + (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
+      	float omega_l = ((float)dwa_cmd_vel.linear.x - (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
+    	
+    	ROS_INFO("OMEGA_R: %.4f --- OMEGA_L: %.4f", omega_r, omega_l);
 
-        /*
-            linear: 
-            x: 0
-            y: 0.1
-            z: 0
-            angular: 
-            x: 0
-            y: 0
-            z: 0.126316
-        */
-        //std::cout << dwa_cmd_vel << std::endl;
-        /*
-            pose: 
-            position: 
-                x: 0
-                y: 0
-                z: 0
-            orientation: 
-                x: 0
-                y: 0
-                z: 0
-                w: 1
-        */
-        //std::cout << l_global_pose << std::endl;
+	  	std_msgs::Float64MultiArray vehicleCommandMsg;
+	  	vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
+	  	vehicleCommandMsg.data.push_back(omega_r);
+	  	vehicleCommandMsg.data.push_back(omega_l);
+	  	vehicleCommand_publisher.publish(vehicleCommandMsg);
 
-        // it seems to work => we just need to send dwa_cmd_vel to the simulator to actually make the robot move
-
+       
     }
 
     //ROS_INFO("pt.3");

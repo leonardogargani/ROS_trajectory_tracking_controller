@@ -1,2 +1,5 @@
 my_dwa_planner/min_vel_y: 0.0
 my_dwa_planner/max_vel_y: 0.0
+
+my_dwa_planner/min_vel_x: 5.0
+my_dwa_planner/max_vel_x: 10.0

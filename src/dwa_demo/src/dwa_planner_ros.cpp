@@ -243,7 +243,7 @@
        return false;
      }
  	 ROS_INFO("PUNTO 6");
-     ROS_DEBUG_NAMED("dwa_local_planner", "A valid velocity command of (%.2f, %.2f, %.2f) was found for this cycle.", 
+     ROS_INFO("dwaComputeVelocity -- A valid velocity command of (%.4f, %.4f, %.4f) was found for this cycle.", 
                      cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z);
  
      // Fill out the local plan
@@ -290,11 +290,12 @@
        ROS_WARN_NAMED("dwa_local_planner", "Received an empty transformed plan.");
        return false;
      }
-     ROS_DEBUG_NAMED("dwa_local_planner", "Received a transformed plan with %zu points.", transformed_plan.size());
+     
+     ROS_INFO("Received a transformed plan with %zu points.", transformed_plan.size());
  
      // update plan in dwa_planner even if we just stop and rotate, to allow checkTrajectory
      dp_->updatePlanAndLocalCosts(current_pose_, transformed_plan, costmap_ros_->getRobotFootprint());
- 
+
      if (latchedStopRotateController_.isPositionReached(&planner_util_, current_pose_)) {
        //publish an empty plan because we've reached our goal position
        std::vector<geometry_msgs::PoseStamped> local_plan;
@@ -312,10 +313,13 @@
            boost::bind(&DWAPlanner::checkTrajectory, dp_, _1, _2, _3));
      } else {
        bool isOk = dwaComputeVelocityCommands(current_pose_, cmd_vel);
+       ROS_INFO("computeVelocity -- A valid velocity command of (%.4f, %.4f, %.4f) was found for this cycle.", 
+                     cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z);
        if (isOk) {
+       	 ROS_INFO("DWA planner successfully produced path.");
          publishGlobalPlan(transformed_plan);
        } else {
-         ROS_WARN_NAMED("dwa_local_planner", "DWA planner failed to produce path.");
+         ROS_INFO("DWA planner failed to produce path.");
          std::vector<geometry_msgs::PoseStamped> empty_plan;
          publishGlobalPlan(empty_plan);
        }
