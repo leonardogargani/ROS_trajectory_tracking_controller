@@ -75,6 +75,10 @@
        bool setPlan(const std::vector<geometry_msgs::PoseStamped>& orig_global_plan);
  
        bool isGoalReached();
+       
+       //AGGIUNTO
+       void setCurrentPose(geometry_msgs::PoseStamped upd_current_pose);
+       //////////
  
  
  

@@ -32,3 +32,57 @@ Navigation stack
 ----------------
 - https://wiki.ros.org/navigation/Tutorials
 
+
+
+
+--------------------------------------------------------------------
+
+
+Things to try:
+- modify parameters in dwa_planner_params.yaml
+- change local/global costmap and pose
+- change the tf in launch file
+- check position of the map wrt to the goal
+
+
+
+In isGoalReched(), when doing costmap_ros_->getRobotPose(current_pose_) the value of current_pose_ is overwritten to 0.0 (while it was previously correct thanks to our function dp.setCurrentPose(gl_l_global_pose))
+
+
+
+Increasing sim_time to 15.0 makes the simulation a circumference
+-> it seems that the goal is in the origin
+
+
+
+--------------------------------------------------------------------
+
+
+- getRobotPose() (funzione di Costmap2D) ritorna sempre 0 (= parametro della static tf)
+    - magari qualche frame in costmap_params.yaml deve cambiare?
+    - magari qualche tf nel launch file deve cambiare da statica a dinamica?
+        - nel diagramma di move_base si vede che odom viene usata per pubblicare una tf    
+
+- la footprint in rviz rimane fissa nell'origine
+
+- usando ostacolo a dritto non si ferma
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

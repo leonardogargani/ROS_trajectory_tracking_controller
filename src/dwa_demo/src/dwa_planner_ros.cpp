@@ -154,6 +154,9 @@
    }
  
    bool DWAPlannerROS::isGoalReached() {
+
+
+   	 //std::cout << costmap_ros_->getRobotPose(current_pose_) << std::endl;
      if (! isInitialized()) {
        ROS_ERROR("This planner has not been initialized, please call initialize() before using this planner");
        return false;
@@ -189,18 +192,18 @@
  
    bool DWAPlannerROS::dwaComputeVelocityCommands(geometry_msgs::PoseStamped &global_pose, geometry_msgs::Twist& cmd_vel) {
    
-	 ROS_INFO("PUNTO 1");
+	 //ROS_INFO("PUNTO 1");
      // dynamic window sampling approach to get useful velocity commands
      if(! isInitialized()){
        ROS_ERROR("This planner has not been initialized, please call initialize() before using this planner");
-       ROS_INFO("PUNTO 2");
+       //ROS_INFO("PUNTO 2");
        return false;
      }
  	 
- 	 ROS_INFO("PUNTO 3");
+ 	 //ROS_INFO("PUNTO 3");
      geometry_msgs::PoseStamped robot_vel;
      odom_helper_.getRobotVel(robot_vel);
-     ROS_INFO("PUNTO 3a");
+     //ROS_INFO("PUNTO 3a");
  
      /* For timing uncomment
      struct timeval start, end;
@@ -211,14 +214,14 @@
      //compute what trajectory to drive along
      geometry_msgs::PoseStamped drive_cmds;
      drive_cmds.header.frame_id = costmap_ros_->getBaseFrameID();
-     ROS_INFO("PUNTO 3b");
+     //ROS_INFO("PUNTO 3b");
      
      
      
      // call with updated footprint
      base_local_planner::Trajectory path = dp_->findBestPath(global_pose, robot_vel, drive_cmds);
      //ROS_ERROR("Best: %.2f, %.2f, %.2f, %.2f", path.xv_, path.yv_, path.thetav_, path.cost_);
- 	 ROS_INFO("PUNTO 4");
+ 	 //ROS_INFO("PUNTO 4");
      /* For timing uncomment
      gettimeofday(&end, NULL);
      start_t = start.tv_sec + double(start.tv_usec) / 1e6;
@@ -235,20 +238,20 @@
      //if we cannot move... tell someone
      std::vector<geometry_msgs::PoseStamped> local_plan;
      if(path.cost_ < 0) {
-       ROS_INFO("PUNTO 5");
+       //ROS_INFO("PUNTO 5");
        ROS_DEBUG_NAMED("dwa_local_planner",
            "The dwa local planner failed to find a valid plan, cost functions discarded all candidates. This can mean there is an obstacle too close to the robot.");
        local_plan.clear();
        publishLocalPlan(local_plan);
        return false;
      }
- 	 ROS_INFO("PUNTO 6");
-     ROS_INFO("dwaComputeVelocity -- A valid velocity command of (%.4f, %.4f, %.4f) was found for this cycle.", 
+ 	 //ROS_INFO("PUNTO 6");
+     ROS_INFO("dwaComputeVelocity -- A valid velocity command of ((%.4f, %.4f), %.4f) was found for this cycle.", 
                      cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z);
  
      // Fill out the local plan
      for(unsigned int i = 0; i < path.getPointsSize(); ++i) {
-       ROS_INFO("PUNTO 7");
+       //ROS_INFO("PUNTO 7");
        double p_x, p_y, p_th;
        path.getPoint(i, p_x, p_y, p_th);
  
@@ -265,10 +268,23 @@
      }
  
      //publish information to the visualizer
-     ROS_INFO("PUNTO 8");
+     //ROS_INFO("PUNTO 8");
      publishLocalPlan(local_plan);
      return true;
    }
+   
+   //AGGIUNTO
+   void DWAPlannerROS::setCurrentPose(geometry_msgs::PoseStamped upd_current_pose){
+   
+   		ROS_INFO("TO UPDATE --- SET_X: %.4f -- SET_Y: %.4f", upd_current_pose.pose.position.x, upd_current_pose.pose.position.y);
+   		
+   		current_pose_.header = upd_current_pose.header;
+   		current_pose_.pose = upd_current_pose.pose;
+   		
+   		//ROS_INFO("SET_X: %.4f -- SET_Y: %.4f", current_pose_.pose.position.x, current_pose_.pose.position.y);
+   		
+   }
+   //////
  
  
  
@@ -284,6 +300,8 @@
        ROS_ERROR("Could not get local plan");
        return false;
      }
+
+     ROS_INFO("POSE (x): %.4f", current_pose_.pose.position.x);
  
      //if the global plan passed in is empty... we won't do anything
      if(transformed_plan.empty()) {
@@ -313,13 +331,13 @@
            boost::bind(&DWAPlanner::checkTrajectory, dp_, _1, _2, _3));
      } else {
        bool isOk = dwaComputeVelocityCommands(current_pose_, cmd_vel);
-       ROS_INFO("computeVelocity -- A valid velocity command of (%.4f, %.4f, %.4f) was found for this cycle.", 
-                     cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z);
+       //ROS_INFO("computeVelocity -- A valid velocity command of (%.4f, %.4f, %.4f) was found for this cycle.", 
+       //              cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.angular.z);
        if (isOk) {
        	 ROS_INFO("DWA planner successfully produced path.");
          publishGlobalPlan(transformed_plan);
        } else {
-         ROS_INFO("DWA planner failed to produce path.");
+         ROS_ERROR("DWA planner failed to produce path.");
          std::vector<geometry_msgs::PoseStamped> empty_plan;
          publishGlobalPlan(empty_plan);
        }

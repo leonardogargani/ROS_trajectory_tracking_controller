@@ -29,3 +29,6 @@ add_executable(demo src/demo.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
 target_link_libraries(demo ${catkin_LIBRARIES})
 add_dependencies(demo ${catkin_EXPORTED_TARGETS})
 
+add_executable(odom_to_baselink_tf src/odom_to_baselink_tf.cpp)
+target_link_libraries(odom_to_baselink_tf ${catkin_LIBRARIES})
+

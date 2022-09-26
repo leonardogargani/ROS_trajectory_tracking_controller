@@ -1,5 +1,22 @@
-my_dwa_planner/min_vel_y: 0.0
-my_dwa_planner/max_vel_y: 0.0
+my_dwa_planner:
 
-my_dwa_planner/min_vel_x: 5.0
-my_dwa_planner/max_vel_x: 10.0
+  min_vel_y: 0.0
+  max_vel_y: 0.0
+
+  min_vel_x: 0.0
+  max_vel_x: 10.0
+
+  acc_lim_theta: 10.0
+
+  # DEPRECATED! (to be written in the report: doc is outdated...)
+  #min_rot_vel: 0.0
+  #max_rot_vel: 0.0
+
+  # CORRECTLY WORKING!
+  min_vel_theta: 0.0
+  max_vel_theta: 0.0
+
+  sim_time: 5.0
+
+  xy_goal_tolerance: 0.5
+  yaw_goal_tolerance: 6.3
