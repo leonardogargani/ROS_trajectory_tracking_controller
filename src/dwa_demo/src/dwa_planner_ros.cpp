@@ -273,21 +273,6 @@
      return true;
    }
    
-   //AGGIUNTO
-   void DWAPlannerROS::setCurrentPose(geometry_msgs::PoseStamped upd_current_pose){
-   
-   		ROS_INFO("TO UPDATE --- SET_X: %.4f -- SET_Y: %.4f", upd_current_pose.pose.position.x, upd_current_pose.pose.position.y);
-   		
-   		current_pose_.header = upd_current_pose.header;
-   		current_pose_.pose = upd_current_pose.pose;
-   		
-   		//ROS_INFO("SET_X: %.4f -- SET_Y: %.4f", current_pose_.pose.position.x, current_pose_.pose.position.y);
-   		
-   }
-   //////
- 
- 
- 
  
    bool DWAPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel) {
      // dispatches to either dwa sampling control or stop and rotate control, depending on whether we have been close enough to goal
@@ -301,7 +286,7 @@
        return false;
      }
 
-     ROS_INFO("POSE (x): %.4f", current_pose_.pose.position.x);
+     ROS_INFO("POSE: %.4f, %.4f", current_pose_.pose.position.x, current_pose_.pose.position.y);
  
      //if the global plan passed in is empty... we won't do anything
      if(transformed_plan.empty()) {

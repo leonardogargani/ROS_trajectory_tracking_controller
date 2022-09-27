@@ -6,6 +6,8 @@
     <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 1 /map odom 100" />
     <!--- <node pkg="tf" type="static_transform_publisher" name="odom_to_base_link" args="0 0 0 0 0 0 1 /odom base_link 100" /> -->
     
+    <!--- From tutorial: https://wiki.ros.org/costmap_2d/Tutorials/Configuring%20Layered%20Costmaps -->
+    <!--- <node name="static_tf0" pkg="tf" type="static_transform_publisher" args="2 0 0 0 0 0 /map /base_link 100"/> -->
 
     <node pkg="dwa_demo" type="demo" respawn="false" name="demo" output="screen">
         <rosparam file="$(find dwa_demo)/config/costmaps_params.yaml" command="load" />

@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /Odometry1/Shape1
-        - /Polygon1
       Splitter Ratio: 0.5
     Tree Height: 704
   - Class: rviz/Selection
@@ -72,7 +71,7 @@ Visualization Manager:
           Value: true
         Value: true
       Enabled: true
-      Keep: 10
+      Keep: 1
       Name: Odometry
       Position Tolerance: 0.10000000149011612
       Shape:
@@ -81,9 +80,9 @@ Visualization Manager:
         Axes Radius: 0.10000000149011612
         Color: 255; 25; 0
         Head Length: 0.10000000149011612
-        Head Radius: 0.05000000074505806
-        Shaft Length: 0.20000000298023224
-        Shaft Radius: 0.019999999552965164
+        Head Radius: 0.10000000149011612
+        Shaft Length: 0.30000001192092896
+        Shaft Radius: 0.03999999910593033
         Value: Arrow
       Topic: /odom
       Unreliable: false
@@ -172,7 +171,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.978117942810059
+      Distance: 7.199695110321045
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

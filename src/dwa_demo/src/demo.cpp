@@ -57,14 +57,14 @@ int main(int argc, char **argv)
     std::vector<geometry_msgs::PoseStamped> orig_global_plan;
     geometry_msgs::PoseStamped tmp_pose_stamped;
 
-    for (uint t = 0; t < srv.response.xref.size(); t++) {
+    for (uint t = 1000; t < srv.response.xref.size(); t+=1000) {
     //for (uint t = 500; t < 1500; t++) {
-        //tmp_pose_stamped.pose.position.x = srv.response.xref[t];
-        //tmp_pose_stamped.pose.position.y = srv.response.yref[t];
-        tmp_pose_stamped.pose.position.x = 2.0;
-        tmp_pose_stamped.pose.position.y = 0.0;
+        tmp_pose_stamped.pose.position.x = srv.response.xref[t];
+        tmp_pose_stamped.pose.position.y = srv.response.yref[t];
+        //tmp_pose_stamped.pose.position.x = -3.0;
+        //tmp_pose_stamped.pose.position.y = 0.0;
         
-        tmp_pose_stamped.header.frame_id = "base_link";
+        tmp_pose_stamped.header.frame_id = "map";  // base_link odom map
         orig_global_plan.push_back(tmp_pose_stamped);
     //}
 
@@ -78,10 +78,21 @@ int main(int argc, char **argv)
 		geometry_msgs::Twist dwa_cmd_vel;
 		geometry_msgs::PoseStamped l_global_pose;
 
-		while(!dp.isGoalReached()) {
-		    ROS_INFO("--> POINT #%d", t);
+
+        float xy_dist = 999.99;
+
+		while(xy_dist > 0.2) {
+		//while(!dp.isGoalReached()) {
+
+		    ROS_INFO("--> GOAL #%d: %f, %f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);
 
 		    my_global_costmap.getRobotPose(l_global_pose);
+
+            xy_dist = sqrt(pow((tmp_pose_stamped.pose.position.x - l_global_pose.pose.position.x), 2.0)
+                            + pow((tmp_pose_stamped.pose.position.y - l_global_pose.pose.position.y), 2.0));
+            
+            ROS_INFO("xy_dist: %f", xy_dist);
+
 
 		    // update global costmap
 		    //my_local_costmap.updateMap();
@@ -113,13 +124,15 @@ int main(int argc, char **argv)
 		  	vehicleCommandMsg.data.push_back(omega_l);
 		  	vehicleCommand_publisher.publish(vehicleCommandMsg);
 		  	
-		  	orig_global_plan.clear();
+		  	//orig_global_plan.clear();
 
-			ros::spinOnce();
+			//ros::spinOnce();
 			//usleep(1000);
 						
-			dp.setCurrentPose(gl_l_global_pose);
+			//dp.setCurrentPose(gl_l_global_pose);
 		}
+
+        xy_dist = 999.99;
 
 		ROS_WARN("\n");
 		ROS_WARN("\n");
