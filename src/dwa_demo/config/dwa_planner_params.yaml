@@ -6,7 +6,7 @@ my_dwa_planner:
   min_vel_x: 0.0
   max_vel_x: 10.0
 
-  acc_lim_theta: 10.0
+  acc_lim_theta: 100.0
 
   # DEPRECATED! (to be written in the report: doc is outdated...)
   #min_rot_vel: 0.0
@@ -20,8 +20,8 @@ my_dwa_planner:
   #sim_granularity: 0.01
   #forward_point_distance: 0.5
   
-  #xy_goal_tolerance: 0.1
-  #yaw_goal_tolerance: 6.3
+  xy_goal_tolerance: 0.15
+  yaw_goal_tolerance: 6.3
 
   #latch_xy_goal_tolerance: false
   #clearing_rotation_allowed: false
