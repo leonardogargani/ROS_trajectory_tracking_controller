@@ -16,10 +16,11 @@ my_dwa_planner:
   #min_vel_theta: 0.0
   #max_vel_theta: 0.0
 
-  sim_time: 6.0
-  sim_granularity: 0.05
-
-  xy_goal_tolerance: 0.1
+  #sim_time: 6.0
+  #sim_granularity: 0.01
+  #forward_point_distance: 0.5
+  
+  #xy_goal_tolerance: 0.1
   #yaw_goal_tolerance: 6.3
 
   #latch_xy_goal_tolerance: false

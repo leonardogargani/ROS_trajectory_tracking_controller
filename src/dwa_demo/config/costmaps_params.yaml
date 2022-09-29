@@ -10,8 +10,8 @@ my_global_costmap:
 
     #resolution: 1.0
 
-    #static_map: true
-    #first_map_only: true
+    static_map: true
+    first_map_only: true
     #map_type: costmap
 
     plugins:

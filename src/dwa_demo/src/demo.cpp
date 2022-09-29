@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     std::vector<geometry_msgs::PoseStamped> orig_global_plan;
     geometry_msgs::PoseStamped tmp_pose_stamped;
 
-    for (uint t = 1000; t < srv.response.xref.size(); t+=1000) {
+    for (uint t = 0; t < srv.response.xref.size(); t+=100) {
     //for (uint t = 500; t < 1500; t++) {
         tmp_pose_stamped.pose.position.x = srv.response.xref[t];
         tmp_pose_stamped.pose.position.y = srv.response.yref[t];
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
         float xy_dist = 999.99;
 
-		while(xy_dist > 0.2) {
+		while(xy_dist > 0.15) {
 		//while(!dp.isGoalReached()) {
 
 		    ROS_INFO("--> GOAL #%d: %f, %f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);

@@ -69,6 +69,9 @@ Increasing sim_time to 15.0 makes the simulation a circumference
 
 
 
+dwa funziona con:
+- while(xy_dist > 0.2) invece che while(!dp.isGoalReached())
+- for (uint t = 1000; t < srv.response.xref.size(); t+=1000)
 
 
 
