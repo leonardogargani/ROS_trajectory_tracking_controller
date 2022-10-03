@@ -7,9 +7,12 @@
     <node pkg="diffdrive_dwa_ctrl" type="diffdrive_dwa_trajctrl" respawn="false" name="diffdrive_dwa_trajctrl" output="screen">
         <rosparam file="$(find diffdrive_dwa_ctrl)/config/costmaps_params.yaml" command="load" />
         <rosparam file="$(find diffdrive_dwa_ctrl)/config/dwa_planner_params.yaml" command="load" />
+        <rosparam file="$(find diffdrive_dwa_ctrl)/config/diffdrive_dwa_trajctrl.yaml" command="load" />
     </node>    
 
-    <node pkg="diffdrive_dwa_ctrl" type="odom_to_baselink_tf" respawn="false" name="odom_to_baselink_tf" output="screen"></node>
+    <node pkg="diffdrive_dwa_ctrl" type="odom_to_baselink_tf" respawn="false" name="odom_to_baselink_tf" output="screen">
+        <rosparam file="$(find diffdrive_dwa_ctrl)/config/odom_to_baselink_tf.yaml" command="load" />
+    </node>
 
     <node name="map_node" pkg="map_server" type="map_server" args="$(find diffdrive_dwa_ctrl)/config/map_server_params.yaml" respawn="false">
         <param name="frame_id" value="map" />

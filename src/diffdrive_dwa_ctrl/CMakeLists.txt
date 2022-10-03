@@ -25,10 +25,10 @@ include_directories(
 )
 
 
-add_executable(diffdrive_dwa_trajctrl src/diffdrive_dwa_trajctrl.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
+add_executable(diffdrive_dwa_trajctrl src/diffdrive_dwa_trajctrl.cpp src/diffdrive_dwa_trajctrl_node.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
 target_link_libraries(diffdrive_dwa_trajctrl ${catkin_LIBRARIES})
 add_dependencies(diffdrive_dwa_trajctrl ${catkin_EXPORTED_TARGETS})
 
-add_executable(odom_to_baselink_tf src/odom_to_baselink_tf.cpp)
+add_executable(odom_to_baselink_tf src/odom_to_baselink_tf.cpp src/odom_to_baselink_tf_node.cpp)
 target_link_libraries(odom_to_baselink_tf ${catkin_LIBRARIES})
-
+add_dependencies(odom_to_baselink_tf ${catkin_EXPORTED_TARGETS})

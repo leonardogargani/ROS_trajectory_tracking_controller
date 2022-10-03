@@ -1,33 +1,24 @@
-#include <tf2_ros/transform_listener.h>
-#include <costmap_2d/costmap_2d_ros.h>
-#include <dwa_local_planner/dwa_planner_ros.h>
-
-#include <geometry_msgs/PoseStamped.h>
-#include "diffdrive_kin_ctrl/GenerateDesiredPathService.h"
-
-#include <std_msgs/Float64MultiArray.h>
+#include "diffdrive_dwa_ctrl/diffdrive_dwa_trajctrl.h"
 
 
-int main(int argc, char **argv)
+
+void diffdrive_dwa_trajctrl::Prepare(void)
 {
 
-	ros::init(argc, argv, "diffdrive_dwa_trajctrl");
+    std::string FullParamName;
 
-	tf2_ros::Buffer tfBuffer(ros::Duration(10));
-	tf2_ros::TransformListener tfListener(tfBuffer);
+    FullParamName = ros::this_node::getName() + "/run_period";
+    if (false == Handle.getParam(FullParamName, RunPeriod))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-	costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
+    tf2_ros::Buffer tfBuffer(ros::Duration(10));
+    tf2_ros::TransformListener tfListener(tfBuffer);
 
+    costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
 	my_global_costmap.start();
-
-	dwa_local_planner::DWAPlannerROS dp;
+    dwa_local_planner::DWAPlannerROS dp;
 	dp.initialize("my_dwa_planner", &tfBuffer, &my_global_costmap);
 
-	ros::ServiceClient client;
-	diffdrive_kin_ctrl::GenerateDesiredPathService srv;
-	ros::NodeHandle Handle;
-
-	ros::Publisher vehicleCommand_publisher;
 	vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
 
 	client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
@@ -36,7 +27,7 @@ int main(int argc, char **argv)
 		ROS_INFO("Waiting for service");
 	}
 
-	ROS_INFO("DEMO.CPP -> Path has been generated and received.");
+	ROS_INFO("Path has been generated and received.");
 
 	std::vector<geometry_msgs::PoseStamped> orig_global_plan;
 	geometry_msgs::PoseStamped tmp_pose_stamped;
@@ -61,17 +52,11 @@ int main(int argc, char **argv)
 			ROS_ERROR("DWA set plan: FAILED");
 		}
 
-		// create twist message to be populated by the local planner
-		geometry_msgs::Twist dwa_cmd_vel;
-		geometry_msgs::PoseStamped l_global_pose;
-
-
 		while(!dp.isGoalReached()) {
 
 			ROS_INFO("--> GOAL #%d: %f, %f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);
 
 			my_global_costmap.getRobotPose(l_global_pose);
-
 			my_global_costmap.updateMap();
 
 			// compute velocity commands using DWA
@@ -93,13 +78,11 @@ int main(int argc, char **argv)
 
 			ROS_INFO("OMEGA_R: %.4f --- OMEGA_L: %.4f", omega_r, omega_l);
 
-			std_msgs::Float64MultiArray vehicleCommandMsg;
+            std_msgs::Float64MultiArray vehicleCommandMsg;
 			vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
 			vehicleCommandMsg.data.push_back(omega_r);
 			vehicleCommandMsg.data.push_back(omega_l);
 			vehicleCommand_publisher.publish(vehicleCommandMsg);
-
-			//orig_global_plan.clear();
 
 		}
 
@@ -110,6 +93,31 @@ int main(int argc, char **argv)
 		orig_global_plan.clear();
 	}
 
-	return (0);
-
 }
+
+
+void diffdrive_dwa_trajctrl::RunPeriodically(float Period)
+{
+    ros::Rate LoopRate(1.0 / Period);
+
+    ROS_INFO("Node %s running periodically (T=%.2fs, f=%.2fHz).", ros::this_node::getName().c_str(), Period, 1.0 / Period);
+
+    while (ros::ok()) {
+        PeriodicTask();
+        ros::spinOnce();
+        LoopRate.sleep();
+    }
+}
+
+
+void diffdrive_dwa_trajctrl::Shutdown(void)
+{
+    ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
+}
+
+
+void diffdrive_dwa_trajctrl::PeriodicTask(void)
+{
+    // do nothing
+}
+
