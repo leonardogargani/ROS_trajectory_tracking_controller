@@ -1,0 +1,36 @@
+required packages to be installed
+---------------------------------
+- sudo apt install ros-melodic-navigation ros-melodic-dwa-local-planner
+- sudo ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
+    \__ (dwa needs looks for /usr/include/Eigen, which I have in /usr/include/eigen3/Eigen)
+
+
+
+People who used DWA standalone
+------------------------------
+- https://github.com/amslabtech/dwa_planner
+- https://answers.ros.org/question/376753/dwa-local-planner-as-a-stand-alone-c-library
+
+
+
+From https://wiki.ros.org/dwa_local_planner:
+- Published Topics:
+    - ~<name>/global_plan (nav_msgs/Path)
+    - ~<name>/local_plan (nav_msgs/Path)
+- Subscribed Topics:
+    - odom (nav_msgs/Odometry)
+
+From the nav_core image [looking at the local_planner circle]:
+- Published Topics:
+    - cmd_vel (geometry_msgs/Twist)
+- reads the nav_msgs/Path internally sent by the global_planner
+- Subscribed Topics:
+    - odom (nav_msgs/Odometry)
+
+
+Navigation stack
+----------------
+- https://wiki.ros.org/navigation/Tutorials
+
+
+

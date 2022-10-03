@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   
-  <name>dwa_demo</name>
+  <name>diffdrive_dwa_ctrl</name>
   <version>0.0.1</version>
 
   <description>

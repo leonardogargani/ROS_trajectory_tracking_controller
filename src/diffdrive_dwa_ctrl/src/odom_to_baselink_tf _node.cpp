@@ -22,7 +22,6 @@ public:
 
 	void callback(const nav_msgs::Odometry::ConstPtr &msg)
 	{
-                ROS_WARN("odom_to_baselink_tf running");
 		transformStamped.header.stamp = ros::Time::now();
 		transformStamped.header.frame_id = "odom";
 		transformStamped.child_frame_id = "base_link";

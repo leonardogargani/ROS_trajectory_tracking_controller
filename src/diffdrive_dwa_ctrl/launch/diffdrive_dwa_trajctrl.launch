@@ -1,0 +1,31 @@
+<launch>
+
+    <param name="/use_sim_time" value="true"/>
+    
+    <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 1 /map odom 100" />    
+
+    <node pkg="diffdrive_dwa_ctrl" type="diffdrive_dwa_trajctrl" respawn="false" name="diffdrive_dwa_trajctrl" output="screen">
+        <rosparam file="$(find diffdrive_dwa_ctrl)/config/costmaps_params.yaml" command="load" />
+        <rosparam file="$(find diffdrive_dwa_ctrl)/config/dwa_planner_params.yaml" command="load" />
+    </node>    
+
+    <node pkg="diffdrive_dwa_ctrl" type="odom_to_baselink_tf" respawn="false" name="odom_to_baselink_tf" output="screen"></node>
+
+    <node name="map_node" pkg="map_server" type="map_server" args="$(find diffdrive_dwa_ctrl)/config/map_server_params.yaml" respawn="false">
+        <param name="frame_id" value="map" />
+    </node>
+
+    <!--- trajectory generator node -->
+    <node pkg="diffdrive_kin_ctrl" type="eight_traj_gen" respawn="false" name="eight_traj_gen" output="screen">
+        <rosparam file="$(find diffdrive_kin_ctrl)/config/eight_traj.yaml" command="load" />
+    </node>
+
+    <!--- RVIZ -->
+    <node pkg="rviz" name="odom_visualizer" type="rviz" args="-d $(find diffdrive_dwa_ctrl)/rviz/odom_visualizer.rviz"/> 
+    
+    <!--- differential drive simulator node -->
+    <node pkg="diffdrive_kin_sim" type="diffdrive_kin_sim" respawn="false" name="diffdrive_kin_sim" output="screen">
+        <rosparam file="$(find diffdrive_kin_sim)/config/diffdrive_kin_sim.yaml" command="load" />
+    </node>
+
+</launch>

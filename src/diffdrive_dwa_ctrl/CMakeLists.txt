@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(dwa_demo)
+project(diffdrive_dwa_ctrl)
 
 
 find_package(catkin REQUIRED COMPONENTS
@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES dwa_demo
+    LIBRARIES diffdrive_dwa_ctrl
     CATKIN_DEPENDS roscpp std_msgs tf2_ros costmap_2d diffdrive_kin_ctrl base_local_planner
 )
 
@@ -25,9 +25,9 @@ include_directories(
 )
 
 
-add_executable(demo src/demo.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
-target_link_libraries(demo ${catkin_LIBRARIES})
-add_dependencies(demo ${catkin_EXPORTED_TARGETS})
+add_executable(diffdrive_dwa_trajctrl src/diffdrive_dwa_trajctrl.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
+target_link_libraries(diffdrive_dwa_trajctrl ${catkin_LIBRARIES})
+add_dependencies(diffdrive_dwa_trajctrl ${catkin_EXPORTED_TARGETS})
 
 add_executable(odom_to_baselink_tf src/odom_to_baselink_tf.cpp)
 target_link_libraries(odom_to_baselink_tf ${catkin_LIBRARIES})

@@ -15,5 +15,8 @@
     <node pkg="diffdrive_kin_ctrl" type="eight_traj_gen" respawn="false" name="eight_traj_gen" output="screen">
         <rosparam file="$(find diffdrive_kin_ctrl)/config/eight_traj.yaml" command="load" />
     </node>
+
+    <!--- RVIZ -->
+    <node pkg="rviz" name="odom_visualizer" type="rviz" args="-d $(find diffdrive_kin_ctrl)/rviz/odom_visualizer.rviz"/>
   
 </launch>

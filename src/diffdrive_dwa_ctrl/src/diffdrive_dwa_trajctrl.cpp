@@ -11,15 +11,13 @@
 int main(int argc, char **argv)
 {
 
-	ros::init(argc, argv, "dwa_demo");
+	ros::init(argc, argv, "diffdrive_dwa_trajctrl");
 
 	tf2_ros::Buffer tfBuffer(ros::Duration(10));
 	tf2_ros::TransformListener tfListener(tfBuffer);
 
-	//costmap_2d::Costmap2DROS my_local_costmap("my_local_costmap", tfBuffer);
 	costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
 
-	//my_local_costmap.start();
 	my_global_costmap.start();
 
 	dwa_local_planner::DWAPlannerROS dp;
@@ -47,17 +45,15 @@ int main(int argc, char **argv)
 
 		tmp_pose_stamped.pose.position.x = srv.response.xref[t];
 		tmp_pose_stamped.pose.position.y = srv.response.yref[t];
-		//tmp_pose_stamped.pose.position.x = -3.0;
-		//tmp_pose_stamped.pose.position.y = 0.0;
 
+		// yaw goal set to 0 (a value is required by DWA)
 		tmp_pose_stamped.pose.orientation.x = 0.0;
 		tmp_pose_stamped.pose.orientation.y = 0.0;
 		tmp_pose_stamped.pose.orientation.z = 0.0;
 		tmp_pose_stamped.pose.orientation.w = 1.0;
 
-		tmp_pose_stamped.header.frame_id = "map";  // base_link odom map
+		tmp_pose_stamped.header.frame_id = "map";
 		orig_global_plan.push_back(tmp_pose_stamped);
-		//}
 
 		if (dp.setPlan(orig_global_plan)) {
 			ROS_INFO("DWA set plan: SUCCESS");
@@ -76,12 +72,9 @@ int main(int argc, char **argv)
 
 			my_global_costmap.getRobotPose(l_global_pose);
 
-			// update global costmap
-			//my_local_costmap.updateMap();
 			my_global_costmap.updateMap();
 
 			// compute velocity commands using DWA
-			//if (dp.dwaComputeVelocityCommands(l_global_pose, dwa_cmd_vel) == true) {
 			if (dp.computeVelocityCommands(dwa_cmd_vel) == true) {
 				ROS_INFO("DWA compute cmd_vel: SUCCESS");
 			} else {

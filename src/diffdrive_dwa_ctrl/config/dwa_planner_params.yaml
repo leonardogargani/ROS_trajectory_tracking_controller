@@ -6,7 +6,7 @@ my_dwa_planner:
   min_vel_x: 0.0
   max_vel_x: 10.0
 
-  acc_lim_theta: 100.0
+  acc_lim_theta: 10.0
 
   # DEPRECATED! (to be written in the report: doc is outdated...)
   #min_rot_vel: 0.0
