@@ -18,7 +18,7 @@ my_dwa_planner:
 
   #sim_time: 6.0
   #sim_granularity: 0.01
-  #forward_point_distance: 0.5
+  forward_point_distance: 0.05
   
   xy_goal_tolerance: 0.15
   yaw_goal_tolerance: 6.3

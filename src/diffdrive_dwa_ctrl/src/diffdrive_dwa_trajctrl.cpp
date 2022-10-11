@@ -54,21 +54,20 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 
 		while(!dp.isGoalReached()) {
 
-			ROS_INFO("--> GOAL #%d: %f, %f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);
+			ROS_INFO("Current goal (#%d): x=%f, y=%f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);
 
 			my_global_costmap.getRobotPose(l_global_pose);
 			my_global_costmap.updateMap();
 
+			ROS_INFO("Current position: x=%f, y=%f", l_global_pose.pose.position.x, l_global_pose.pose.position.y);
+
 			// compute velocity commands using DWA
 			if (dp.computeVelocityCommands(dwa_cmd_vel) == true) {
-				ROS_INFO("DWA compute cmd_vel: SUCCESS");
+				ROS_INFO("DWA result: v=%.4f, w=%.4f", dwa_cmd_vel.linear.x, dwa_cmd_vel.angular.z);
+
 			} else {
 				ROS_ERROR("DWA compute cmd_vel: FAILED");
 			}
-
-
-			ROS_INFO("DWA_CMD_X (lin_x): %.4f | DWA_CMD_Z (ang_z): %.4f | (v_y (lin_y) = %.4f, v_z (lin_z) = %.4f)",
-			dwa_cmd_vel.linear.x, dwa_cmd_vel.angular.z, dwa_cmd_vel.linear.y, dwa_cmd_vel.linear.z);
 
 			float d = 0.15;
 			float r = 0.03;
@@ -76,19 +75,15 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 			float omega_r = ((float)dwa_cmd_vel.linear.x + (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
 			float omega_l = ((float)dwa_cmd_vel.linear.x - (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
 
-			ROS_INFO("OMEGA_R: %.4f --- OMEGA_L: %.4f", omega_r, omega_l);
+			ROS_INFO("Velocities of wheels: w_r=%.4f, w_l=%.4f\n", omega_r, omega_l);
 
-            std_msgs::Float64MultiArray vehicleCommandMsg;
+            		std_msgs::Float64MultiArray vehicleCommandMsg;
 			vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
 			vehicleCommandMsg.data.push_back(omega_r);
 			vehicleCommandMsg.data.push_back(omega_l);
 			vehicleCommand_publisher.publish(vehicleCommandMsg);
 
 		}
-
-		ROS_WARN("\n");
-		ROS_WARN("\n");
-		ROS_WARN("---- NEW ITERATION ----");
 
 		orig_global_plan.clear();
 	}
