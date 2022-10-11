@@ -76,12 +76,6 @@
  
        bool isGoalReached();
        
-       //AGGIUNTO
-       void setCurrentPose(geometry_msgs::PoseStamped upd_current_pose);
-       //////////
- 
- 
- 
        bool isInitialized() {
          return initialized_;
        }
