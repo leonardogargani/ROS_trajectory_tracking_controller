@@ -20,6 +20,7 @@ private:
 
     ros::Subscriber vehicleState_subscriber;
     ros::Publisher vehicleCommand_publisher;
+    ros::Publisher controllerState_publisher;
 
     ros::ServiceClient client;
     diffdrive_kin_ctrl::GenerateDesiredPathService srv;

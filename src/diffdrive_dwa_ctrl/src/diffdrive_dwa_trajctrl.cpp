@@ -5,21 +5,22 @@
 void diffdrive_dwa_trajctrl::Prepare(void)
 {
 
-    std::string FullParamName;
+	std::string FullParamName;
 
-    FullParamName = ros::this_node::getName() + "/run_period";
-    if (false == Handle.getParam(FullParamName, RunPeriod))
-        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+	FullParamName = ros::this_node::getName() + "/run_period";
+	if (false == Handle.getParam(FullParamName, RunPeriod))
+		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    tf2_ros::Buffer tfBuffer(ros::Duration(10));
-    tf2_ros::TransformListener tfListener(tfBuffer);
+	tf2_ros::Buffer tfBuffer(ros::Duration(10));
+	tf2_ros::TransformListener tfListener(tfBuffer);
 
-    costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
+    	costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
 	my_global_costmap.start();
-    dwa_local_planner::DWAPlannerROS dp;
+    	dwa_local_planner::DWAPlannerROS dp;
 	dp.initialize("my_dwa_planner", &tfBuffer, &my_global_costmap);
 
 	vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
+	controllerState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/controller_state", 1);
 
 	client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
 
@@ -83,6 +84,28 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 			vehicleCommandMsg.data.push_back(omega_l);
 			vehicleCommand_publisher.publish(vehicleCommandMsg);
 
+			double xref = tmp_pose_stamped.pose.position.x;
+			double yref = tmp_pose_stamped.pose.position.y;
+
+			double x = l_global_pose.pose.position.x;
+			double y = l_global_pose.pose.position.y;
+
+			// publish controller state
+			std_msgs::Float64MultiArray controllerStateMsg;
+			controllerStateMsg.data.push_back(ros::Time::now().toSec());
+			controllerStateMsg.data.push_back(xref);
+			controllerStateMsg.data.push_back(yref);
+			controllerStateMsg.data.push_back(xref);	// xPref
+			controllerStateMsg.data.push_back(yref);	// yPref
+			controllerStateMsg.data.push_back(x);		// xP
+			controllerStateMsg.data.push_back(y);		// yP
+			controllerStateMsg.data.push_back(0);		// vPx
+			controllerStateMsg.data.push_back(0);		// vPy
+			controllerStateMsg.data.push_back(omega_r);
+			controllerStateMsg.data.push_back(omega_l);    
+			controllerState_publisher.publish(controllerStateMsg);
+
+
 		}
 
 		orig_global_plan.clear();
@@ -93,26 +116,26 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 
 void diffdrive_dwa_trajctrl::RunPeriodically(float Period)
 {
-    ros::Rate LoopRate(1.0 / Period);
+	ros::Rate LoopRate(1.0 / Period);
 
-    ROS_INFO("Node %s running periodically (T=%.2fs, f=%.2fHz).", ros::this_node::getName().c_str(), Period, 1.0 / Period);
+	ROS_INFO("Node %s running periodically (T=%.2fs, f=%.2fHz).", ros::this_node::getName().c_str(), Period, 1.0 / Period);
 
-    while (ros::ok()) {
-        PeriodicTask();
-        ros::spinOnce();
-        LoopRate.sleep();
-    }
+	while (ros::ok()) {
+		PeriodicTask();
+		ros::spinOnce();
+		LoopRate.sleep();
+	}
 }
 
 
 void diffdrive_dwa_trajctrl::Shutdown(void)
 {
-    ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
+	ROS_INFO("Node %s shutting down.", ros::this_node::getName().c_str());
 }
 
 
 void diffdrive_dwa_trajctrl::PeriodicTask(void)
 {
-    // do nothing
+	// do nothing
 }
 
