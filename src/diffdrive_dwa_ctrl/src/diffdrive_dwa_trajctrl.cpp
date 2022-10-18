@@ -10,6 +10,10 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 	FullParamName = ros::this_node::getName() + "/run_period";
 	if (false == Handle.getParam(FullParamName, RunPeriod))
 		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+		
+	FullParamName = ros::this_node::getName() + "/skipped_goals";
+	if (false == Handle.getParam(FullParamName, skipped_goals))
+		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
 	tf2_ros::Buffer tfBuffer(ros::Duration(10));
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -33,7 +37,7 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 	std::vector<geometry_msgs::PoseStamped> orig_global_plan;
 	geometry_msgs::PoseStamped tmp_pose_stamped;
 
-	for (uint t = 0; t < srv.response.xref.size(); t+=100) {
+	for (uint t = 0; t < srv.response.xref.size(); t+=skipped_goals) {
 
 		tmp_pose_stamped.pose.position.x = srv.response.xref[t];
 		tmp_pose_stamped.pose.position.y = srv.response.yref[t];

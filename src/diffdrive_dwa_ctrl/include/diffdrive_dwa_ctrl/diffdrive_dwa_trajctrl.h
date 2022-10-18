@@ -33,6 +33,7 @@ private:
 
 public:
     float RunPeriod;
+    int skipped_goals;
     void Prepare(void);
     void RunPeriodically(float Period);
     void Shutdown(void);
