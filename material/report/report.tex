@@ -73,20 +73,19 @@
 
 % -> title of your work
 \renewcommand{\title}{Title}
-% -> author name and surname
+% -> author name and surname, IDs
 \newcommand{\AUTHORa}{Giuseppe Chiari}
+\newcommand{\IDa}{10576799}
 \newcommand{\AUTHORb}{Leonardo Gargani}
+\newcommand{\IDb}{10569221}
 \newcommand{\AUTHORc}{Serena Salvi}
+\newcommand{\IDc}{10607377}
 % -> MSc course
 \newcommand{\course}{Computer Science and Engineering}
 % -> supervisor name and surname
 \newcommand{\supervisor}{Luca Bascetta}
-% -> author ID
-\newcommand{\IDa}{10569221}
-\newcommand{\IDb}{xxxxxx}
-\newcommand{\IDc}{xxxxxx}
 % -> academic year
-\newcommand{\YEAR}{2021-2022}
+\newcommand{\YEAR}{2022-2023}
 % -> abstract (only in English)
 \renewcommand{\abstract}{
 ...
@@ -105,6 +104,13 @@
 % This file creates the Title Page of the document
 \input{config_files/title_page}
 
+\newpage
+
+\renewcommand*\contentsname{Table of Contents}
+\tableofcontents
+
+\newpage
+
 %-----------------------------------------------------------------------------
 % INTRODUCTION
 %-----------------------------------------------------------------------------
@@ -114,9 +120,80 @@
 
 ...
 
-%-----------------------------------------------------------------------------
-% CONCLUSIONS
-%-----------------------------------------------------------------------------
+\section{DWA overview (paper version)}
+\label{sec:}
+
+...
+
+
+\section{DWA in ROS (+ comparison with paper)}
+\label{sec:}
+
+\subsection{From ROS wiki}
+
+...
+
+\subsection{Comparison}
+
+...
+
+
+\section{Our set up}
+\label{sec:}
+
+\subsection{Our robot}
+
+... (differential drive, footprint, dimensions)
+
+
+\subsection{Our map}
+
+... (No obstacles, only global plan/map, multiple goals)
+
+
+\section{Implementation}
+\label{sec:}
+
+\subsection{Architecture overview}
+
+... (things in common between our controller and DWA: simulator, ...)
+
+\subsection{Simulator}
+
+...
+
+\subsection{Trajectory controller}
+
+...
+
+\subsection{DWA controller}
+
+...
+
+
+\section{Parameters tuning}
+\label{sec:}
+
+...
+
+
+\section{Experimental Results}
+\label{sec:}
+
+... (plots of the bags + plots of the comparison with the custom script)
+
+
+\section{Encountered problems}
+\label{sec:}
+
+...
+
+
+\section{Usage of the code}
+\label{sec:}
+
+...
+
 
 \section{Conclusions}
 \label{sec:conclusions}
