@@ -17,5 +17,9 @@ material/presentation/*.log
 material/presentation/*.aux
 material/presentation/*.dvi
 material/presentation/*.ps
-
+material/report/*.gz
+material/report/*.out
+material/report/*.log
+material/report/*.aux
+material/report/config_files/*.log
 
