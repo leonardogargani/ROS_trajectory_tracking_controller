@@ -53,6 +53,9 @@ for bag in [bag_1, bag_2]:
             controllerState_yP.append(msg.data[6])
             controllerState_vPx.append(msg.data[7])
             controllerState_vPy.append(msg.data[8])
+            #####
+            # AGGIUNGI LINEAR E ANGULAR VELOCITIES
+            #####
             controllerState_angularvelocity_r.append(msg.data[9])
             controllerState_angularvelocity_l.append(msg.data[10])
             controllerState_xPerr.append(msg.data[3]-msg.data[5])

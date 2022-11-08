@@ -23,8 +23,9 @@
         <rosparam file="$(find diffdrive_kin_ctrl)/config/eight_traj.yaml" command="load" />
     </node>
 
-    <!--- RVIZ -->
+    <!--- RVIZ
     <node pkg="rviz" name="odom_visualizer" type="rviz" args="-d $(find diffdrive_dwa_ctrl)/rviz/odom_visualizer.rviz"/> 
+    -->
     
     <!--- differential drive simulator node -->
     <node pkg="diffdrive_kin_sim" type="diffdrive_kin_sim" respawn="false" name="diffdrive_kin_sim" output="screen">

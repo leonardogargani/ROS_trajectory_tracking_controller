@@ -14,6 +14,16 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 	FullParamName = ros::this_node::getName() + "/skipped_goals";
 	if (false == Handle.getParam(FullParamName, skipped_goals))
 		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+	
+	/*
+	FullParamName = ros::this_node::getName() + "/d";
+	if (false == Handle.getParam(FullParamName, d))
+		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+		
+	FullParamName = ros::this_node::getName() + "/r";
+	if (false == Handle.getParam(FullParamName, r))
+		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+	*/
 
 	tf2_ros::Buffer tfBuffer(ros::Duration(10));
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -56,7 +66,7 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 		} else {
 			ROS_ERROR("DWA set plan: FAILED");
 		}
-
+		
 		while(!dp.isGoalReached()) {
 
 			ROS_INFO("Current goal (#%d): x=%f, y=%f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);
@@ -73,7 +83,8 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 			} else {
 				ROS_ERROR("DWA compute cmd_vel: FAILED");
 			}
-
+			
+			// Valori originali: prima di introdurre i parametri
 			float d = 0.15;
 			float r = 0.03;
 
@@ -82,7 +93,7 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 
 			ROS_INFO("Velocities of wheels: w_r=%.4f, w_l=%.4f\n", omega_r, omega_l);
 
-            		std_msgs::Float64MultiArray vehicleCommandMsg;
+    		std_msgs::Float64MultiArray vehicleCommandMsg;
 			vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
 			vehicleCommandMsg.data.push_back(omega_r);
 			vehicleCommandMsg.data.push_back(omega_l);
@@ -96,19 +107,20 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 
 			// publish controller state
 			std_msgs::Float64MultiArray controllerStateMsg;
-			controllerStateMsg.data.push_back(ros::Time::now().toSec());
-			controllerStateMsg.data.push_back(xref);
-			controllerStateMsg.data.push_back(yref);
-			controllerStateMsg.data.push_back(xref);	// xPref
-			controllerStateMsg.data.push_back(yref);	// yPref
-			controllerStateMsg.data.push_back(x);		// xP
-			controllerStateMsg.data.push_back(y);		// yP
-			controllerStateMsg.data.push_back(0);		// vPx
-			controllerStateMsg.data.push_back(0);		// vPy
-			controllerStateMsg.data.push_back(omega_r);
-			controllerStateMsg.data.push_back(omega_l);    
+			controllerStateMsg.data.push_back(ros::Time::now().toSec()); // 0
+			controllerStateMsg.data.push_back(xref); // 1
+			controllerStateMsg.data.push_back(yref); // 2
+			controllerStateMsg.data.push_back(xref);	// xPref // 3
+			controllerStateMsg.data.push_back(yref);	// yPref // 4
+			controllerStateMsg.data.push_back(x);		// xP // 5
+			controllerStateMsg.data.push_back(y);		// yP // 6
+			controllerStateMsg.data.push_back(0);		// vPx // 7
+			controllerStateMsg.data.push_back(0);		// vPy // 8
+			controllerStateMsg.data.push_back(dwa_cmd_vel.linear.x); // 9
+			controllerStateMsg.data.push_back(dwa_cmd_vel.angular.z); // 10
+			controllerStateMsg.data.push_back(omega_r); // 11
+			controllerStateMsg.data.push_back(omega_l); // 12
 			controllerState_publisher.publish(controllerStateMsg);
-
 
 		}
 

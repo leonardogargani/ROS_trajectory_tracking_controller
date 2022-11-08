@@ -140,16 +140,18 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
 
     // publish controller state
     std_msgs::Float64MultiArray controllerStateMsg;
-    controllerStateMsg.data.push_back(ros::Time::now().toSec());
-    controllerStateMsg.data.push_back(xref);
-    controllerStateMsg.data.push_back(yref);
-    controllerStateMsg.data.push_back(xPref);
-    controllerStateMsg.data.push_back(yPref);
-    controllerStateMsg.data.push_back(xP);
-    controllerStateMsg.data.push_back(yP);
-    controllerStateMsg.data.push_back(vPx);
-    controllerStateMsg.data.push_back(vPy);
-    controllerStateMsg.data.push_back(omega_r);
-    controllerStateMsg.data.push_back(omega_l);    
+    controllerStateMsg.data.push_back(ros::Time::now().toSec()); // 0
+    controllerStateMsg.data.push_back(xref); // 1
+    controllerStateMsg.data.push_back(yref); // 2
+    controllerStateMsg.data.push_back(xPref); // 3
+    controllerStateMsg.data.push_back(yPref); // 4
+    controllerStateMsg.data.push_back(xP); // 5
+    controllerStateMsg.data.push_back(yP); // 6
+    controllerStateMsg.data.push_back(vPx); // 7
+    controllerStateMsg.data.push_back(vPy); // 8
+	controllerStateMsg.data.push_back(v); // 9
+	controllerStateMsg.data.push_back(omega); // 10
+    controllerStateMsg.data.push_back(omega_r); // 11
+    controllerStateMsg.data.push_back(omega_l); // 12
     controllerState_publisher.publish(controllerStateMsg);
 }

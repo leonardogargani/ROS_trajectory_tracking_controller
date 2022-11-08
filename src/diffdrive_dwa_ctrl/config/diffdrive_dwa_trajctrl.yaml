@@ -1,2 +1,6 @@
 /diffdrive_dwa_trajctrl/run_period: 0.01          # node execution period
-/diffdrive_dwa_trajctrl/skipped_goals: 100
+/diffdrive_dwa_trajctrl/skipped_goals: 15 #50 #1 #100
+
+
+#/diffdrive_dwa_trajctrl/d: 0.15     # distance between wheels
+#/diffdrive_dwa_trajctrl/r: 0.03 #0.07     # radius of the wheel
