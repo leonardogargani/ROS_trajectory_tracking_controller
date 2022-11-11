@@ -1,18 +1,19 @@
 \babel@toc {english}{}\relax 
 \contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
-\contentsline {section}{\numberline {2}DWA overview (paper version)}{3}{section.2}%
-\contentsline {section}{\numberline {3}DWA in ROS (+ comparison with paper)}{3}{section.3}%
+\contentsline {section}{\numberline {2}DWA overview}{3}{section.2}%
+\contentsline {section}{\numberline {3}DWA - implementation in ROS}{3}{section.3}%
 \contentsline {subsection}{\numberline {3.1}From ROS wiki}{3}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Comparison}{3}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Our set up}{3}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Our robot}{3}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Our map}{3}{subsection.4.2}%
+\contentsline {subsection}{\numberline {3.2}Comparison with the paper formulation}{3}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Setup of the experiment}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}The robot}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}The map}{3}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}The trajectory}{3}{subsection.4.3}%
 \contentsline {section}{\numberline {5}Implementation}{3}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Architecture overview}{3}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Simulator}{3}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Trajectory controller}{3}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}DWA controller}{3}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Parameters tuning}{3}{section.6}%
+\contentsline {subsection}{\numberline {5.1}Architecture overview}{4}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Simulator}{4}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Trajectory controller}{4}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}DWA controller}{4}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Parameters tuning}{4}{section.6}%
 \contentsline {section}{\numberline {7}Experimental Results}{4}{section.7}%
 \contentsline {section}{\numberline {8}Encountered problems}{4}{section.8}%
 \contentsline {section}{\numberline {9}Usage of the code}{4}{section.9}%
