@@ -1,9 +1,5 @@
 \documentclass[11pt,a4paper]{article} 
 
-%------------------------------------------------------------------------------
-%	REQUIRED PACKAGES AND  CONFIGURATIONS
-%------------------------------------------------------------------------------
-
 % PACKAGES FOR TITLES
 \usepackage{titlesec}
 \usepackage{color}
@@ -55,76 +51,197 @@
 \usepackage{lipsum} % Insert dummy text
 \usepackage{tcolorbox} % Create coloured boxes (e.g. the one for the key-words)
 
-%-------------------------------------------------------------------------
-%	NEW COMMANDS DEFINED
-%-------------------------------------------------------------------------
-
 \newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
 \newcommand{\eea}{\end{eqnarray}}
 \newcommand{\e}[1]{\times 10^{#1}}  % Powers of 10 notation
 \newcommand{\mathbbm}[1]{\text{\usefont{U}{bbm}{m}{n}#1}} % From mathbbm.sty
 \newcommand{\pdev}[2]{\frac{\partial#1}{\partial#2}}
 
-%----------------------------------------------------------------------------
-%	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
-%----------------------------------------------------------------------------
-
 \input{config_files/config}
 
-% -> title of your work
 \renewcommand{\title}{Title}
-% -> author name and surname
 \newcommand{\AUTHORa}{Giuseppe Chiari}
+\newcommand{\IDa}{10576799}
 \newcommand{\AUTHORb}{Leonardo Gargani}
+\newcommand{\IDb}{10569221}
 \newcommand{\AUTHORc}{Serena Salvi}
-% -> MSc course
+\newcommand{\IDc}{10607377}
 \newcommand{\course}{Computer Science and Engineering}
-% -> supervisor name and surname
 \newcommand{\supervisor}{Luca Bascetta}
-% -> author ID
-\newcommand{\IDa}{10569221}
-\newcommand{\IDb}{xxxxxx}
-\newcommand{\IDc}{xxxxxx}
-% -> academic year
-\newcommand{\YEAR}{2021-2022}
-% -> abstract (only in English)
+\newcommand{\YEAR}{2022-2023}
 \renewcommand{\abstract}{
 ...
 }
 
-%-------------------------------------------------------------------------
-%	BEGIN OF YOUR DOCUMENT
-%-------------------------------------------------------------------------
-
 \begin{document}
 
-%-----------------------------------------------------------------------------
-% TITLE PAGE
-%-----------------------------------------------------------------------------
-
-% This file creates the Title Page of the document
 \input{config_files/title_page}
 
+\newpage
+
+\renewcommand*\contentsname{Table of Contents}
+\tableofcontents
+
+\newpage
+
+
+
 %-----------------------------------------------------------------------------
-% INTRODUCTION
+%                               INTRODUCTION
 %-----------------------------------------------------------------------------
 
 \section{Introduction}
-\label{sec:introduction}
 
 ...
 
+
+
 %-----------------------------------------------------------------------------
-% CONCLUSIONS
+%                               DWA OVERVIEW
+%-----------------------------------------------------------------------------
+
+\section{DWA overview}
+
+...
+
+
+
+%-----------------------------------------------------------------------------
+%                        DWA - IMPLEMENTATION IN ROS
+%-----------------------------------------------------------------------------
+
+\section{DWA - implementation in ROS}
+
+\subsection{From ROS wiki}
+
+...
+
+\subsection{Comparison with the paper formulation}
+
+...
+
+
+
+%-----------------------------------------------------------------------------
+%                             SETUP OF THE EXPERIMENT
+%-----------------------------------------------------------------------------
+
+\section{Setup of the experiment}
+
+\subsection{The robot}
+
+In our experiment we chose to simulate a small differential drive robot.\\
+
+In particular, it is characterized by two main dimensions (specified as YAML parameters in the code):
+\begin{itemize}
+ \item \texttt{d} = 15 cm, which is the distance between the two motorized wheels;
+ \item \texttt{r} = 3 cm, which is the radius of the two motorized wheels.\\
+\end{itemize}
+
+The precise footprint is a pentagon, just for convenience, so that when looking at it we are able to determine the orientation of the robot.
+However, this is not a decisive detail since it has o influence on the robot's behavior.
+
+
+\subsection{The map}
+
+Regarding the map, it is important to highlight the different setting we have with respect to the usual DWA use.
+
+There are two main differences:
+\begin{itemize}
+ \item in our setting there are no obstacles, neither fixed nor moving;
+ \item the robot does not have any sensor.\\
+\end{itemize}
+
+As a consequence, we don't need both the local map and the global map, but only the local one.
+
+Moreover, this map needs to be empy so it is generated strating from a totally white image.
+
+
+\subsection{The trajectory}
+
+The robot must follow a precise trajectory, which is used to perform all benchmarks.
+
+In our case we chose an eight-shaped trajectory with a dimension of 2 x 1 meters.\\
+
+In order to make DWA compute the velocities of the robot, we must feed it a goal.
+
+This means that the complete trajectory has to be "discretized" in multiple points.
+Each one of these points is passed to DWA as the current goal, and once it is reached the next point is set as the new goal. You will find a detailed explaination in the following sections.
+
+
+
+%-----------------------------------------------------------------------------
+%                               IMPLEMENTATION
+%-----------------------------------------------------------------------------
+
+\section{Implementation}
+
+\subsection{Architecture overview}
+
+... (things in common between our controller and DWA: simulator, ...)
+
+\subsection{Simulator}
+
+...
+
+\subsection{Trajectory controller}
+
+...
+
+\subsection{DWA controller}
+
+...
+
+
+
+%-----------------------------------------------------------------------------
+%
+%-----------------------------------------------------------------------------
+
+\section{Parameters tuning}
+
+...
+
+
+
+%-----------------------------------------------------------------------------
+%
+%-----------------------------------------------------------------------------
+
+\section{Experimental Results}
+
+... (plots of the bags + plots of the comparison with the custom script)
+
+
+
+%-----------------------------------------------------------------------------
+%
+%-----------------------------------------------------------------------------
+
+\section{Encountered problems}
+
+...
+
+
+
+%-----------------------------------------------------------------------------
+%
+%-----------------------------------------------------------------------------
+
+\section{Usage of the code}
+
+...
+
+
+
+%-----------------------------------------------------------------------------
+%                               CONCLUSIONS
 %-----------------------------------------------------------------------------
 
 \section{Conclusions}
-\label{sec:conclusions}
 
 ...
 
-%-------------------------------------------------------------------------
-%	END OF YOUR DOCUMENT
-%-------------------------------------------------------------------------
+
 
 \end{document}
