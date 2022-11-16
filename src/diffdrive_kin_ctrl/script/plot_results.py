@@ -31,30 +31,30 @@ controllerState_xPerr = []
 controllerState_yPerr = []
 
 for topic, msg, t in bag.read_messages():
-    if topic == "/robot_state":
-        vehicleState_time.append(msg.data[0])
-        vehicleState_x.append(msg.data[1])
-        vehicleState_y.append(msg.data[2])
-        vehicleState_theta.append(msg.data[3])
-        vehicleState_angularvelocity_r.append(msg.data[4])
-        vehicleState_angularvelocity_l.append(msg.data[5])
+	if topic == "/robot_state":
+		vehicleState_time.append(msg.data[0])
+		vehicleState_x.append(msg.data[1])
+		vehicleState_y.append(msg.data[2])
+		vehicleState_theta.append(msg.data[3])
+		vehicleState_angularvelocity_r.append(msg.data[4])
+		vehicleState_angularvelocity_l.append(msg.data[5])
 
-    if topic == "/controller_state":
-        controllerState_time.append(msg.data[0])
-        controllerState_xref.append(msg.data[1])
-        controllerState_yref.append(msg.data[2])
-        controllerState_xPref.append(msg.data[3])
-        controllerState_yPref.append(msg.data[4])
-        controllerState_xP.append(msg.data[5])
-        controllerState_yP.append(msg.data[6])
-        controllerState_vPx.append(msg.data[7])
-        controllerState_vPy.append(msg.data[8])
-        controllerState_linearvelocity.append(msg.data[9])
-        controllerState_angularvelocity.append(msg.data[10])
-        controllerState_angularvelocity_r.append(msg.data[11])
-        controllerState_angularvelocity_l.append(msg.data[12])
-        controllerState_xPerr.append(msg.data[3]-msg.data[5])
-        controllerState_yPerr.append(msg.data[4]-msg.data[6])
+	if topic == "/controller_state":
+		controllerState_time.append(msg.data[0])
+		controllerState_xref.append(msg.data[1])
+		controllerState_yref.append(msg.data[2])
+		controllerState_xPref.append(msg.data[3])
+		controllerState_yPref.append(msg.data[4])
+		controllerState_xP.append(msg.data[5])
+		controllerState_yP.append(msg.data[6])
+		controllerState_vPx.append(msg.data[7])
+		controllerState_vPy.append(msg.data[8])
+		controllerState_linearvelocity.append(msg.data[9])
+		controllerState_angularvelocity.append(msg.data[10])
+		controllerState_angularvelocity_r.append(msg.data[11])
+		controllerState_angularvelocity_l.append(msg.data[12])
+		controllerState_xPerr.append(msg.data[3]-msg.data[5])
+		controllerState_yPerr.append(msg.data[4]-msg.data[6])
 
 bag.close()
 

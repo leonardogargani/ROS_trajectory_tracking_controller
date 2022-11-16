@@ -9,6 +9,7 @@
     <!--- linearizing controller node -->
     <node pkg="diffdrive_kin_ctrl" type="diffdrive_kin_trajctrl" respawn="false" name="diffdrive_kin_trajctrl" output="screen">
         <rosparam file="$(find diffdrive_kin_ctrl)/config/diffdrive_kin_trajctrl.yaml" command="load" />
+        <rosparam file="$(find diffdrive_kin_sim)/config/diffdrive_kin_sim.yaml" command="load" />
     </node>
 
     <!--- trajectory generator node -->

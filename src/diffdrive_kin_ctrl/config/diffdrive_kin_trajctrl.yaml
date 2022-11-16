@@ -10,6 +10,6 @@
 /diffdrive_kin_trajctrl/Kd: 0.0                   # PID trajectory tracking controller derivative gain
 
 # differential drive parameters
-/diffdrive_kin_trajctrl/d: 0.15                   # distance between the two wheels
-/diffdrive_kin_trajctrl/r: 0.03                   # radius of the wheels
+#/diffdrive_kin_trajctrl/d: 0.15                   # distance between the two wheels
+#/diffdrive_kin_trajctrl/r: 0.03                   # radius of the wheels
 

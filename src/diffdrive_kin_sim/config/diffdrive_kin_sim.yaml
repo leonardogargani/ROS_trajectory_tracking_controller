@@ -6,6 +6,6 @@
 /diffdrive_kin_sim/y0: 0.0                     # initial position y
 /diffdrive_kin_sim/theta0: 0.0                 # initial heading
 
-/diffdrive_kin_trajctrl/d: 0.15                # distance between the two wheels
-/diffdrive_kin_trajctrl/r: 0.03                # radius of the wheels
+/diffdrive_kin_sim/d: 0.15                # distance between the two wheels
+/diffdrive_kin_sim/r: 0.03                # radius of the wheels
 

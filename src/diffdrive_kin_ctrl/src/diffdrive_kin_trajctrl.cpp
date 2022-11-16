@@ -27,11 +27,11 @@ void diffdrive_kin_trajctrl::Prepare(void)
     if (false == Handle.getParam(FullParamName, Kd))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    FullParamName = ros::this_node::getName() + "/d";
+    FullParamName = "/diffdrive_kin_sim/d";
     if (false == Handle.getParam(FullParamName, d))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    FullParamName = ros::this_node::getName() + "/r";
+    FullParamName = "/diffdrive_kin_sim/r";
     if (false == Handle.getParam(FullParamName, r))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 

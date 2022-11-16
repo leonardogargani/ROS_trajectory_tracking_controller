@@ -24,6 +24,14 @@ void diffdrive_kin_sim::Prepare(void)
     FullParamName = ros::this_node::getName() + "/theta0";
     if (false == Handle.getParam(FullParamName, theta0))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+    
+    FullParamName = ros::this_node::getName() + "/d";
+	if (false == Handle.getParam(FullParamName, d))
+		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+		
+	FullParamName = ros::this_node::getName() + "/r";
+	if (false == Handle.getParam(FullParamName, r))
+		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
     vehicleCommand_subscriber = Handle.subscribe("/robot_input", 1, &diffdrive_kin_sim::vehicleCommand_MessageCallback, this);
     vehicleState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_state", 1);
@@ -97,8 +105,8 @@ void diffdrive_kin_sim::PeriodicTask(void)
     vehicleState_publisher.publish(vehicleStateMsg);
 
     // publish an Odometry message on the odom topic using: x, y, theta(?), v & w (from omega_r_act, omega_l_act, d, r)
-    double r = 0.03;
-    double d = 0.15;
+    //double r = 0.03;
+    //double d = 0.15;
     
     double v_r = omega_r_act * r;
     double v_l = omega_l_act * r;

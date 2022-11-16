@@ -24,6 +24,7 @@ private:
     /// parameters from ROS parameter server
     double dt;
     double x0, y0, theta0;
+    float d, r;
 
     void vehicleCommand_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr &msg);
 

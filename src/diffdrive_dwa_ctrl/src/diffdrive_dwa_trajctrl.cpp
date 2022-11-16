@@ -15,15 +15,13 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 	if (false == Handle.getParam(FullParamName, skipped_goals))
 		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 	
-	/*
-	FullParamName = ros::this_node::getName() + "/d";
+	FullParamName = "/diffdrive_kin_sim/d";
 	if (false == Handle.getParam(FullParamName, d))
 		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 		
-	FullParamName = ros::this_node::getName() + "/r";
+	FullParamName = "/diffdrive_kin_sim/r";
 	if (false == Handle.getParam(FullParamName, r))
 		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
-	*/
 
 	tf2_ros::Buffer tfBuffer(ros::Duration(10));
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -85,8 +83,8 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 			}
 			
 			// Valori originali: prima di introdurre i parametri
-			float d = 0.15;
-			float r = 0.03;
+			//float d = 0.15;
+			//float r = 0.03;
 
 			float omega_r = ((float)dwa_cmd_vel.linear.x + (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
 			float omega_l = ((float)dwa_cmd_vel.linear.x - (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
