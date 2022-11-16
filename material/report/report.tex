@@ -59,7 +59,7 @@
 
 \input{config_files/config}
 
-\renewcommand{\title}{Title}
+\renewcommand{\title}{DWA vs custom trajectory tracking controller: a comparison in ROS}
 \newcommand{\AUTHORa}{Giuseppe Chiari}
 \newcommand{\IDa}{10576799}
 \newcommand{\AUTHORb}{Leonardo Gargani}
@@ -68,10 +68,22 @@
 \newcommand{\IDc}{10607377}
 \newcommand{\course}{Computer Science and Engineering}
 \newcommand{\supervisor}{Luca Bascetta}
-\newcommand{\YEAR}{2022-2023}
+\newcommand{\YEAR}{2022/2023}
 \renewcommand{\abstract}{
-...
+
+The Dynamic Window Approach (DWA) is an online collision avoidance strategy for mobile robots.
+It incorporates the dynamics of the robot by reducing the search space to only the velocities
+reachable within a short time interval.
+
+In this work we first present a comparison between the DWA algorithm from the paper and its implementation in
+Robot Operating System (ROS).
+
+Then, a further comparison is made between the implementation above and a custom trajectory tracking controller,
+which is composed of an inner linearisation law (based on the kinematic model) and an outer tracking law (based on a proportional integral controller with velocity feed-forward).
+
 }
+
+
 
 \begin{document}
 
@@ -92,7 +104,7 @@
 
 \section{Introduction}
 
-...
+... (state that the experiment has been carried on ROS Melodic)
 
 
 
@@ -107,10 +119,10 @@
 
 
 %-----------------------------------------------------------------------------
-%                        DWA - IMPLEMENTATION IN ROS
+%                               DWA IN ROS
 %-----------------------------------------------------------------------------
 
-\section{DWA - implementation in ROS}
+\section{DWA in ROS}
 
 \subsection{From ROS wiki}
 
@@ -154,7 +166,7 @@ There are two main differences:
 
 As a consequence, we don't need both the local map and the global map, but only the local one.
 
-Moreover, this map needs to be empy so it is generated strating from a totally white image.
+Moreover, this map needs to be empty so it is generated starting from a totally white image.
 
 
 \subsection{The trajectory}
@@ -166,7 +178,7 @@ In our case we chose an eight-shaped trajectory with a dimension of 2 x 1 meters
 In order to make DWA compute the velocities of the robot, we must feed it a goal.
 
 This means that the complete trajectory has to be "discretized" in multiple points.
-Each one of these points is passed to DWA as the current goal, and once it is reached the next point is set as the new goal. You will find a detailed explaination in the following sections.
+Each one of these points is passed to DWA as the current goal, and once it is reached the next point is set as the new goal. You will find a detailed explanation in the following sections.
 
 
 
@@ -195,7 +207,7 @@ Each one of these points is passed to DWA as the current goal, and once it is re
 
 
 %-----------------------------------------------------------------------------
-%
+%                               PARAMETERS TUNING
 %-----------------------------------------------------------------------------
 
 \section{Parameters tuning}
@@ -205,7 +217,7 @@ Each one of these points is passed to DWA as the current goal, and once it is re
 
 
 %-----------------------------------------------------------------------------
-%
+%                               EXPERIMENTAL RESULTS
 %-----------------------------------------------------------------------------
 
 \section{Experimental Results}
@@ -215,17 +227,18 @@ Each one of these points is passed to DWA as the current goal, and once it is re
 
 
 %-----------------------------------------------------------------------------
-%
+%                               ENCOUNTERED PROBLEMS
 %-----------------------------------------------------------------------------
 
 \section{Encountered problems}
 
-...
-
+... (deprecated parameters name in the official doc: put screen of the doc +
+screen of the comments in the code of the library)
+% 
 
 
 %-----------------------------------------------------------------------------
-%
+%                               USAGE OF THE CODE
 %-----------------------------------------------------------------------------
 
 \section{Usage of the code}

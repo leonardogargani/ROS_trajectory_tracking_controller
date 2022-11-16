@@ -21,5 +21,5 @@ material/report/*.gz
 material/report/*.out
 material/report/*.log
 material/report/*.aux
+material/report/*.dvi
 material/report/config_files/*.log
-
