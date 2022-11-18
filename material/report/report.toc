@@ -1,21 +1,22 @@
 \babel@toc {english}{}\relax 
 \contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
 \contentsline {section}{\numberline {2}DWA overview}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Search Space}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Optimization}{3}{subsection.2.2}%
 \contentsline {section}{\numberline {3}DWA in ROS}{3}{section.3}%
 \contentsline {subsection}{\numberline {3.1}From ROS wiki}{3}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Comparison with the paper formulation}{3}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Setup of the experiment}{3}{section.4}%
-\contentsline {subsection}{\numberline {4.1}The robot}{3}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}The map}{3}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}The trajectory}{3}{subsection.4.3}%
+\contentsline {subsection}{\numberline {3.2}Comparison with the paper formulation}{4}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Setup of the experiment}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}The robot}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}The map}{4}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}The trajectory}{4}{subsection.4.3}%
 \contentsline {section}{\numberline {5}Implementation}{4}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Architecture overview}{4}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Simulator}{4}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Trajectory controller}{4}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}DWA controller}{4}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Parameters tuning}{4}{section.6}%
-\contentsline {section}{\numberline {7}Experimental Results}{4}{section.7}%
-\contentsline {section}{\numberline {8}Encountered problems}{4}{section.8}%
-\contentsline {section}{\numberline {9}Usage of the code}{4}{section.9}%
-\contentsline {section}{\numberline {10}Conclusions}{4}{section.10}%
-\contentsline {section}{\numberline {11}Conclusionse}{4}{section.11}%
+\contentsline {subsection}{\numberline {5.2}Simulator}{5}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Trajectory controller}{5}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}DWA controller}{5}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Parameters tuning}{5}{section.6}%
+\contentsline {section}{\numberline {7}Experimental Results}{5}{section.7}%
+\contentsline {section}{\numberline {8}Encountered problems}{5}{section.8}%
+\contentsline {section}{\numberline {9}Usage of the code}{5}{section.9}%
+\contentsline {section}{\numberline {10}Conclusions}{5}{section.10}%

@@ -72,14 +72,11 @@
 \renewcommand{\abstract}{
 
 The Dynamic Window Approach (DWA) is an online collision avoidance strategy for mobile robots.
-It incorporates the dynamics of the robot by reducing the search space to only the velocities
-reachable within a short time interval.
+It incorporates the dynamics of the robot by reducing the search space to only the velocities reachable within a short time interval.
 
-In this work we first present a comparison between the DWA algorithm from the paper and its implementation in
-Robot Operating System (ROS).
+In this work we first present a comparison between the DWA algorithm from the paper and its implementation in Robot Operating System (ROS).
 
-Then, a further comparison is made between the implementation above and a custom trajectory tracking controller,
-which is composed of an inner linearisation law (based on the kinematic model) and an outer tracking law (based on a proportional integral controller with velocity feed-forward).
+Then, a further comparison is made between the implementation above and a custom trajectory tracking controller, which is composed of an inner linearisation law (based on the kinematic model) and an outer tracking law (based on a proportional integral controller with velocity feed-forward).
 
 }
 
@@ -104,7 +101,9 @@ which is composed of an inner linearisation law (based on the kinematic model) a
 
 \section{Introduction}
 
-... (state that the experiment has been carried on ROS Melodic)
+This project aims at helping a student attending the Control of Mobile Robots course by providing a simple case study which compares the behavior of a robot controlled with DWA and of one controlled with a trajectory tracking control law.\\
+
+The software simulates the robot, using its kinematic model, and implements the two controllers. Everything runs on ROS Melodic on Ubuntu 18.04 LTS.
 
 
 
@@ -114,7 +113,40 @@ which is composed of an inner linearisation law (based on the kinematic model) a
 
 \section{DWA overview}
 
-...
+This section is basically a brief overview of the Dynamic Window Approach (DWA) as presented in the original paper\footnote{D. Fox, W. Burgard, S. Thrun (1997) \textit{The Dynamic Window Approach to Collision Avoidance}}.\\
+
+DWA is an approach to perform collision avoidance in mobile robots, while dealing with the constraints imposed by limited velocities and accelerations.
+
+\subsection{Search Space}
+
+This approach consists in reducing the search space to those velocities which are reachable under the dynamic constraints and are safe with respect to obstacles.
+
+One of the core concepts of DWA is the so-called search space. It can be seen as a two-dimensional space where each point represents a tuple $(v, \omega)$ of velocities where $v$ is the linear velocity of the robot and $\omega$ is the angular velocity.\\
+
+Starting from a sequence of n future time intervals, DWA performs a forward simulation of different values for the velocities keeping them constant for those time intervals.
+
+As a result, the simulated trajectories are all circular arcs, and the most suitable one (we will go into details when talking about the cost function) is selected.\\
+
+The search space of the possible velocities is further reduced in other two steps.
+
+First, we consider only all the admissible velocities, which correspond to the velocities allowing the robot to stop before it reaches the closest obstacle on the corresponding curvature.
+
+Then, we leave out all the velocities that can't be reached within a short time interval
+given the limited accelerations of the robot.
+
+\subsection{Optimization}
+
+The remaining velocities are fed into the following objective function to maximize it:
+$$ G(v, \omega) = \sigma(\alpha \cdot heading(v, \omega) + \beta \cdot dist(v, \omega) + \gamma \cdot vel(v, \omega)) $$
+
+This function trades off the following aspects:
+\begin{itemize}
+ \item \textit{heading}, which is a measure of progress towards the goal location;
+ \item \textit{dist}, which is the distance to the closest obstacle on the trajectory;
+ \item \textit{vel}, which is the forward velocity of the robot.\\
+\end{itemize}
+
+Each one of the three quantities above is multiplied to its own weight ($\alpha$, $\beta$, $\gamma$), and the resulting quantity is passed to a smoothing function ($\sigma$).
 
 
 
@@ -126,11 +158,18 @@ which is composed of an inner linearisation law (based on the kinematic model) a
 
 \subsection{From ROS wiki}
 
-...
+DWA is already implemented in ROS in the \href{https://wiki.ros.org/dwa\_local\_planner}{\texttt{dwa\_local\_planner}}\footnote{https://wiki.ros.org/dwa\_local\_planner} package.
+
+As stated in the ROS Wiki:
+\begin{quote}
+ The dwa\_local\_planner package provides a controller that drives a mobile base in the plane. This controller serves to connect the path planner to the robot. Using a map, the planner creates a kinematic trajectory for the robot to get from a start to a goal location. Along the way, the planner creates, at least locally around the robot, a value function, represented as a grid map. This value function encodes the costs of traversing through the grid cells. The controller's job is to use this value function to determine dx,dy,dtheta velocities to send to the robot.
+\end{quote}
+
+This package is ought to be used as the planner for \href{https://wiki.ros.org/move\_base}{\texttt{move\_base}}\footnote{https://wiki.ros.org/move\_base} within the navigation stack.
 
 \subsection{Comparison with the paper formulation}
 
-...
+... (cost function)
 
 
 
