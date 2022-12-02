@@ -167,9 +167,76 @@ As stated in the ROS Wiki:
 
 This package is ought to be used as the planner for \href{https://wiki.ros.org/move\_base}{\texttt{move\_base}}\footnote{https://wiki.ros.org/move\_base} within the navigation stack.
 
+\subsection{ROS libray source code}
+
+In order to use DWA in our experiment, we call the \texttt{DWAPlannerROS::computeVelocityCommands()} function which leads to the following cascading function calls:\\
+\begin{enumerate}
+
+ \item \href{https://docs.ros.org/en/melodic/api/dwa_local_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{DWAPlannerROS::computeVelocityCommands(...)}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
+ called in our \texttt{diffdrive\_traj\_ctrl.cpp}, line 78;
+
+ \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{DWAPlannerROS::dwaComputeVelocityCommands(...)}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
+ called from the function at step 1, line 302;
+
+ \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{DWAPlanner::findBestPath(...)}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}
+ called from the function at step 2, line 209;
+
+ \item \href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{\texttt{SimpleScoredSamplingPlanner::findBestTrajectory(...)}}\footnote{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}
+ called from the function at step 3, line 317;
+
+ \item \href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{\texttt{SimpleScoredSamplingPlanner::scoreTrajectory(...)}}\footnote{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}
+ called from the function at step 4, line 105.\\
+
+\end{enumerate}
+
+At this point, inside \texttt{scoreTrajectory(...)} the different cost elements are evaluated to score the trajectory.
+
+Each cost element is an instance of the abstract \texttt{base\_local\_planner::TrajectoryCostFunction} class.
+
+These elements are contained in a \texttt{std::vector<TrajectoryCostFunction*>} vector, and in the case of DWA they are:
+\begin{itemize}
+ \item \texttt{base\_local\_planner::OscillationCostFunction oscillation\_costs\_}, which penalizes trajectories where the robot oscillates;
+ \item \texttt{base\_local\_planner::ObstacleCostFunction obstacle\_costs\_}, which penalizes trajectories where the robot occupies illegal positions with its footprint;
+ \item \texttt{base\_local\_planner::MapGridCostFunction goal\_front\_costs\_}, which prefers  trajectories that make the nose go towards (local) nose goal;
+ \item \texttt{base\_local\_planner::MapGridCostFunction alignment\_costs\_}, which prefers trajectories that keep the robot nose on nose path;
+ \item \texttt{base\_local\_planner::MapGridCostFunction path\_costs\_}, which prefers trajectories on global path;
+ \item \texttt{base\_local\_planner::MapGridCostFunction goal\_costs\_}, which prefers trajectories that go towards (local) goal;
+ \item \texttt{base\_local\_planner::TwirlingCostFunction twirling\_costs\_}, which prefers trajectories that don't spin.
+\end{itemize}
+
+
+
 \subsection{Comparison with the paper formulation}
 
-... (cost function)
+
+
+
+
+
+
+
+$$ G(v, \omega) = \sigma(\alpha \cdot heading(v, \omega) + \beta \cdot dist(v, \omega) + \gamma \cdot vel(v, \omega)) $$
+
+\begin{quote}
+    cost =
+    path\_distance\_bias * (distance to path from the endpoint of the trajectory)\\
+    + goal\_distance\_bias * (distance to local goal from the endpoint of the trajectory)\\
+    + occdist\_scale * (maximum obstacle cost along the trajectory in obstacle cost (0-254))
+\end{quote}
+
+
+At line 196 of https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html:
+\begin{quote}
+    // used for visualization only, total\_costs are not really total costs
+    bool DWAPlanner::getCellCosts(int cx, int cy, float \&path\_cost, float \&goal\_cost, float \&occ\_cost, float \&total\_cost)
+
+    ...
+
+    total\_cost =
+        path\_distance\_bias\_ * path\_cost +
+        goal\_distance\_bias\_ * goal\_cost +
+        occdist\_scale\_ * occ\_cost;
+\end{quote}
 
 
 
