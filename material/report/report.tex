@@ -50,6 +50,7 @@
 \usepackage{fancyhdr} % Fancy headers and footers
 \usepackage{lipsum} % Insert dummy text
 \usepackage{tcolorbox} % Create coloured boxes (e.g. the one for the key-words)
+\usepackage{listings}
 
 \newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
 \newcommand{\eea}{\end{eqnarray}}
@@ -123,16 +124,16 @@ This approach consists in reducing the search space to those velocities which ar
 
 One of the core concepts of DWA is the so-called search space. It can be seen as a two-dimensional space where each point represents a tuple $(v, \omega)$ of velocities where $v$ is the linear velocity of the robot and $\omega$ is the angular velocity.\\
 
-Starting from a sequence of n future time intervals, DWA performs a forward simulation of different values for the velocities keeping them constant for those time intervals.
-
-As a result, the simulated trajectories are all circular arcs, and the most suitable one (we will go into details when talking about the cost function) is selected.\\
-
 The search space of the possible velocities is further reduced in other two steps.
 
 First, we consider only all the admissible velocities, which correspond to the velocities allowing the robot to stop before it reaches the closest obstacle on the corresponding curvature.
 
 Then, we leave out all the velocities that can't be reached within a short time interval
-given the limited accelerations of the robot.
+given the limited accelerations of the robot.\\
+
+Starting from a sequence of n future time intervals, DWA performs a forward simulation of different values for the velocities keeping them constant for those time intervals.
+
+As a result, the simulated trajectories are all circular arcs, and the most suitable one (we will go into details when talking about the cost function) is selected.
 
 \subsection{Optimization}
 
@@ -149,7 +150,6 @@ This function trades off the following aspects:
 Each one of the three quantities above is multiplied to its own weight ($\alpha$, $\beta$, $\gamma$), and the resulting quantity is passed to a smoothing function ($\sigma$).
 
 
-
 %-----------------------------------------------------------------------------
 %                               DWA IN ROS
 %-----------------------------------------------------------------------------
@@ -162,10 +162,23 @@ DWA is already implemented in ROS in the \href{https://wiki.ros.org/dwa\_local\_
 
 As stated in the ROS Wiki:
 \begin{quote}
- The dwa\_local\_planner package provides a controller that drives a mobile base in the plane. This controller serves to connect the path planner to the robot. Using a map, the planner creates a kinematic trajectory for the robot to get from a start to a goal location. Along the way, the planner creates, at least locally around the robot, a value function, represented as a grid map. This value function encodes the costs of traversing through the grid cells. The controller's job is to use this value function to determine dx,dy,dtheta velocities to send to the robot.
+ ``The dwa\_local\_planner package provides a controller that drives a mobile base in the plane. This controller serves to connect the path planner to the robot. Using a map, the planner creates a kinematic trajectory for the robot to get from a start to a goal location. Along the way, the planner creates, at least locally around the robot, a value function, represented as a grid map. This value function encodes the costs of traversing through the grid cells. The controller's job is to use this value function to determine dx,dy,dtheta velocities to send to the robot.''
 \end{quote}
 
 This package is ought to be used as the planner for \href{https://wiki.ros.org/move\_base}{\texttt{move\_base}}\footnote{https://wiki.ros.org/move\_base} within the navigation stack.
+
+In the Wiki there is the following cost function to score each trajectory:
+
+\begin{quote}
+    cost =
+    path\_distance\_bias * (distance to path from the endpoint of the trajectory)\\
+    + goal\_distance\_bias * (distance to local goal from the endpoint of the trajectory)\\
+    + occdist\_scale * (maximum obstacle cost along the trajectory in obstacle cost (0-254))
+\end{quote}
+
+However, reading through the source code of the DWA ROS library, it is said that the above function is ``used for visualization only, total\_costs are not really total costs''\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html (line 184)}.
+
+
 
 \subsection{ROS libray source code}
 
@@ -201,42 +214,10 @@ These elements are contained in a \texttt{std::vector<TrajectoryCostFunction*>} 
  \item \texttt{base\_local\_planner::MapGridCostFunction alignment\_costs\_}, which prefers trajectories that keep the robot nose on nose path;
  \item \texttt{base\_local\_planner::MapGridCostFunction path\_costs\_}, which prefers trajectories on global path;
  \item \texttt{base\_local\_planner::MapGridCostFunction goal\_costs\_}, which prefers trajectories that go towards (local) goal;
- \item \texttt{base\_local\_planner::TwirlingCostFunction twirling\_costs\_}, which prefers trajectories that don't spin.
+ \item \texttt{base\_local\_planner::TwirlingCostFunction twirling\_costs\_}, which prefers trajectories that don't spin.\\
 \end{itemize}
 
-
-
-\subsection{Comparison with the paper formulation}
-
-
-
-
-
-
-
-
-$$ G(v, \omega) = \sigma(\alpha \cdot heading(v, \omega) + \beta \cdot dist(v, \omega) + \gamma \cdot vel(v, \omega)) $$
-
-\begin{quote}
-    cost =
-    path\_distance\_bias * (distance to path from the endpoint of the trajectory)\\
-    + goal\_distance\_bias * (distance to local goal from the endpoint of the trajectory)\\
-    + occdist\_scale * (maximum obstacle cost along the trajectory in obstacle cost (0-254))
-\end{quote}
-
-
-At line 196 of https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html:
-\begin{quote}
-    // used for visualization only, total\_costs are not really total costs
-    bool DWAPlanner::getCellCosts(int cx, int cy, float \&path\_cost, float \&goal\_cost, float \&occ\_cost, float \&total\_cost)
-
-    ...
-
-    total\_cost =
-        path\_distance\_bias\_ * path\_cost +
-        goal\_distance\_bias\_ * goal\_cost +
-        occdist\_scale\_ * occ\_cost;
-\end{quote}
+The considered trajectories by DWA are those taken from a equi-distant discretization of the velocities that the robot can assume. For this purpose ROS has a \href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html}{\texttt{base\_local\_planner::SimpleTrajectoryGenerator}}\footnote{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html} class.
 
 
 
@@ -296,20 +277,53 @@ Each one of these points is passed to DWA as the current goal, and once it is re
 
 \subsection{Architecture overview}
 
-... (things in common between our controller and DWA: simulator, ...)
+Our implementation is composed of three packages: one simulator (\texttt{diffdrive\_kin\_sim}) and two controllers (\texttt{diffdrive\_kin\_ctrl} and \texttt{diffdrive\_dwa\_ctrl}).
 
-\subsection{Simulator}
+The two controllers are interchangeable and are meant to always be used together with the simulator, one at a time.
+
+\subsection{Service}
+
+\subsubsection{\texttt{generate\_desired\_path\_service}}
+
+The 8-shaped trajectory that the robot must follow is generated inside \texttt{eight\_traj\_gen.cpp} executed in the launch file.
+
+As a result, the two vectors contained in the \texttt{GenerateDesiredPathService.srv} message are populated with the coordinates of all the points of the trajectory.
+
+As soon as the service is called, during the initialization (in the \texttt{Prepare()} function) of both controllers, the complete trajectory is made available also to the controllers.
+
+
+\subsection{Nodes}
+
+\subsubsection{\texttt{diffdrive\_kin\_sim\_node}}
+
+This node is subscribed to the \texttt{/robot\_input} topic and reads the wheels velocities.
+
+Given those it simulates the movement of the robot and publishes the new position in both \texttt{/robot\_state} and \texttt{/odom} topics. We have decided to keep these two topics separate in order to accommodate both controllers.\\
+
+The actual simulator is an object of the \texttt{diffdrive\_kin\_ode} class, which is initialized as follow:
+\begin{lstlisting}[language=C++]
+    simulator = new diffdrive_kin_ode(dt);
+\end{lstlisting}
+
+and contains the integration logic to update the robot pose.
+
+\subsubsection{Trajectory controller}
 
 ...
 
-\subsection{Trajectory controller}
+\subsubsection{DWA controller}
 
 ...
 
-\subsection{DWA controller}
+\subsection{Topics}
 
 ...
 
+
+
+- screen rqt\_graph di quando usiamo il nostro controllore e di quando usiamo dwa (messe di fianco)
+- subsection con service che discretizza la traiettoria ad 8
+- fare una lista di cosa accade dal rosrun al movimento del robot (menzionando il contenuto dei launch file)
 
 
 %-----------------------------------------------------------------------------
@@ -318,7 +332,7 @@ Each one of these points is passed to DWA as the current goal, and once it is re
 
 \section{Parameters tuning}
 
-...
+... (nuber of points when discretizing the trajectory: t+=0.001... MAKE IT PARAMETER!!)
 
 
 
