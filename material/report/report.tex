@@ -301,21 +301,68 @@ This node is subscribed to the \texttt{/robot\_input} topic and reads the wheels
 Given those it simulates the movement of the robot and publishes the new position in both \texttt{/robot\_state} and \texttt{/odom} topics. We have decided to keep these two topics separate in order to accommodate both controllers.\\
 
 The actual simulator is an object of the \texttt{diffdrive\_kin\_ode} class, which is initialized as follow:
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}
     simulator = new diffdrive_kin_ode(dt);
 \end{lstlisting}
 
 and contains the integration logic to update the robot pose.
 
-\subsubsection{Trajectory controller}
+\subsubsection{\texttt{diffdrive\_kin\_trajctrl\_node}}
 
-...
+This node is dedicated to compute the angular velocities of the two wheels given the current position of the robot and its next point in the trajectory.\\
 
-\subsubsection{DWA controller}
+During the initialization phase it queries the \texttt{generate\_desired\_path\_service} service and stores the complete trajectory.
 
-...
+Then, every time a message is published on the \texttt{/robot\_state} topic this node updates its internal values of the robot pose.\\
+
+The \texttt{PeriodicTask()} that gets executed uses a PID controller and a linearization law (implemented in the \texttt{diffdrive\_kin\_fblin} class) to compute both the linear and the angular velocities of the robot.
+
+As a last step, since the simulated robot is a differential drive one, the angular velocities of the two wheels are computed starting from the $(v, \omega)$ above, and the new results are published on the \texttt{/robot\_input} and \texttt{/controller\_state} topics.
+
+\subsubsection{\texttt{diffdrive\_dwa\_trajctrl\_node}}
+
+This node is used to interface the DWA library in ROS with the simulator.
+
+This is due to the fact that natively DWA is used inside ROS Navigation Stack, thus it expects an odometry source and a costmap.\\
+
+In this specific implementation only a global costmap and a planner (DWA) are used.
+
+As the controller explained above, during the initialiation phase the service is queried. Once the trajectory is received, one point every \texttt{skipped\_goals} is set as the new plan for DWA.
+
+Once the plan is set, the DWA controller tries to reach the new goal position by computing the necessary pair of $(v, \omega)$ velocities. As soon as the goal is reached with a certain tolerance, the next point in the trajectory is set as the new goal.\\
+
+Lastly, the $(\omega_r,\omega_r)$ velocities are computed and published on the \texttt{/robot\_input} and \texttt{/controller\_state} topics.
+
+The implementaion of DWA and all the functions that have been used are provided by the following two files in the ROS library:
+href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html} and href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{dwa\_planner.cpp}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}.
+
+(add navigation stack image)
+
+\subsubsection{\texttt{odom\_to\_baselink\_tf\_node}}
+
+This node is needed in order to link the \texttt{odom} and the \texttt{base\_link} coordinate frames through a simple dynamic tf.
+
+\subsection{Frames}
+
+Here is a list with a brief description of all the frames:
+\begin{itemize}
+ \item \texttt{map}, which is the coordinate system where the empty map (provided by the map server) is;
+ \item \texttt{odom}, which represent the global reference system, that in this particular case its origin matches the one of the \texttt{map} frame;
+ \item \texttt{base\_link}, which represrents reference system moving around together with the robot.
+\end{itemize}
+
+(add tf\_tree image)
 
 \subsection{Topics}
+
+...
+
+\subsection{Launch files}
+
+...
+
+
+\subsection{Parameters (YAML)}
 
 ...
 
