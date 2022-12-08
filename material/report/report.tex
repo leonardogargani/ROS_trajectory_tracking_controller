@@ -331,7 +331,7 @@ As the controller explained above, during the initialiation phase the service is
 
 Once the plan is set, the DWA controller tries to reach the new goal position by computing the necessary pair of $(v, \omega)$ velocities. As soon as the goal is reached with a certain tolerance, the next point in the trajectory is set as the new goal.\\
 
-Lastly, the $(\omega_r,\omega_r)$ velocities are computed and published on the \texttt{/robot\_input} and \texttt{/controller\_state} topics.
+Lastly, the $(\omega_r,\omega_l)$ velocities are computed and published on the \texttt{/robot\_input} and \texttt{/controller\_state} topics.
 
 The implementaion of DWA and all the functions that have been used are provided by the following two files in the ROS library:
 href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html} and href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{dwa\_planner.cpp}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}.
@@ -355,22 +355,91 @@ Here is a list with a brief description of all the frames:
 
 \subsection{Topics}
 
-...
+Here is a list with a brief description of the topics that our nodes are subscribed to and published into:\\
+
+\begin{itemize}
+
+    \item \texttt{/clock}, used to synchronize all the nodes in the simulation;
+
+    \item \texttt{/odom}, used to pass the odometry information of the robot to DWA;
+        \begin{itemize}
+            \item publishers:
+                \begin{itemize}
+                    \item \texttt{diffdrive\_kin\_sim}
+                \end{itemize}
+            \item subscribers:
+                \begin{itemize}
+                    \item \texttt{odom\_to\_baselink\_tf}
+                \end{itemize}
+        \end{itemize}
+
+    \item \texttt{/robot\_state}, used to pass the odometry information of the robot to the custom controller.
+        \begin{itemize}
+            \item publishers:
+                \begin{itemize}
+                    \item \texttt{diffdrive\_kin\_sim}
+                \end{itemize}
+            \item subscribers:
+                \begin{itemize}
+                    \item \texttt{diffdrive\_kin\_trajctrl}
+                \end{itemize}
+        \end{itemize}
+
+    \item \texttt{/controller\_state}, used to publish details about the controller for visualization purposes;
+        \begin{itemize}
+            \item publishers:
+                \begin{itemize}
+                    \item \texttt{diffdrive\_kin\_trajctrl}
+                    \item \texttt{diffdrive\_dwa\_trajctrl}
+                \end{itemize}
+            \item subscribers:
+                \begin{itemize}
+                    \item \textit{none}
+                \end{itemize}
+        \end{itemize}
+
+    \item \texttt{/robot\_input}, used to communicate $(\omega_r,\omega_l)$ computed by the controllers;
+        \begin{itemize}
+            \item publishers:
+                \begin{itemize}
+                    \item \texttt{diffdrive\_kin\_trajctrl}
+                    \item \texttt{diffdrive\_dwa\_trajctrl}
+                \end{itemize}
+            \item subscribers:
+                \begin{itemize}
+                    \item \texttt{diffdrive\_kin\_sim}
+                \end{itemize}
+        \end{itemize}
+
+\end{itemize}
 
 \subsection{Launch files}
 
-...
+Here is a list with a brief description of all the launch files:\\
+\begin{itemize}
+    \item \texttt{diffdrive\_kin\_trajctrl.launch}, used to start the following nodes:
+        \begin{itemize}
+            \item \texttt{diffdrive\_kin\_sim}
+            \item \texttt{diffdrive\_kin\_trajctrl}
+            \item \texttt{eight\_traj\_gen}
+            \item \texttt{world\_to\_odom} (static tf linking \texttt{world} and \texttt{odom} frames)
+            \item \texttt{odom\_visualizer} (\textit{RVIZ} node to visualize data)\\
+        \end{itemize}
+
+    \item \texttt{diffdrive\_dwa\_trajctrl.launch}, used to start the following nodes:
+        \begin{itemize}
+            \item \texttt{diffdrive\_kin\_sim}
+            \item \texttt{diffdrive\_dwa\_trajctrl}
+            \item \texttt{eight\_traj\_gen}
+            \item \texttt{odom\_to\_baselink\_tf}
+            \item \texttt{map\_node} (\textit{map\_server} node used to provide the map)
+            \item \texttt{map\_to\_odom} (static tf linking \texttt{map} and \texttt{odom} frames)
+            \item \texttt{odom\_visualizer} (\textit{RVIZ} node to visualize data)
+        \end{itemize}
+\end{itemize}
 
 
-\subsection{Parameters (YAML)}
-
-...
-
-
-
-- screen rqt\_graph di quando usiamo il nostro controllore e di quando usiamo dwa (messe di fianco)
-- subsection con service che discretizza la traiettoria ad 8
-- fare una lista di cosa accade dal rosrun al movimento del robot (menzionando il contenuto dei launch file)
+screen rqt\_graph di quando usiamo il nostro controllore e di quando usiamo dwa (messe di fianco)
 
 
 %-----------------------------------------------------------------------------
@@ -379,7 +448,54 @@ Here is a list with a brief description of all the frames:
 
 \section{Parameters tuning}
 
-... (nuber of points when discretizing the trajectory: t+=0.001... MAKE IT PARAMETER!!)
+Parameters have a crucial role for the correct functioning of the nodes introduced above.\\
+
+In this section the most relevant ones are explained:\\
+\begin{itemize}
+
+    \item \texttt{diffdrive\_kin\_sim.yaml}:
+        \begin{itemize}
+            \item \texttt{d}, distance between the two wheels;
+            \item \texttt{r}, radius of the two wheels.\\
+        \end{itemize}
+
+    \item \texttt{eight\_traj.yaml}:
+        \begin{itemize}
+            \item \texttt{a}, amplitude of the eight-shaped trajectory;
+            \item \texttt{w}, ratio $2\pi / T$ where $T$ is the time duration of each lap.\\
+        \end{itemize}
+
+    \item \texttt{diffdrive\_kin\_trajctrl.yaml}:
+        \begin{itemize}
+            \item \texttt{Kp}, proportional gain of the PID controller;
+            \item \texttt{Ki}, integral gain of the PID controller;
+            \item \texttt{Kd}, derivative gain of the PID controller.\\
+        \end{itemize}
+
+    \item \texttt{diffdrive\_dwa\_trajctrl.yaml}:
+        \begin{itemize}
+            \item \texttt{skipped\_goals}, number of points to skip when feeding the trajectory to DWA.\\
+        \end{itemize}
+
+    \item \texttt{dwa\_planner\_params.yaml}:
+        \begin{itemize}
+            \item \texttt{min\_vel\_y}, minimum linear velocity along the y-axis;
+            \item \texttt{max\_vel\_y}, maximum linear velocity along the y-axis;
+            \item \texttt{min\_vel\_x}, minimum linear velocity along the x-axis;
+            \item \texttt{max\_vel\_x}, minimum linear velocity along the x-axis;
+            \item \texttt{acc\_lim\_theta}, maximum angular acceleration;
+            \item \texttt{vth\_samples}, number of samples of $\omega$ that DWA considers when simulating;
+            \item \texttt{vx\_samples}, number of samples of $v$ that DWA considers when simulating;
+            \item \texttt{path\_distance\_bias}, weighting for how much the controller should stay close to the given path;
+            \item \texttt{goal\_distance\_bias}, weighting for how much the controller should attempt to reach its local goal;
+            \item \texttt{xy\_goal\_tolerance}, tolerance (in meters) in the x \& y distance when reaching a goal;
+            \item \texttt{yaw\_goal\_tolerance}, tolerance (in radians) in yaw/rotation when reaching a goal .\\
+        \end{itemize}
+
+\end{itemize}
+
+
+... (number of points when discretizing the trajectory: t+=0.001... MAKE IT PARAMETER!!)
 
 
 

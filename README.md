@@ -23,7 +23,7 @@ source ~/ROS_trajectory_tracking_controller/devel/setup.bash
 
 If you use *zsh*, add instead this other line to the end of your `.zshrc`:
 ```bash
-source ~/ROS_trajectory_tracking_controller/devel/setup.bash
+source ~/ROS_trajectory_tracking_controller/devel/setup.zsh
 ```
 
 Enter the project root directory and compile everything with:
