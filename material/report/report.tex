@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article} 
+\documentclass[11pt,a4paper]{article}
 
 % PACKAGES FOR TITLES
 \usepackage{titlesec}
@@ -41,7 +41,7 @@
 % PACKAGES FOR THE APPENDIX
 \usepackage{appendix}
 
-% PACKAGES FOR ITEMIZE & ENUMERATES 
+% PACKAGES FOR ITEMIZE & ENUMERATES
 \usepackage{enumitem}
 
 % OTHER PACKAGES
@@ -446,7 +446,7 @@ screen rqt\_graph di quando usiamo il nostro controllore e di quando usiamo dwa 
 %                               PARAMETERS TUNING
 %-----------------------------------------------------------------------------
 
-\section{Parameters tuning}
+\section{Parameters}
 
 Parameters have a crucial role for the correct functioning of the nodes introduced above.\\
 
@@ -462,7 +462,7 @@ In this section the most relevant ones are explained:\\
     \item \texttt{eight\_traj.yaml}:
         \begin{itemize}
             \item \texttt{a}, amplitude of the eight-shaped trajectory;
-            \item \texttt{w}, ratio $2\pi / T$ where $T$ is the time duration of each lap.\\
+            \item \texttt{w}, ratio $\frac{2 \cdot \pi }{T}$ where $T$ is the time duration of each lap.\\
         \end{itemize}
 
     \item \texttt{diffdrive\_kin\_trajctrl.yaml}:
@@ -495,7 +495,63 @@ In this section the most relevant ones are explained:\\
 \end{itemize}
 
 
-... (number of points when discretizing the trajectory: t+=0.001... MAKE IT PARAMETER!!)
+\subsection{Tuning}
+
+\subsubsection{Eight-shaped trajectory}
+
+An eight-shaped trajectory can be be described with the following analytical equations:
+$$x = \texttt{a} \cdot \sin (\texttt{w} \cdot t)$$
+$$y = \texttt{a} \cdot \sin (\texttt{w} \cdot t)\cdot \cos (\texttt{w} \cdot t)$$\\
+
+In the equations above it is possible to tune two parameters: \texttt{a} and \texttt{w}.
+In the presented implementation they are set to \texttt{a} = 1 and \texttt{w} = 1.
+
+[INSERIRE IMMAGINI CON VALORI NETTAMENTE DIVERSI DI A E W] NOSTRA + UNO DIVERSO E CAPIRE COSA FA W] \\
+
+\subsubsection{Custom controller}
+
+The custom controller is a trajectory tracking one composed of an inner linearisation law and an outer tracking law.
+The outer tracking law is based on a PID controller with tunable parameters: $K_p$, $K_i$, $K_d$.\\
+
+The step response when using a PID controller is computed as follows:
+$$ {\displaystyle u(t)=K_{\text{p}}e(t)+K_{\text{i}}\int _{0}^{t}e(\tau )\,\mathrm {d} \tau +K_{\text{d}}{\frac {\mathrm {d} e(t)}{\mathrm {d} t}}} $$ \\
+
+Various tests have been carried out to achieve the optimal behaviour, in particular to minimize the overshoot and
+the settling time while keeping an overall good stability in the PID response.\\
+
+In the presented implementation they are set to $K_p = 0.8$, $K_i = 0.8$, $K_d = 0$.
+
+[RIPORTARE IMMAGINE TABELLA WIKI RIFATTA DA NOI (?) + UN PO DI ESEMPI NOSTRI]
+
+\subsubsection{DWA}
+
+When the trajectory is generated, the eight shape is discretized over numerous points.
+
+Due to the large number of those, they are very close to each other. This makes the robot misbehave as soon as
+a new goal is set in DWA. For this reason it is best to skip some of the points in the trajectory.
+This is accomplished through the \texttt{skipped\_goals} parameters, which is set to 15.\\
+
+[IMMAGINI UNA CON IL NOSTRO VALORE E UNO VALORE ALTO E METTERNE UNO CON VALORE MINIMO E CERCARE DI MOTIVARE
+
+... (number of points when discretizing the trajectory: t+=0.001... MAKE IT PARAMETER!!)\\
+
+In order to simulate a differential drive robot, the following parameters have been set:
+
+\begin{itemize}
+    \item \texttt{min\_vel\_y} = 0 and \texttt{max\_vel\_y} = 0, to forbid lateral movement along the y-axis;
+    \item \texttt{min\_vel\_x} = 0, to forbid backward movement along the x-axis.\\
+\end{itemize}
+
+Another parameter related to the constraints on the movement of the robot is \texttt{acc\_lim\_theta}.
+To achieve the best trade-off betweeen the ability to correctly follow the trajectory and the realistic
+constraints on the steering capabilities of the robot, the most suitable value for it is 10.\\
+
+Paragraph on \texttt{vth\_samples} and \texttt{vx\_samples}...\\
+
+Paragraph on {xy\_goal\_tolerance} and \texttt{yaw\_goal\_tolerance}...\\
+
+
+
 
 
 
@@ -517,7 +573,7 @@ In this section the most relevant ones are explained:\\
 
 ... (deprecated parameters name in the official doc: put screen of the doc +
 screen of the comments in the code of the library)
-% 
+%
 
 
 %-----------------------------------------------------------------------------
