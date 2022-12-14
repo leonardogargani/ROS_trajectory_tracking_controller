@@ -484,8 +484,8 @@ In this section the most relevant ones are explained:\\
             \item \texttt{min\_vel\_x}, minimum linear velocity along the x-axis;
             \item \texttt{max\_vel\_x}, minimum linear velocity along the x-axis;
             \item \texttt{acc\_lim\_theta}, maximum angular acceleration;
-            \item \texttt{vth\_samples}, number of samples of $\omega$ that DWA considers when simulating;
-            \item \texttt{vx\_samples}, number of samples of $v$ that DWA considers when simulating;
+            \item \texttt{vth\_samples}, number of uniformly-sampled values of $\omega$ that DWA considers when simulating;
+            \item \texttt{vx\_samples}, number of uniformly-sampled values of $v$ that DWA considers when simulating;
             \item \texttt{path\_distance\_bias}, weighting for how much the controller should stay close to the given path;
             \item \texttt{goal\_distance\_bias}, weighting for how much the controller should attempt to reach its local goal;
             \item \texttt{xy\_goal\_tolerance}, tolerance (in meters) in the x \& y distance when reaching a goal;
@@ -546,13 +546,17 @@ Another parameter related to the constraints on the movement of the robot is \te
 To achieve the best trade-off betweeen the ability to correctly follow the trajectory and the realistic
 constraints on the steering capabilities of the robot, the most suitable value for it is 10.\\
 
-Paragraph on \texttt{vth\_samples} and \texttt{vx\_samples}...\\
+Since DWA discretely sample in the robot's control space, parameters \texttt{vth\_samples} and \texttt{vx\_samples}
+play a key role in allowing a finer grained choice of velocities.
+To achieve the best trade-off betweeen a wide choice of possible $(v,\omega)$ and computational effort,
+the optimal values have been found to be \texttt{vth\_samples = 100} and \texttt{vx\_samples = 30}.\\
 
-Paragraph on {xy\_goal\_tolerance} and \texttt{yaw\_goal\_tolerance}...\\
-
-
-
-
+Finally, DWA provides a certain tolerance within which the goal is considered to be reached.
+In particular this can be done through two parameters \texttt{yaw\_goal\_tolerance} and \texttt{xy\_goal\_tolerance}.
+The former has been set to \texttt{6.3} because it is irrelevant the direction of the robot when reaching the goal
+(thus $6.3 \simeq 2\pi$ in radians).
+The latter has been set to \texttt{0.15} because it is a good deal between the dimension of the robot and
+an approximation of the trajectory.
 
 
 %-----------------------------------------------------------------------------
@@ -560,6 +564,14 @@ Paragraph on {xy\_goal\_tolerance} and \texttt{yaw\_goal\_tolerance}...\\
 %-----------------------------------------------------------------------------
 
 \section{Experimental Results}
+
+- immagini commentate
+    - script singolo su bag controllore custom
+    - script singolo su bag dwa
+    - script confronto su bag1 + bag2
+
+
+
 
 ... (plots of the bags + plots of the comparison with the custom script)
 
@@ -571,9 +583,45 @@ Paragraph on {xy\_goal\_tolerance} and \texttt{yaw\_goal\_tolerance}...\\
 
 \section{Encountered problems}
 
-... (deprecated parameters name in the official doc: put screen of the doc +
-screen of the comments in the code of the library)
-%
+\subsubsection{Deprecated parameters}
+
+During the tuning phase of DWA a trial and error approach has been carried out, finding that
+a few parameters are named differently in the in the ROS library with respect to the ROS Wiki.
+
+Such renaming was not advertised by any error nor warning, so it was difficult to spot where the problem
+was when changing parameters and seeing no effect in the robot behaviour.\\
+
+The following pair of parameters is an example:
+\begin{itemize}
+ \item \texttt{min\_rot\_vel} renamed into \texttt{min\_vel\_theta};
+ \item \texttt{max\_rot\_vel} renamed into \texttt{max\_vel\_theta}.\\
+\end{itemize}
+
+(put screen of the doc + screen of the comments in the library)
+
+\subsubsection{DWA used outside of ROS Navigation Stack}
+
+Usually DWA is used inside a standard architecture which is the Navigation Stack in ROS.
+
+However the goal of this project was to integrate DWA in the architecture with the simulator used for
+the custom controller. Thereby DWA has been rearranged in a standalone mode.\\
+
+To accomplish this, it has been necessary to provide to DWA all the information it normally expects on certain topics such as
+\texttt{/odom}, \texttt{/goal}, and\texttt{/map}.\\
+
+Unfortunately there is no documentation for this kind of setup on the ROS Wiki, and the few lines of code that are present
+refer to some deprecated libraries (i.e. \texttt{tf} is the one mentioned in the example, while \texttt{tf2} is the actual
+supported one).
+
+(foto di navigation stack + confronto con foto della nostra architettura)
+
+\subsubsection{Multiple goals along the trajectory}
+
+In a standard scenario DWA needs only the one final goal and computes the trajectory on its own.
+
+In this project the trajectory is predefined and must be forced changing continuously the goal, otherwise the robot
+would go straight to the final point of the overall eight-shaped trajectory.
+
 
 
 %-----------------------------------------------------------------------------
@@ -582,8 +630,99 @@ screen of the comments in the code of the library)
 
 \section{Usage of the code}
 
-...
+\subsection{Initial set up and compilation}
 
+Clone or download the repository into your home ($\sim$) folder.\\
+
+If you use bash, add the following line to the end of your .bashrc:
+\begin{lstlisting}
+    source \sim/ROS_trajectory_tracking_controller/devel/setup.bash
+\end{lstlisting}
+
+If you use zsh, add instead this other line to the end of your .zshrc:
+\begin{lstlisting}
+    source ~/ROS_trajectory_tracking_controller/devel/setup.zsh
+\end{lstlisting}
+
+Enter the project root directory and compile everything with:
+\begin{lstlisting}
+    cd ROS_trajectory_tracking_controller
+    catkin_make
+\end{lstlisting}
+
+\subsection{Run simulation and plot results}
+
+The following instructions let you perform and visualize a simulation.
+
+\subsubsection{Trajectory control for differential drive}
+
+This simulation shows the behavior of the custom controller when an 8-shaped trajectory is set.\\
+
+[terminal 1] Start the simulation:
+\begin{lstlisting}
+    roslaunch diffdrive_kin_ctrl diffdrive_kin_trajctrl.launch
+\end{lstlisting}
+
+
+[terminal 2] Enter the script/ folder and record the simulation:
+\begin{lstlisting}
+    cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
+    rosbag record -a -O diffdrive_kin_trajctrl.bag
+\end{lstlisting}
+
+Wait about 30 seconds so that the simulation can be performed.\\
+
+[terminal 2] Stop the recording with Ctrl-C.\\
+
+[terminal 1] Stop the simulation with Ctrl-C.\\
+
+[terminal 2] Visualize the results:
+\begin{lstlisting}
+    python plot_result_trajctrl.py diffdrive_kin_trajctrl.bag
+\end{lstlisting}
+
+\subsubsection{DWA for differential drive}
+
+This simulation shows the behavior of DWA when an 8-shaped trajectory is set.\\
+
+[terminal 1] Start the simulation:
+\begin{lstlisting}
+    roslaunch diffdrive_dwa_ctrl diffdrive_dwa_trajctrl.launch
+\end{lstlisting}
+
+[terminal 2] Enter the script/ folder and record the simulation:
+\begin{lstlisting}
+    cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
+    rosbag record -a -O diffdrive_dwa_trajctrl.bag
+\end{lstlisting}
+
+Wait about 30 seconds so that the simulation can be performed.\\
+
+[terminal 2] Stop the recording with Ctrl-C.\\
+
+[terminal 1] Stop the simulation with Ctrl-C.\\
+
+[terminal 2] Visualize the results:
+\begin{lstlisting}
+    python plot_result_trajctrl.py diffdrive_dwa_trajctrl.bag
+\end{lstlisting}
+
+
+\subsubsection{Compare two simulations}
+
+If you wish, you can also compare the results of two different simulations.
+
+Given two bag files named bag\_1.bag and bag\_2.bag, visualize the comparison:
+\begin{lstlisting}
+    python plot_result_comparison.py bag_1.bag bag_2.bag
+\end{lstlisting}
+
+
+
+
+
+
+(aggiungi fase di installazione: menziona pacchetti)
 
 
 %-----------------------------------------------------------------------------

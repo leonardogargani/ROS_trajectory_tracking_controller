@@ -39,7 +39,7 @@ The following instructions let you perform and visualize a simulation.
 
 ### Trajectory control for differential drive
 
-This simulation shows the behavior of the controller when an 8-shaped trajectory is set.
+This simulation shows the behavior of the custom controller when an 8-shaped trajectory is set.
 
 **[terminal #1]** Start the simulation:
 ```bash
@@ -61,6 +61,32 @@ Wait about 30 seconds so that the simulation can be performed.
 **[terminal #2]** Visualize the results:
 ```bash
 python plot_result_trajctrl.py diffdrive_kin_trajctrl.bag
+```
+
+### DWA for differential drive
+
+This simulation shows the behavior of DWA when an 8-shaped trajectory is set.
+
+**[terminal #1]** Start the simulation:
+```bash
+roslaunch diffdrive_dwa_ctrl diffdrive_dwa_trajctrl.launch
+```
+
+**[terminal #2]** Enter the *script/* folder and record the simulation:
+```bash
+cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
+rosbag record -a -O diffdrive_dwa_trajctrl.bag
+```
+
+Wait about 30 seconds so that the simulation can be performed.
+
+**[terminal #2]** Stop the recording with `Ctrl-C`.
+
+**[terminal #1]** Stop the simulation with `Ctrl-C`.
+
+**[terminal #2]** Visualize the results:
+```bash
+python plot_result_trajctrl.py diffdrive_dwa_trajctrl.bag
 ```
 
 ### Compare two simulations
