@@ -49,8 +49,40 @@
 \usepackage{comment} % Comment part of code
 \usepackage{fancyhdr} % Fancy headers and footers
 \usepackage{lipsum} % Insert dummy text
-\usepackage{tcolorbox} % Create coloured boxes (e.g. the one for the key-words)
+\usepackage[skins]{tcolorbox} % Create coloured boxes (e.g. the one for the key-words)
 \usepackage{listings}
+\usepackage{xcolor}
+
+\renewcommand{\footnotesize}{\scriptsize}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=none,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    literate={~} {$\sim$}{1}
+}
+
+\lstset{
+    style=mystyle
+}
 
 \newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
 \newcommand{\eea}{\end{eqnarray}}
@@ -114,7 +146,7 @@ The software simulates the robot, using its kinematic model, and implements the 
 
 \section{DWA overview}
 
-This section is basically a brief overview of the Dynamic Window Approach (DWA) as presented in the original paper\footnote{D. Fox, W. Burgard, S. Thrun (1997) \textit{The Dynamic Window Approach to Collision Avoidance}}.\\
+This section is basically a brief overview of the Dynamic Window Approach (DWA) as presented in the original paper\footnote{\href{https://www.ri.cmu.edu/pub_files/pub1/fox_dieter_1997_1/fox_dieter_1997_1.pdf}{D. Fox, W. Burgard, S. Thrun (1997) \textit{The Dynamic Window Approach to Collision Avoidance}}}.\\
 
 DWA is an approach to perform collision avoidance in mobile robots, while dealing with the constraints imposed by limited velocities and accelerations.
 
@@ -158,25 +190,28 @@ Each one of the three quantities above is multiplied to its own weight ($\alpha$
 
 \subsection{From ROS wiki}
 
-DWA is already implemented in ROS in the \href{https://wiki.ros.org/dwa\_local\_planner}{\texttt{dwa\_local\_planner}}\footnote{https://wiki.ros.org/dwa\_local\_planner} package.
+DWA is already implemented in ROS in the \texttt{dwa\_local\_planner}\footnote{\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}} package.
 
 As stated in the ROS Wiki:
 \begin{quote}
  ``The dwa\_local\_planner package provides a controller that drives a mobile base in the plane. This controller serves to connect the path planner to the robot. Using a map, the planner creates a kinematic trajectory for the robot to get from a start to a goal location. Along the way, the planner creates, at least locally around the robot, a value function, represented as a grid map. This value function encodes the costs of traversing through the grid cells. The controller's job is to use this value function to determine dx,dy,dtheta velocities to send to the robot.''
 \end{quote}
 
-This package is ought to be used as the planner for \href{https://wiki.ros.org/move\_base}{\texttt{move\_base}}\footnote{https://wiki.ros.org/move\_base} within the navigation stack.
+This package is ought to be used as the planner for \texttt{move\_base}\footnote{\href{https://wiki.ros.org/move\_base}{https://wiki.ros.org/move\_base}} within the navigation stack.
 
 In the Wiki there is the following cost function to score each trajectory:
 
-\begin{quote}
-    cost =
-    path\_distance\_bias * (distance to path from the endpoint of the trajectory)\\
-    + goal\_distance\_bias * (distance to local goal from the endpoint of the trajectory)\\
-    + occdist\_scale * (maximum obstacle cost along the trajectory in obstacle cost (0-254))
-\end{quote}
 
-However, reading through the source code of the DWA ROS library, it is said that the above function is ``used for visualization only, total\_costs are not really total costs''\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html (line 184)}.
+\begin{tcolorbox}[enhanced,width=6in,center,size=fbox]
+
+cost \textbf{=} path\_distance\_bias \textbf{*} (distance to path from the endpoint of the trajectory)\\
+    \hspace*{4em}\textbf{+} goal\_distance\_bias \textbf{*} (distance to local goal from the endpoint of the trajectory)\\
+    \hspace*{4em}\textbf{+} occdist\_scale \textbf{*} (maximum obstacle cost along the trajectory in obstacle cost (0-254))
+
+\end{tcolorbox}
+
+However, reading through the source code of the DWA ROS library, it is said that the above function is
+\textit{``used for visualization only, total\_costs are not really total costs''} \footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}}.
 
 
 
@@ -185,19 +220,19 @@ However, reading through the source code of the DWA ROS library, it is said that
 In order to use DWA in our experiment, we call the \texttt{DWAPlannerROS::computeVelocityCommands()} function which leads to the following cascading function calls:\\
 \begin{enumerate}
 
- \item \href{https://docs.ros.org/en/melodic/api/dwa_local_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{DWAPlannerROS::computeVelocityCommands(...)}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
+ \item \texttt{DWAPlannerROS::computeVelocityCommands(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
  called in our \texttt{diffdrive\_traj\_ctrl.cpp}, line 78;
 
- \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{DWAPlannerROS::dwaComputeVelocityCommands(...)}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
+ \item \texttt{DWAPlannerROS::dwaComputeVelocityCommands(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
  called from the function at step 1, line 302;
 
- \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{DWAPlanner::findBestPath(...)}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}
+ \item \texttt{DWAPlanner::findBestPath(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}}
  called from the function at step 2, line 209;
 
- \item \href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{\texttt{SimpleScoredSamplingPlanner::findBestTrajectory(...)}}\footnote{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}
+ \item \texttt{SimpleScoredSamplingPlanner::findBestTrajectory(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}}
  called from the function at step 3, line 317;
 
- \item \href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{\texttt{SimpleScoredSamplingPlanner::scoreTrajectory(...)}}\footnote{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}
+ \item \texttt{SimpleScoredSamplingPlanner::scoreTrajectory(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}}
  called from the function at step 4, line 105.\\
 
 \end{enumerate}
@@ -217,7 +252,7 @@ These elements are contained in a \texttt{std::vector<TrajectoryCostFunction*>} 
  \item \texttt{base\_local\_planner::TwirlingCostFunction twirling\_costs\_}, which prefers trajectories that don't spin.\\
 \end{itemize}
 
-The considered trajectories by DWA are those taken from a equi-distant discretization of the velocities that the robot can assume. For this purpose ROS has a \href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html}{\texttt{base\_local\_planner::SimpleTrajectoryGenerator}}\footnote{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html} class.
+The considered trajectories by DWA are those taken from a equi-distant discretization of the velocities that the robot can assume. For this purpose ROS has a \texttt{base\_local\_planner::SimpleTrajectoryGenerator}\footnote{\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html}{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html}} class.
 
 
 
@@ -333,8 +368,11 @@ Once the plan is set, the DWA controller tries to reach the new goal position by
 
 Lastly, the $(\omega_r,\omega_l)$ velocities are computed and published on the \texttt{/robot\_input} and \texttt{/controller\_state} topics.
 
-The implementaion of DWA and all the functions that have been used are provided by the following two files in the ROS library:
-href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html} and href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{dwa\_planner.cpp}}\footnote{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}.
+The implementation of DWA and all the functions that have been used is provided by the following two files in the ROS library:
+\begin{itemize}
+ \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{dwa\_planner.cpp}}
+ \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}
+\end{itemize}
 
 (add navigation stack image)
 
@@ -606,8 +644,7 @@ Usually DWA is used inside a standard architecture which is the Navigation Stack
 However the goal of this project was to integrate DWA in the architecture with the simulator used for
 the custom controller. Thereby DWA has been rearranged in a standalone mode.\\
 
-To accomplish this, it has been necessary to provide to DWA all the information it normally expects on certain topics such as
-\texttt{/odom}, \texttt{/goal}, and\texttt{/map}.\\
+To accomplish this, it has been necessary to provide to DWA all the information it normally expects on certain topics such as \texttt{/odom}, \texttt{/goal}, and \texttt{/map}.\\
 
 Unfortunately there is no documentation for this kind of setup on the ROS Wiki, and the few lines of code that are present
 refer to some deprecated libraries (i.e. \texttt{tf} is the one mentioned in the example, while \texttt{tf2} is the actual
@@ -630,24 +667,38 @@ would go straight to the final point of the overall eight-shaped trajectory.
 
 \section{Usage of the code}
 
+\subsection{Installation of required ROS packages}
+
+First of all, all the software written in this project has been tested on \textit{Ubuntu 18.04 LTS} and \textit{ROS Melodic}.\\
+
+In order to install ROS and all the required packages, execute:
+
+\begin{lstlisting}
+sudo apt instal ros-melodic-desktop-full
+sudo apt install ros-melodic-costmap-2d ros-melodic-base-local-planner ros-melodic-dwa-local-planner ros-melodic-map-server
+\end{lstlisting}
+
+
+
+
 \subsection{Initial set up and compilation}
 
 Clone or download the repository into your home ($\sim$) folder.\\
 
 If you use bash, add the following line to the end of your .bashrc:
 \begin{lstlisting}
-    source \sim/ROS_trajectory_tracking_controller/devel/setup.bash
+source ~/ROS_trajectory_tracking_controller/devel/setup.bash
 \end{lstlisting}
 
 If you use zsh, add instead this other line to the end of your .zshrc:
 \begin{lstlisting}
-    source ~/ROS_trajectory_tracking_controller/devel/setup.zsh
+source ~/ROS_trajectory_tracking_controller/devel/setup.zsh
 \end{lstlisting}
 
 Enter the project root directory and compile everything with:
 \begin{lstlisting}
-    cd ROS_trajectory_tracking_controller
-    catkin_make
+cd ROS_trajectory_tracking_controller
+catkin_make
 \end{lstlisting}
 
 \subsection{Run simulation and plot results}
@@ -658,53 +709,53 @@ The following instructions let you perform and visualize a simulation.
 
 This simulation shows the behavior of the custom controller when an 8-shaped trajectory is set.\\
 
-[terminal 1] Start the simulation:
+\textit{[terminal 1]} Start the simulation:
 \begin{lstlisting}
-    roslaunch diffdrive_kin_ctrl diffdrive_kin_trajctrl.launch
+roslaunch diffdrive_kin_ctrl diffdrive_kin_trajctrl.launch
 \end{lstlisting}
 
 
-[terminal 2] Enter the script/ folder and record the simulation:
+\textit{[terminal 2]} Enter the \texttt{script/} folder and record the simulation:
 \begin{lstlisting}
-    cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
-    rosbag record -a -O diffdrive_kin_trajctrl.bag
+cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
+rosbag record -a -O diffdrive_kin_trajctrl.bag
 \end{lstlisting}
 
 Wait about 30 seconds so that the simulation can be performed.\\
 
-[terminal 2] Stop the recording with Ctrl-C.\\
+\textit{[terminal 2]} Stop the recording with Ctrl-C.\\
 
-[terminal 1] Stop the simulation with Ctrl-C.\\
+\textit{[terminal 1]} Stop the simulation with Ctrl-C.\\
 
-[terminal 2] Visualize the results:
+\textit{[terminal 2]} Visualize the results:
 \begin{lstlisting}
-    python plot_result_trajctrl.py diffdrive_kin_trajctrl.bag
+python plot_result_trajctrl.py diffdrive_kin_trajctrl.bag
 \end{lstlisting}
 
 \subsubsection{DWA for differential drive}
 
 This simulation shows the behavior of DWA when an 8-shaped trajectory is set.\\
 
-[terminal 1] Start the simulation:
+\textit{[terminal 1]} Start the simulation:
 \begin{lstlisting}
-    roslaunch diffdrive_dwa_ctrl diffdrive_dwa_trajctrl.launch
+roslaunch diffdrive_dwa_ctrl diffdrive_dwa_trajctrl.launch
 \end{lstlisting}
 
-[terminal 2] Enter the script/ folder and record the simulation:
+\textit{[terminal 2]} Enter the script/ folder and record the simulation:
 \begin{lstlisting}
-    cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
-    rosbag record -a -O diffdrive_dwa_trajctrl.bag
+cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
+rosbag record -a -O diffdrive_dwa_trajctrl.bag
 \end{lstlisting}
 
 Wait about 30 seconds so that the simulation can be performed.\\
 
-[terminal 2] Stop the recording with Ctrl-C.\\
+\textit{[terminal 2]} Stop the recording with Ctrl-C.\\
 
-[terminal 1] Stop the simulation with Ctrl-C.\\
+\textit{[terminal 1]} Stop the simulation with Ctrl-C.\\
 
-[terminal 2] Visualize the results:
+\textit{[terminal 2]} Visualize the results:
 \begin{lstlisting}
-    python plot_result_trajctrl.py diffdrive_dwa_trajctrl.bag
+python plot_result_trajctrl.py diffdrive_dwa_trajctrl.bag
 \end{lstlisting}
 
 
@@ -714,15 +765,8 @@ If you wish, you can also compare the results of two different simulations.
 
 Given two bag files named bag\_1.bag and bag\_2.bag, visualize the comparison:
 \begin{lstlisting}
-    python plot_result_comparison.py bag_1.bag bag_2.bag
+python plot_result_comparison.py bag_1.bag bag_2.bag
 \end{lstlisting}
-
-
-
-
-
-
-(aggiungi fase di installazione: menziona pacchetti)
 
 
 %-----------------------------------------------------------------------------
@@ -731,7 +775,13 @@ Given two bag files named bag\_1.bag and bag\_2.bag, visualize the comparison:
 
 \section{Conclusions}
 
-...
+
+
+
+
+
+
+
 
 
 
