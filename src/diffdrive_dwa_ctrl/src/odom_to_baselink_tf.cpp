@@ -3,7 +3,8 @@
 
 void odom_to_baselink_tf::Prepare(void)
 {
-	
+
+	// fetch parameters from parameters server
 	std::string FullParamName;
 
     FullParamName = ros::this_node::getName() + "/run_period";
@@ -39,6 +40,7 @@ void odom_to_baselink_tf::Shutdown(void)
 
 void odom_to_baselink_tf::Callback(const nav_msgs::Odometry::ConstPtr &msg)
 {
+	// publish a dynamic tf between odom and base_link frames
 	transformStamped.header.stamp = ros::Time::now();
 	transformStamped.header.frame_id = "odom";
 	transformStamped.child_frame_id = "base_link";

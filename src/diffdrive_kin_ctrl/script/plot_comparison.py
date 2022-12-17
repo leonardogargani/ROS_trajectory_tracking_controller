@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 bag_1 = rosbag.Bag(sys.argv[1])
 bag_2 = rosbag.Bag(sys.argv[2])
 
+# Create subplots for the figures
 fig_traj, ax_traj = plt.subplots()
 fig_dwa_vel, (ax_dwa_vel_1, ax_dwa_vel_2) = plt.subplots(2)
 fig_wvel, (ax_wvel_1, ax_wvel_2) = plt.subplots(2)
@@ -15,11 +16,12 @@ fig_err, (ax_err_1, ax_err_2) = plt.subplots(2)
 controllerState_xref = []
 controllerState_yref = []
 
+# Fetch and plot data from the two bag files
 for bag in [bag_1, bag_2]:
 
 	bag_name = bag.filename
 
-	# State published by the simulator ("actual")
+	# State published by the simulator ("real")
 	vehicleState_time = []
 	vehicleState_x = []
 	vehicleState_y = []
@@ -44,8 +46,9 @@ for bag in [bag_1, bag_2]:
 	controllerState_xPerr = []
 	controllerState_yPerr = []
 	
-	
+	# Look into only relevant topics
 	for topic, msg, _ in bag.read_messages():
+
 		if topic == '/robot_state':
 			vehicleState_time.append(msg.data[0])
 			vehicleState_x.append(msg.data[1])
@@ -136,7 +139,6 @@ for bag in [bag_1, bag_2]:
 
 ax_traj.plot(controllerState_xref,controllerState_yref,'k', label="reference")
 ax_traj.legend(loc='best')
-
 ax_pose_1.plot(controllerState_time,controllerState_xref, 'k--', label="x ref")
 ax_pose_1.legend(loc='best')
 ax_pose_2.plot(controllerState_time,controllerState_yref, 'k--', label="y ref")

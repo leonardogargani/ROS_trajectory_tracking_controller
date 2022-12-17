@@ -6,7 +6,10 @@
 bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request &req,
                                             diffdrive_kin_ctrl::GenerateDesiredPathService::Response &res)
 {
+
+    // fetch parameters from parameters server
     std::string FullParamName;
+
     ros::NodeHandle Handle;
 
     double a;
@@ -22,13 +25,14 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
 
     float t = 0;
 
-    while(t < 10){
+    // generate eight-shaped trajectory
+    while(t < 10) {
         res.xref.push_back(a * std::sin(w * t));
         res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
     	t += 0.001;
     }
 
-	 ROS_INFO("Size in traj_gen: %lu", res.xref.size());
+	ROS_INFO("Size in traj_gen: %lu", res.xref.size());
 
     ROS_INFO("Service server: sending back response.");
 
@@ -44,7 +48,6 @@ int main(int argc, char **argv)
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 
     ros::NodeHandle Handle;
-
     ros::ServiceServer service = Handle.advertiseService("generate_desired_path_service", GenerateDesiredPath);
     ros::spin();
 

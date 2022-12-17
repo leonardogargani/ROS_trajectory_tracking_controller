@@ -5,6 +5,8 @@
 
 void diffdrive_kin_trajctrl::Prepare(void)
 {
+
+    // fetch parameters from parameters server
     std::string FullParamName;
 
     FullParamName = ros::this_node::getName() + "/run_period";
@@ -35,28 +37,35 @@ void diffdrive_kin_trajctrl::Prepare(void)
     if (false == Handle.getParam(FullParamName, r))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    vehicleState_subscriber = Handle.subscribe("/robot_state", 1, &diffdrive_kin_trajctrl::vehicleState_MessageCallback, this);
+    // publishers
     vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
     controllerState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/controller_state", 1);
+    
+    // subscribers
+    vehicleState_subscriber = Handle.subscribe("/robot_state", 1, &diffdrive_kin_trajctrl::vehicleState_MessageCallback, this);
 
+    // create the trajectory controller
     controller = new diffdrive_kin_fblin(P_dist);
 
+	// service for trajectory generation
     client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 
+    // query the service server until it gives a response (while waiting, do nothing)
     while (!client.call(srv)) {
-        // query the service server until it gives a response (while waiting, do nothing)
         ROS_INFO("Waiting for service");
     }
 
-	 ROS_INFO("Size in kin_trajctrl: %lu", srv.response.xref.size());
-	 ROS_INFO("Starting point -- x: %.2f -- y: %.2f", srv.response.xref[0], srv.response.yref[0]);
+	ROS_INFO("Size in kin_trajctrl: %lu", srv.response.xref.size());
+	ROS_INFO("Starting point -- x: %.2f -- y: %.2f", srv.response.xref[0], srv.response.yref[0]);
 
+    // populate the reference vectore with the trajectory from the service response
     for (uint t = 0; t < srv.response.xref.size(); t++) {
         xref_vector.push_back(srv.response.xref[t]);
         yref_vector.push_back(srv.response.yref[t]);            
     }
+
     ROS_INFO("Path has been generated and received.");
 
 }
@@ -83,6 +92,7 @@ void diffdrive_kin_trajctrl::Shutdown(void)
 }
 
 
+// set (x,y,theta) of the robot in the controller 
 void diffdrive_kin_trajctrl::vehicleState_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg)
 {
     // input command: t, msg->data[0]; x, msg->data[1]; y, msg->data[2]; theta, msg->data[3];
@@ -91,6 +101,8 @@ void diffdrive_kin_trajctrl::vehicleState_MessageCallback(const std_msgs::Float6
 }
 
 
+// compute (v,w) in order to follow the trajectory;
+// to do so, use a PID controller and a linearization law
 void diffdrive_kin_trajctrl::PeriodicTask(void)
 {
     long unsigned int t_ns = ros::Time::now().toNSec();
@@ -131,27 +143,27 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     omega_r = (v + omega * d / 2) / r;
     omega_l = (v - omega * d / 2) / r;
     
-    // publish vehicle commands
+    // publish vehicle commands as a message
     std_msgs::Float64MultiArray vehicleCommandMsg;
     vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
     vehicleCommandMsg.data.push_back(omega_r);
     vehicleCommandMsg.data.push_back(omega_l);
     vehicleCommand_publisher.publish(vehicleCommandMsg);
 
-    // publish controller state
+    // publish controller state as a message
     std_msgs::Float64MultiArray controllerStateMsg;
-    controllerStateMsg.data.push_back(ros::Time::now().toSec()); // 0
-    controllerStateMsg.data.push_back(xref); // 1
-    controllerStateMsg.data.push_back(yref); // 2
-    controllerStateMsg.data.push_back(xPref); // 3
-    controllerStateMsg.data.push_back(yPref); // 4
-    controllerStateMsg.data.push_back(xP); // 5
-    controllerStateMsg.data.push_back(yP); // 6
-    controllerStateMsg.data.push_back(vPx); // 7
-    controllerStateMsg.data.push_back(vPy); // 8
-	controllerStateMsg.data.push_back(v); // 9
-	controllerStateMsg.data.push_back(omega); // 10
-    controllerStateMsg.data.push_back(omega_r); // 11
-    controllerStateMsg.data.push_back(omega_l); // 12
+    controllerStateMsg.data.push_back(ros::Time::now().toSec());
+    controllerStateMsg.data.push_back(xref);
+    controllerStateMsg.data.push_back(yref);
+    controllerStateMsg.data.push_back(xPref);
+    controllerStateMsg.data.push_back(yPref);
+    controllerStateMsg.data.push_back(xP);
+    controllerStateMsg.data.push_back(yP);
+    controllerStateMsg.data.push_back(vPx);
+    controllerStateMsg.data.push_back(vPy);
+	controllerStateMsg.data.push_back(v);
+	controllerStateMsg.data.push_back(omega);
+    controllerStateMsg.data.push_back(omega_r);
+    controllerStateMsg.data.push_back(omega_l);
     controllerState_publisher.publish(controllerStateMsg);
 }

@@ -1,4 +1,6 @@
-# 8-shaped trajectory
-/eight_traj_gen/a: 1.0
-/eight_traj_gen/w: 1.0
+/eight_traj_gen:
+
+    # 8-shaped trajectory parameters
+    a: 1.0          # amplitude of the trajectory
+    w: 1.0          # ratio (2*pi)/T where T is the duration of each lap
 

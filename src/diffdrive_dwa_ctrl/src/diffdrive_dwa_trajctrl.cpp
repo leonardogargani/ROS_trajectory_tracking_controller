@@ -1,10 +1,10 @@
 #include "diffdrive_dwa_ctrl/diffdrive_dwa_trajctrl.h"
 
 
-
 void diffdrive_dwa_trajctrl::Prepare(void)
 {
 
+	// fetch parameters from parameters server
 	std::string FullParamName;
 
 	FullParamName = ros::this_node::getName() + "/run_period";
@@ -26,16 +26,22 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 	tf2_ros::Buffer tfBuffer(ros::Duration(10));
 	tf2_ros::TransformListener tfListener(tfBuffer);
 
-    	costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
+	// prepare global costmap for DWA
+    costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
 	my_global_costmap.start();
-    	dwa_local_planner::DWAPlannerROS dp;
+
+	// initialize DWA
+    dwa_local_planner::DWAPlannerROS dp;
 	dp.initialize("my_dwa_planner", &tfBuffer, &my_global_costmap);
 
+	// publishers
 	vehicleCommand_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_input", 1);
 	controllerState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/controller_state", 1);
 
+	// service for trajectory generation
 	client = Handle.serviceClient<diffdrive_kin_ctrl::GenerateDesiredPathService>("generate_desired_path_service");
 
+    // query the service server until it gives a response (while waiting, do nothing)
 	while (!client.call(srv)) {
 		ROS_INFO("Waiting for service");
 	}
@@ -45,30 +51,38 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 	std::vector<geometry_msgs::PoseStamped> orig_global_plan;
 	geometry_msgs::PoseStamped tmp_pose_stamped;
 
-	for (uint t = 0; t < srv.response.xref.size(); t+=skipped_goals) {
+	// follow the trajectory by reaching one goal one at a time
+	for (uint t = 0; t < srv.response.xref.size(); t += (1 + skipped_goals)) {
 
+		// take one point of the trajectory from the service response
 		tmp_pose_stamped.pose.position.x = srv.response.xref[t];
 		tmp_pose_stamped.pose.position.y = srv.response.yref[t];
 
-		// yaw goal set to 0 (a value is required by DWA)
+		// yaw of the goal set to 0 (the yaw field is required by DWA)
 		tmp_pose_stamped.pose.orientation.x = 0.0;
 		tmp_pose_stamped.pose.orientation.y = 0.0;
 		tmp_pose_stamped.pose.orientation.z = 0.0;
 		tmp_pose_stamped.pose.orientation.w = 1.0;
 
+		// frame of the goal
 		tmp_pose_stamped.header.frame_id = "map";
+		
+		// push the goal into the global plan (which is just the current goal)
 		orig_global_plan.push_back(tmp_pose_stamped);
 
+		// feed the global plan to DWA
 		if (dp.setPlan(orig_global_plan)) {
 			ROS_INFO("DWA set plan: SUCCESS");
 		} else {
 			ROS_ERROR("DWA set plan: FAILED");
 		}
 		
+		// reach the current goal
 		while(!dp.isGoalReached()) {
 
 			ROS_INFO("Current goal (#%d): x=%f, y=%f", t, tmp_pose_stamped.pose.position.x, tmp_pose_stamped.pose.position.y);
 
+			// fetch the pose of the robot and update the map
 			my_global_costmap.getRobotPose(l_global_pose);
 			my_global_costmap.updateMap();
 
@@ -77,20 +91,17 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 			// compute velocity commands using DWA
 			if (dp.computeVelocityCommands(dwa_cmd_vel) == true) {
 				ROS_INFO("DWA result: v=%.4f, w=%.4f", dwa_cmd_vel.linear.x, dwa_cmd_vel.angular.z);
-
 			} else {
 				ROS_ERROR("DWA compute cmd_vel: FAILED");
 			}
 			
-			// Valori originali: prima di introdurre i parametri
-			//float d = 0.15;
-			//float r = 0.03;
-
+			// compute (w_r,w_l) from (v,w)
 			float omega_r = ((float)dwa_cmd_vel.linear.x + (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
 			float omega_l = ((float)dwa_cmd_vel.linear.x - (float)dwa_cmd_vel.angular.z * d / 2.0) / r;
 
 			ROS_INFO("Velocities of wheels: w_r=%.4f, w_l=%.4f\n", omega_r, omega_l);
 
+			// publish (w_r,w_l) as a message
     		std_msgs::Float64MultiArray vehicleCommandMsg;
 			vehicleCommandMsg.data.push_back(ros::Time::now().toSec());
 			vehicleCommandMsg.data.push_back(omega_r);
@@ -103,25 +114,26 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 			double x = l_global_pose.pose.position.x;
 			double y = l_global_pose.pose.position.y;
 
-			// publish controller state
+			// publish the full state of the controller as a message
 			std_msgs::Float64MultiArray controllerStateMsg;
-			controllerStateMsg.data.push_back(ros::Time::now().toSec()); // 0
-			controllerStateMsg.data.push_back(xref); // 1
-			controllerStateMsg.data.push_back(yref); // 2
-			controllerStateMsg.data.push_back(xref);	// xPref // 3
-			controllerStateMsg.data.push_back(yref);	// yPref // 4
-			controllerStateMsg.data.push_back(x);		// xP // 5
-			controllerStateMsg.data.push_back(y);		// yP // 6
-			controllerStateMsg.data.push_back(0);		// vPx // 7
-			controllerStateMsg.data.push_back(0);		// vPy // 8
-			controllerStateMsg.data.push_back(dwa_cmd_vel.linear.x); // 9
-			controllerStateMsg.data.push_back(dwa_cmd_vel.angular.z); // 10
-			controllerStateMsg.data.push_back(omega_r); // 11
-			controllerStateMsg.data.push_back(omega_l); // 12
+			controllerStateMsg.data.push_back(ros::Time::now().toSec());
+			controllerStateMsg.data.push_back(xref);
+			controllerStateMsg.data.push_back(yref);
+			controllerStateMsg.data.push_back(xref);
+			controllerStateMsg.data.push_back(yref);
+			controllerStateMsg.data.push_back(x);
+			controllerStateMsg.data.push_back(y);
+			controllerStateMsg.data.push_back(0);
+			controllerStateMsg.data.push_back(0);
+			controllerStateMsg.data.push_back(dwa_cmd_vel.linear.x);
+			controllerStateMsg.data.push_back(dwa_cmd_vel.angular.z);
+			controllerStateMsg.data.push_back(omega_r);
+			controllerStateMsg.data.push_back(omega_l);
 			controllerState_publisher.publish(controllerStateMsg);
 
 		}
 
+		// clear the global plan (remove the single current goal)
 		orig_global_plan.clear();
 	}
 

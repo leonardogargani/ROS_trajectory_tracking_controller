@@ -29,24 +29,25 @@ private:
     double d;
     double r;
 
-    void vehicleState_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg);
-
-    void PeriodicTask(void);
-
     diffdrive_kin_fblin* controller;
     double xP, yP, xPref, yPref;
     double vPx, vPy, v, omega, omega_r, omega_l;
 
     std::vector<double> xref_vector, yref_vector, dxref_vector, dyref_vector; 
-
     double prev_error_x = 0;
     double prev_error_y = 0;
 
+    void vehicleState_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr& msg);
+    void PeriodicTask(void);
+
 public:
+
     float RunPeriod;
+
     void Prepare(void);
     void RunPeriodically(float Period);
     void Shutdown(void);
+
 };
 
 #endif /* DIFFDRIVE_KIN_TRAJCTRL_H_ */

@@ -13,6 +13,7 @@
 class diffdrive_kin_sim
 {
 private:
+
     ros::NodeHandle Handle;
 
     ros::Subscriber vehicleCommand_subscriber;
@@ -21,16 +22,16 @@ private:
 
     ros::Publisher odom_publisher;
 
-    /// parameters from ROS parameter server
+    // parameters from the parameters server
     double dt;
     double x0, y0, theta0;
     float d, r;
 
+    diffdrive_kin_ode *simulator;
+
     void vehicleCommand_MessageCallback(const std_msgs::Float64MultiArray::ConstPtr &msg);
 
     void PeriodicTask(void);
-
-    diffdrive_kin_ode *simulator;
 
 public:
     void Prepare(void);

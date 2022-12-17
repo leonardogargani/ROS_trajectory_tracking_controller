@@ -60,7 +60,7 @@ Wait about 30 seconds so that the simulation can be performed.
 
 **[terminal #2]** Visualize the results:
 ```bash
-python plot_result_trajctrl.py diffdrive_kin_trajctrl.bag
+python plot_results.py diffdrive_kin_trajctrl.bag
 ```
 
 ### DWA for differential drive
@@ -86,7 +86,7 @@ Wait about 30 seconds so that the simulation can be performed.
 
 **[terminal #2]** Visualize the results:
 ```bash
-python plot_result_trajctrl.py diffdrive_dwa_trajctrl.bag
+python plot_results.py diffdrive_dwa_trajctrl.bag
 ```
 
 ### Compare two simulations
@@ -95,5 +95,5 @@ If you wish, you can also compare the results of two different simulations.
 
 Given two bag files named bag_1.bag and bag_2.bag, visualize the comparison:
 ```bash
-python plot_result_comparison.py bag_1.bag bag_2.bag
+python plot_comparison.py bag_1.bag bag_2.bag
 ```

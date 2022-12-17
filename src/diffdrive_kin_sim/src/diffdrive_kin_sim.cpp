@@ -7,6 +7,8 @@
 
 void diffdrive_kin_sim::Prepare(void)
 {
+
+    // fetch parameters from parameters server
     std::string FullParamName;
 
     FullParamName = ros::this_node::getName() + "/dt";
@@ -33,14 +35,18 @@ void diffdrive_kin_sim::Prepare(void)
 	if (false == Handle.getParam(FullParamName, r))
 		ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
-    vehicleCommand_subscriber = Handle.subscribe("/robot_input", 1, &diffdrive_kin_sim::vehicleCommand_MessageCallback, this);
+    // publishers
     vehicleState_publisher = Handle.advertise<std_msgs::Float64MultiArray>("/robot_state", 1);
     clock_publisher = Handle.advertise<rosgraph_msgs::Clock>("/clock", 1);
-
     odom_publisher = Handle.advertise<nav_msgs::Odometry>("/odom", 1);
 
+    // subscribers
+    vehicleCommand_subscriber = Handle.subscribe("/robot_input", 1, &diffdrive_kin_sim::vehicleCommand_MessageCallback, this);
+    
+    // create and initialize the simulator
     simulator = new diffdrive_kin_ode(dt);
     simulator->setInitialState(x0, y0, theta0);
+    simulator->setRobotDimensions(d, r);
 
     ROS_INFO("Node %s ready to run.", ros::this_node::getName().c_str());
 }
@@ -75,26 +81,28 @@ void diffdrive_kin_sim::vehicleCommand_MessageCallback(const std_msgs::Float64Mu
 }
 
 
+// 
 void diffdrive_kin_sim::PeriodicTask(void)
 {
-    simulator->integrate();
 
+    // perform an integration step and fetch the new state
+    simulator->integrate();
     double x, y, theta;
     simulator->getPose(x, y, theta);
 
+    // fetch (w_r,w_l) of the robot
     double omega_r_act, omega_l_act;
     simulator->getCommands(omega_r_act, omega_l_act);
 
     double time;
     simulator->getTime(time);
 
-    // print simulation time every 5 sec
-    if (std::fabs(std::fmod(time, 5.0)) < 1.0e-3)
-    {
+    // print simulation time every 5 seconds
+    if (std::fabs(std::fmod(time, 5.0)) < 1.0e-3) {
         ROS_INFO("Simulator time: %d seconds", (int) time);
     }
 
-    // publish vehicle state
+    // publish vehicle state as a message
     std_msgs::Float64MultiArray vehicleStateMsg;
     vehicleStateMsg.data.push_back(time);
     vehicleStateMsg.data.push_back(x);
@@ -104,19 +112,18 @@ void diffdrive_kin_sim::PeriodicTask(void)
     vehicleStateMsg.data.push_back(omega_l_act);
     vehicleState_publisher.publish(vehicleStateMsg);
 
-    // publish an Odometry message on the odom topic using: x, y, theta(?), v & w (from omega_r_act, omega_l_act, d, r)
-    //double r = 0.03;
-    //double d = 0.15;
-    
+    // compute (v,w) from (w_r,w_l)
     double v_r = omega_r_act * r;
     double v_l = omega_l_act * r;
     double v = (v_r + v_l) / 2.0;
     double w = (v_r - v_l) / d;
 
+    // transform theta into a quaternion
     tf2::Quaternion quaternion; 
     quaternion.setRPY(0, 0, theta); 
     quaternion = quaternion.normalize();
 
+    // publish an Odometry message on the odom topic (to accommodate DWA needs)
     nav_msgs::Odometry odometry_message;
     odometry_message.header.frame_id = "odom";
     odometry_message.child_frame_id = "base_link";
@@ -129,7 +136,6 @@ void diffdrive_kin_sim::PeriodicTask(void)
     odometry_message.pose.pose.orientation.w = quaternion.w();
     odometry_message.twist.twist.linear.x = v;
     odometry_message.twist.twist.angular.z = w;
-
     odom_publisher.publish(odometry_message);
 
     // publish clock

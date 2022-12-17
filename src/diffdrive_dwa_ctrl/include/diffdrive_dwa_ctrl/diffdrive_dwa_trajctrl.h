@@ -27,14 +27,18 @@ private:
 
     // create twist message to be populated by the local planner
     geometry_msgs::Twist dwa_cmd_vel;
+    
     geometry_msgs::PoseStamped l_global_pose;
 
     void PeriodicTask(void);
 
 public:
+
+    // parameters fetched from yaml
     float RunPeriod;
     int skipped_goals;
     float d, r;
+
     void Prepare(void);
     void RunPeriodically(float Period);
     void Shutdown(void);

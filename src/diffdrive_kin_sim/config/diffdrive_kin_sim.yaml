@@ -1,11 +1,16 @@
-# simulator configuration parameters
-/diffdrive_kin_sim/dt: 0.001                   # integration step
+/diffdrive_kin_sim:
 
-# vehicle initial state
-/diffdrive_kin_sim/x0: 0.0                     # initial position x
-/diffdrive_kin_sim/y0: 0.0                     # initial position y
-/diffdrive_kin_sim/theta0: 0.0                 # initial heading
+    # integration step
+    dt: 0.001
 
-/diffdrive_kin_sim/d: 0.15                # distance between the two wheels
-/diffdrive_kin_sim/r: 0.03                # radius of the two wheels
+    # robot initial state
+    x0: 0.0                     # position x
+    y0: 0.0                     # position y
+    theta0: 0.0                 # heading
+
+    # distance between the two wheels
+    d: 0.15
+
+    # radius of the two wheels
+    r: 0.03
 

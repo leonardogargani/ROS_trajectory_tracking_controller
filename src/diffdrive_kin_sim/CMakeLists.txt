@@ -9,19 +9,16 @@ find_package(catkin REQUIRED COMPONENTS
     tf2_ros
 )
 
-
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES diffdrive_kin_sim
     CATKIN_DEPENDS roscpp std_msgs nav_msgs tf2_ros
 )
 
-
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
 )
-
 
 add_executable(diffdrive_kin_sim src/diffdrive_kin_sim.cpp src/diffdrive_kin_sim_node.cpp src/diffdrive_kin_ode.cpp)
 target_link_libraries(diffdrive_kin_sim ${catkin_LIBRARIES})

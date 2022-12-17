@@ -30,7 +30,9 @@ controllerState_angularvelocity_l = []
 controllerState_xPerr = []
 controllerState_yPerr = []
 
+# Look into only relevant topics
 for topic, msg, t in bag.read_messages():
+
 	if topic == "/robot_state":
 		vehicleState_time.append(msg.data[0])
 		vehicleState_x.append(msg.data[1])
@@ -58,9 +60,7 @@ for topic, msg, t in bag.read_messages():
 
 bag.close()
 
-# Plot data
-
-# Plot eight-shaped reference trajectory and actual trajectory
+# Plot eight-shaped reference trajectory and real trajectory
 fig_traj, ax_traj = plt.subplots()
 fig_traj.canvas.set_window_title('Trajectory')
 ax_traj.plot(vehicleState_x,vehicleState_y, label="actual")

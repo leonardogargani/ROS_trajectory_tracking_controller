@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 
+// constructor
 diffdrive_kin_fblin::diffdrive_kin_fblin(double P_dist)
 {
     this->P_dist  = P_dist;
@@ -15,12 +16,14 @@ diffdrive_kin_fblin::diffdrive_kin_fblin(double P_dist)
 }
 
 
+// destructor
 diffdrive_kin_fblin::~diffdrive_kin_fblin()
 {
-    // destructor: do nothing
+    // do nothing
 }
 
 
+// compute (v,w) starting from vPx and vPy
 void diffdrive_kin_fblin::control_transformation(double vPx, double vPy, double& v, double& omega)
 {
     v = vPx * std::cos(theta) + vPy * std::sin(theta);
@@ -28,6 +31,7 @@ void diffdrive_kin_fblin::control_transformation(double vPx, double vPy, double&
 }
 
 
+// compute (xP,yP) starting from x and y
 void diffdrive_kin_fblin::output_transformation(double& xP, double& yP)
 {
     xP = x + P_dist * std::cos(theta);
@@ -35,6 +39,7 @@ void diffdrive_kin_fblin::output_transformation(double& xP, double& yP)
 }
 
 
+// compute (xPref,yPref) starting from xref and yref
 void diffdrive_kin_fblin::reference_transformation(double xref, double yref, double& xPref, double& yPref)
 {
     xPref = xref + P_dist * std::cos(theta);

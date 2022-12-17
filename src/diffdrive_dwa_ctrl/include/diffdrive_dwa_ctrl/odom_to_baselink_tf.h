@@ -12,6 +12,7 @@
 class odom_to_baselink_tf
 {
 	private:
+
 		ros::NodeHandle Handle;
 		tf2_ros::TransformBroadcaster br;
 		geometry_msgs::TransformStamped transformStamped;
@@ -20,7 +21,9 @@ class odom_to_baselink_tf
 		void PeriodicTask();
 		
 	public:
+
 		float RunPeriod;
+		
 		void Prepare(void);
 		void RunPeriodically(float Period);
 		void Shutdown(void);

@@ -10,22 +10,21 @@ find_package(catkin REQUIRED COMPONENTS
     diffdrive_kin_ctrl
     message_generation
     base_local_planner
+    dwa_local_planner
 )
 
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES diffdrive_dwa_ctrl
-    CATKIN_DEPENDS roscpp std_msgs tf2_ros costmap_2d diffdrive_kin_ctrl base_local_planner
+    CATKIN_DEPENDS roscpp std_msgs tf2_ros costmap_2d diffdrive_kin_ctrl base_local_planner dwa_local_planner
 )
-
 
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
 )
 
-
-add_executable(diffdrive_dwa_trajctrl src/diffdrive_dwa_trajctrl.cpp src/diffdrive_dwa_trajctrl_node.cpp src/dwa_planner.cpp src/dwa_planner_ros.cpp)
+add_executable(diffdrive_dwa_trajctrl src/diffdrive_dwa_trajctrl.cpp src/diffdrive_dwa_trajctrl_node.cpp)
 target_link_libraries(diffdrive_dwa_trajctrl ${catkin_LIBRARIES})
 add_dependencies(diffdrive_dwa_trajctrl ${catkin_EXPORTED_TARGETS})
 

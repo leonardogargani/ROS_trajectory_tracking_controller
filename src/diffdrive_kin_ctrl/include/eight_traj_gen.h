@@ -11,6 +11,7 @@
 class eight_traj_gen
 {
 private:
+
     bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request &req,
                                 diffdrive_kin_ctrl::GenerateDesiredPathService::Response &res);
 
