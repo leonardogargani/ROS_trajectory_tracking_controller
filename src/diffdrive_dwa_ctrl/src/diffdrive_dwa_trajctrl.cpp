@@ -137,6 +137,9 @@ void diffdrive_dwa_trajctrl::Prepare(void)
 		orig_global_plan.clear();
 	}
 
+	// shutdown the simulator when the trajectory has been fully ran
+	system("rosnode kill diffdrive_kin_sim");
+
 }
 
 

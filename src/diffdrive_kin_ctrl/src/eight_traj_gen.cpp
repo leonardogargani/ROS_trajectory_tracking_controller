@@ -12,8 +12,8 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
 
     ros::NodeHandle Handle;
 
-    double a;
-    double w;
+    float a, w;
+    float trajectory_length, increment_step;
 
     FullParamName = ros::this_node::getName() + "/a";
     if (false == Handle.getParam(FullParamName, a))
@@ -23,13 +23,21 @@ bool GenerateDesiredPath(diffdrive_kin_ctrl::GenerateDesiredPathService::Request
     if (false == Handle.getParam(FullParamName, w))
         ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
 
+    FullParamName = ros::this_node::getName() + "/trajectory_length";
+    if (false == Handle.getParam(FullParamName, trajectory_length))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
+    FullParamName = ros::this_node::getName() + "/increment_step";
+    if (false == Handle.getParam(FullParamName, increment_step))
+        ROS_ERROR("Node %s: unable to retrieve parameter %s.", ros::this_node::getName().c_str(), FullParamName.c_str());
+
     float t = 0;
 
     // generate eight-shaped trajectory
-    while(t < 10) {
+    while(t < trajectory_length) {
         res.xref.push_back(a * std::sin(w * t));
         res.yref.push_back(a * std::sin(w * t) * std::cos(w * t));
-    	t += 0.001;
+    	t += increment_step;
     }
 
 	ROS_INFO("Size in traj_gen: %lu", res.xref.size());

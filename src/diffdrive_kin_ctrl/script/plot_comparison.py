@@ -77,7 +77,7 @@ for bag in [bag_1, bag_2]:
 	bag.close()
 	
 	# Plot eight-shaped reference trajectory and actual trajectory
-	fig_traj.canvas.set_window_title('Trajectory')
+	fig_traj.canvas.set_window_title('Trajectory - comparison')
 	ax_traj.plot(vehicleState_x,vehicleState_y, label="actual " + bag_name)
 	ax_traj.plot(vehicleState_x[0],vehicleState_y[0],'ro')
 	ax_traj.plot(vehicleState_x[len(vehicleState_x)-1],vehicleState_y[len(vehicleState_x)-1],'rx')
@@ -89,7 +89,7 @@ for bag in [bag_1, bag_2]:
 	ax_traj.set(xlabel='x [m]', ylabel='y [m]')
 	
 	# Plot velocities (linear and angular) produced by dwa_local_planner
-	fig_dwa_vel.canvas.set_window_title('DWA Velocities')
+	fig_dwa_vel.canvas.set_window_title('Linear and Angular Velocities - comparison')
 	ax_dwa_vel_1.plot(controllerState_time,controllerState_linearvelocity, label=bag_name)
 	ax_dwa_vel_1.set_ylim(-0.01,0.2)
 	ax_dwa_vel_1.set(xlabel='Time [s]', ylabel="Linear velocity [m/s]")
@@ -101,7 +101,7 @@ for bag in [bag_1, bag_2]:
 	
 	
 	# Plot right and left wheels' velocities
-	fig_wvel.canvas.set_window_title('Wheels Velocities')
+	fig_wvel.canvas.set_window_title('Wheels Velocities - comparison')
 	ax_wvel_1.plot(vehicleState_time,vehicleState_angularvelocity_r, label=bag_name)
 	ax_wvel_1.set(xlabel='Time [s]', ylabel='Right angular velocity [rad/s]')
 	ax_wvel_1.set_ylim(-1.0,8.0)
@@ -113,7 +113,7 @@ for bag in [bag_1, bag_2]:
 	
 	
 	# Plot actual position of the robot and reference position
-	fig_pose.canvas.set_window_title('Pose Comparison')
+	fig_pose.canvas.set_window_title('Pose - comparison')
 	ax_pose_1.plot(vehicleState_time,vehicleState_x, label=bag_name)
 	#ax_pose_1.plot(controllerState_time,controllerState_xref, 'k--', label="x ref")
 	ax_pose_1.set(xlabel='Time [s]', ylabel='x [m]')
@@ -127,7 +127,7 @@ for bag in [bag_1, bag_2]:
 	ax_pose_3.legend(loc='best')
 	
 	# Plot position error
-	fig_err.canvas.set_window_title('Position Error')
+	fig_err.canvas.set_window_title('Position Error - comparison')
 	ax_err_1.plot(controllerState_time,controllerState_xPerr, label=bag_name)
 	ax_err_1.set(xlabel='Time [s]', ylabel='x position error [m]')
 	ax_err_1.set_ylim(-0.25,0.25)

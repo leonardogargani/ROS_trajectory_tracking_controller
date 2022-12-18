@@ -108,9 +108,10 @@ void diffdrive_kin_trajctrl::PeriodicTask(void)
     long unsigned int t_ns = ros::Time::now().toNSec();
     int t = (int)(t_ns / 10000000);
 
-    // handle the end of the desired trajectory: in such a case do nothing
+    // handle the end of the desired trajectory: in such a case kill the simulator
     if (t + 1 > xref_vector.size()) {
         ROS_INFO("Path vector totally consumed");
+        system("rosnode kill diffdrive_kin_sim");
         ros::shutdown();
         return;
     }

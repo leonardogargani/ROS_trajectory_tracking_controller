@@ -72,7 +72,7 @@ ax_traj.legend(loc='best')
 
 # Plot velocities (linear and angular) produced by dwa_local_planner
 fig_dwa_vel, (ax_dwa_vel_1, ax_dwa_vel_2) = plt.subplots(2)
-fig_dwa_vel.canvas.set_window_title('DWA Velocities')
+fig_dwa_vel.canvas.set_window_title('Linear and Angular Velocities')
 ax_dwa_vel_1.plot(controllerState_time,controllerState_linearvelocity)
 ax_dwa_vel_1.set_ylim(-0.01,0.2)
 ax_dwa_vel_1.set(xlabel='Time [s]', ylabel='Linear velocity [m/s]')
@@ -90,7 +90,7 @@ ax_wvel_2.set(xlabel='Time [s]', ylabel='Left angular velocity [rad/s]')
 
 # Plot actual position of the robot and reference position
 fig_pose, (ax_pose_1, ax_pose_2, ax_pose_3) = plt.subplots(3)
-fig_pose.canvas.set_window_title('Pose Comparison')
+fig_pose.canvas.set_window_title('Pose')
 ax_pose_1.plot(vehicleState_time,vehicleState_x, label="x act")
 ax_pose_1.plot(controllerState_time,controllerState_xref, 'r--', label="x ref")
 ax_pose_1.set(xlabel='Time [s]', ylabel='x [m]')

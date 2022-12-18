@@ -4,4 +4,4 @@
     run_period: 0.01
 
     # number of points in the trajectory skipped when fed to DWA
-    skipped_goals: 0
+    skipped_goals: 15

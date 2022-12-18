@@ -1,6 +1,7 @@
 /eight_traj_gen:
 
     # 8-shaped trajectory parameters
-    a: 1.0          # amplitude of the trajectory
-    w: 1.0          # ratio (2*pi)/T where T is the duration of each lap
-
+    a: 1.0                      # amplitude of the trajectory
+    w: 1.0                      # ratio (2*pi)/T where T is the duration of each lap
+    trajectory_length: 6.5      # length of the trajectory (t in the formula)
+    increment_step: 0.001       # increment step (step when discretizing the trajectory)

@@ -481,10 +481,12 @@ screen rqt\_graph di quando usiamo il nostro controllore e di quando usiamo dwa 
 
 
 %-----------------------------------------------------------------------------
-%                               PARAMETERS TUNING
+%                               PARAMETERS
 %-----------------------------------------------------------------------------
 
 \section{Parameters}
+
+\subsection{List of parameters}
 
 Parameters have a crucial role for the correct functioning of the nodes introduced above.\\
 
@@ -500,7 +502,9 @@ In this section the most relevant ones are explained:\\
     \item \texttt{eight\_traj.yaml}:
         \begin{itemize}
             \item \texttt{a}, amplitude of the eight-shaped trajectory;
-            \item \texttt{w}, ratio $\frac{2 \cdot \pi }{T}$ where $T$ is the time duration of each lap.\\
+            \item \texttt{w}, ratio $\frac{2 \cdot \pi }{T}$ where $T$ is the time duration of each lap;
+            \item \texttt{trajectory\_length}, length of the eight-shaped trajectory;
+            \item \texttt{increment\_step}, increment step when discretizing the trajectory.\\
         \end{itemize}
 
     \item \texttt{diffdrive\_kin\_trajctrl.yaml}:
@@ -527,7 +531,7 @@ In this section the most relevant ones are explained:\\
             \item \texttt{path\_distance\_bias}, weighting for how much the controller should stay close to the given path;
             \item \texttt{goal\_distance\_bias}, weighting for how much the controller should attempt to reach its local goal;
             \item \texttt{xy\_goal\_tolerance}, tolerance (in meters) in the x \& y distance when reaching a goal;
-            \item \texttt{yaw\_goal\_tolerance}, tolerance (in radians) in yaw/rotation when reaching a goal .\\
+            \item \texttt{yaw\_goal\_tolerance}, tolerance (in radians) in yaw/rotation when reaching a goal.\\
         \end{itemize}
 
 \end{itemize}
@@ -763,9 +767,9 @@ python plot_results.py diffdrive_dwa_trajctrl.bag
 
 If you wish, you can also compare the results of two different simulations.
 
-Given two bag files named bag\_1.bag and bag\_2.bag, visualize the comparison:
+Given the two bag files named diffdrive\_dwa\_trajctrl.bag and diffdrive\_kin\_trajctrl.bag, visualize the comparison:
 \begin{lstlisting}
-python plot_comparison.py bag_1.bag bag_2.bag
+python plot_comparison.py diffdrive\_dwa\_trajctrl.bag diffdrive\_kin\_trajctrl.bag
 \end{lstlisting}
 
 
