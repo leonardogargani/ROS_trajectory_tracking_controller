@@ -337,7 +337,7 @@ Given those it simulates the movement of the robot and publishes the new positio
 
 The actual simulator is an object of the \texttt{diffdrive\_kin\_ode} class, which is initialized as follow:
 \begin{lstlisting}
-    simulator = new diffdrive_kin_ode(dt);
+simulator = new diffdrive_kin_ode(dt);
 \end{lstlisting}
 
 and contains the integration logic to update the robot pose.
@@ -374,7 +374,11 @@ The implementation of DWA and all the functions that have been used is provided 
  \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}
 \end{itemize}
 
-(add navigation stack image)
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{other/navigation_stack.png}
+    \caption{ROS Navigation Stack.}
+\end{figure}
 
 \subsubsection{\texttt{odom\_to\_baselink\_tf\_node}}
 
@@ -389,7 +393,19 @@ Here is a list with a brief description of all the frames:
  \item \texttt{base\_link}, which represrents reference system moving around together with the robot.
 \end{itemize}
 
-(add tf\_tree image)
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{ros_tools/rqttftree_custom.png}
+    \caption{\texttt{rqt\_tf\_tree} of custom controller architecure.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{ros_tools/rqttftree_dwa.png}
+    \caption{\texttt{rqt\_tf\_tree} of DWA architecure standalone.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 \subsection{Topics}
 
@@ -477,7 +493,19 @@ Here is a list with a brief description of all the launch files:\\
 \end{itemize}
 
 
-screen rqt\_graph di quando usiamo il nostro controllore e di quando usiamo dwa (messe di fianco)
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.2]{ros_tools/rqtgraph_custom.png}
+    \caption{\texttt{rqt\_graph} of custom controller architecure.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{ros_tools/rqtgraph_dwa.png}
+    \caption{\texttt{rqt\_graph} of DWA architecure standalone.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI RAGGRUPPATE]
 
 
 %-----------------------------------------------------------------------------
@@ -548,7 +576,11 @@ $$y = \texttt{a} \cdot \sin (\texttt{w} \cdot t)\cdot \cos (\texttt{w} \cdot t)$
 In the equations above it is possible to tune two parameters: \texttt{a} and \texttt{w}.
 In the presented implementation they are set to \texttt{a} = 1 and \texttt{w} = 1.
 
-[INSERIRE IMMAGINI CON VALORI NETTAMENTE DIVERSI DI A E W] NOSTRA + UNO DIVERSO E CAPIRE COSA FA W] \\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{different_params/dwa_a3/Trajectory.png}
+    \caption{Trajectory when \texttt{a = 3.0}.}
+\end{figure}
 
 \subsubsection{Custom controller}
 
@@ -558,12 +590,45 @@ The outer tracking law is based on a PID controller with tunable parameters: $K_
 The step response when using a PID controller is computed as follows:
 $$ {\displaystyle u(t)=K_{\text{p}}e(t)+K_{\text{i}}\int _{0}^{t}e(\tau )\,\mathrm {d} \tau +K_{\text{d}}{\frac {\mathrm {d} e(t)}{\mathrm {d} t}}} $$ \\
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{other/PID_parameters_description.png}
+    \caption{PID parameters tuning.}
+\end{figure}
+
 Various tests have been carried out to achieve the optimal behaviour, in particular to minimize the overshoot and
 the settling time while keeping an overall good stability in the PID response.\\
 
 In the presented implementation they are set to $K_p = 0.8$, $K_i = 0.8$, $K_d = 0$.
 
-[RIPORTARE IMMAGINE TABELLA WIKI RIFATTA DA NOI (?) + UN PO DI ESEMPI NOSTRI]
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/custom_kp02/Trajectory.png}
+    \caption{Trajectory when $K_p=0.2, K_p=0.8, K_p=0.0$.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/custom_kp02/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities when $K_p=0.2, K_p=0.8, K_p=0.0$.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/custom_ki32kd10/Trajectory.png}
+    \caption{Trajectory when $K_p=0.8, K_p=3.2, K_p=1.0$.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/custom_ki32kd10/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities when $K_p=0.8, K_p=3.2, K_p=1.0$.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
+
 
 \subsubsection{DWA}
 
@@ -573,9 +638,45 @@ Due to the large number of those, they are very close to each other. This makes 
 a new goal is set in DWA. For this reason it is best to skip some of the points in the trajectory.
 This is accomplished through the \texttt{skipped\_goals} parameters, which is set to 15.\\
 
-[IMMAGINI UNA CON IL NOSTRO VALORE E UNO VALORE ALTO E METTERNE UNO CON VALORE MINIMO E CERCARE DI MOTIVARE
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals0/Trajectory.png}
+    \caption{Trajectory when \texttt{skipped\_goals = 0}.}
+\end{figure}
 
-... (number of points when discretizing the trajectory: t+=0.001... MAKE IT PARAMETER!!)\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{different_params/dwa_skippedgoals0/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities when \texttt{skipped\_goals = 0}.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals0/Position_Error.png}
+    \caption{Position error when \texttt{skipped\_goals = 0}.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals150/Trajectory.png}
+    \caption{Trajectory when \texttt{skipped\_goals = 150}.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals150/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities when \texttt{skipped\_goals = 150}.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals150/Position_Error.png}
+    \caption{Position error when \texttt{skipped\_goals = 150}.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 In order to simulate a differential drive robot, the following parameters have been set:
 
@@ -608,15 +709,107 @@ an approximation of the trajectory.
 \section{Experimental Results}
 
 - immagini commentate
-    - script singolo su bag controllore custom
-    - script singolo su bag dwa
-    - script confronto su bag1 + bag2
+    - script singolo su bag controllore custom (fatto)
+    - script singolo su bag dwa (fatto)
+    - script confronto su bag1 + bag2 (fatto)
 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{kin_screenshots/Trajectory.png}
+    \caption{Trajectory in the custom controller.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{kin_screenshots/Pose.png}
+    \caption{Pose in the custom controller.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{kin_screenshots/Position_Error.png}
+    \caption{Position error in the custom controller.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{kin_screenshots/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities in the custom controller.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{kin_screenshots/Wheels_Velocities.png}
+    \caption{Wheels velocities in the custom controller.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{dwa_screenshots/Trajectory.png}
+    \caption{Trajectory in DWA.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{dwa_screenshots/Pose.png}
+    \caption{Pose in DWA.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{dwa_screenshots/Position_Error.png}
+    \caption{Position error in DWA.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{dwa_screenshots/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities in DWA.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{dwa_screenshots/Wheels_Velocities.png}
+    \caption{Wheels velocities in DWA.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 
-... (plots of the bags + plots of the comparison with the custom script)
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{comparison/Trajectory.png}
+    \caption{Trajectory comparison between the two approaches.}
+\end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{comparison/Pose.png}
+    \caption{Pose comparison between the two approaches.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{comparison/Position_Error.png}
+    \caption{Position error comparison between the two approaches.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{comparison/Linear_and_Angular_Velocities.png}
+    \caption{Linear and angular velocities comparison between the two approaches.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{comparison/Wheels_Velocities.png}
+    \caption{Wheels velocities comparison between the two approaches.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 
 %-----------------------------------------------------------------------------
@@ -631,7 +824,10 @@ During the tuning phase of DWA a trial and error approach has been carried out, 
 a few parameters are named differently in the in the ROS library with respect to the ROS Wiki.
 
 Such renaming was not advertised by any error nor warning, so it was difficult to spot where the problem
-was when changing parameters and seeing no effect in the robot behaviour.\\
+was when changing parameters and seeing no effect in the robot behaviour.
+
+In fact, the warning would be raised only if DWA was instantiated inside the \texttt{nav\_core} architecture,
+which is not the case when using DWA standalone.\\
 
 The following pair of parameters is an example:
 \begin{itemize}
@@ -639,7 +835,19 @@ The following pair of parameters is an example:
  \item \texttt{max\_rot\_vel} renamed into \texttt{max\_vel\_theta}.\\
 \end{itemize}
 
-(put screen of the doc + screen of the comments in the library)
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{other/deprecated_parameters_description.png}
+    \caption{ROS Wiki containing deprecated parameters.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{other/deprecated_parameters_warning.png}
+    \caption{ROS library source code warning about deprecated parameters.}
+\end{figure}
+
+[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 \subsubsection{DWA used outside of ROS Navigation Stack}
 
@@ -654,8 +862,11 @@ Unfortunately there is no documentation for this kind of setup on the ROS Wiki, 
 refer to some deprecated libraries (i.e. \texttt{tf} is the one mentioned in the example, while \texttt{tf2} is the actual
 supported one).
 
-(foto di navigation stack + confronto con foto della nostra architettura)
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{other/nav_core.png}
+    \caption{ROS \texttt{nav\_core} pachage architecture.}
+\end{figure}
 \subsubsection{Multiple goals along the trajectory}
 
 In a standard scenario DWA needs only the one final goal and computes the trajectory on its own.
@@ -681,8 +892,6 @@ In order to install ROS and all the required packages, execute:
 sudo apt instal ros-melodic-desktop-full
 sudo apt install ros-melodic-costmap-2d ros-melodic-base-local-planner ros-melodic-dwa-local-planner ros-melodic-map-server
 \end{lstlisting}
-
-
 
 
 \subsection{Initial set up and compilation}
