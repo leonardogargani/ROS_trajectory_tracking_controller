@@ -52,6 +52,7 @@
 \usepackage[skins]{tcolorbox} % Create coloured boxes (e.g. the one for the key-words)
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{multicol}
 
 \renewcommand{\footnotesize}{\scriptsize}
 
@@ -102,6 +103,7 @@
 \newcommand{\course}{Computer Science and Engineering}
 \newcommand{\supervisor}{Luca Bascetta}
 \newcommand{\YEAR}{2022/2023}
+
 \renewcommand{\abstract}{
 
 The Dynamic Window Approach (DWA) is an online collision avoidance strategy for mobile robots.
@@ -128,79 +130,131 @@ Then, a further comparison is made between the implementation above and a custom
 
 
 
-%-----------------------------------------------------------------------------
-%                               INTRODUCTION
-%-----------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------------------------------------------
+%                                           INTRODUCTION
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Introduction}
 
-This project aims at helping a student attending the Control of Mobile Robots course by providing a simple case study which compares the behavior of a robot controlled with DWA and of one controlled with a trajectory tracking control law.\\
+%------------------------------------------ PROJECT OVERVIEW ------------------------------------------
 
-The software simulates the robot, using its kinematic model, and implements the two controllers. Everything runs on ROS Melodic on Ubuntu 18.04 LTS.
+\subsection{Project overview}
+
+This project aims at comparing the behavior of a robot when controlled in two different ways: first with a
+trajectory tracking controller, and then with the Dynamic Window Approach (DWA).\\
+
+The software performs a simulation of a differential drive robot, using its kinematic model, and implements
+the two controllers. To test the quality of the results, an eight-shaped trajectory has been chosen as the
+reference one to be followed.\\
+
+Everything runs on \textit{ROS Melodic} on \textit{Ubuntu 18.04}.
+
+%------------------------------------------ BACKGROUND ON DIFFERENTIAL DRIVE ------------------------------------------
+
+\subsection{Background on differential drive}
+
+%$$ \dot{x} = \frac{v_r + v_l}{2} \cos{\theta} $$
+%$$ \dot{y} = \frac{v_r + v_l}{2} \sin{\theta} $$
+%$$ \dot{\theta} = \frac{v_r - v_l}{L} $$
+
+\begin{multicols}{2}
+    $$
+    \begin{cases}
+        \omega_R = {\frac {v + \omega \cdot d/2}{r}} \\
+        \omega_L = {\frac {v - \omega \cdot d/2}{r}}
+    \end{cases}
+    $$
+    \break
+    \begin{equation}
+        b=c
+    \end{equation}
+\end{multicols}
 
 
 
-%-----------------------------------------------------------------------------
-%                               DWA OVERVIEW
-%-----------------------------------------------------------------------------
+
+
+
+%--------------------------------------------------------------------------------------------------------------
+%                                               DWA OVERVIEW
+%--------------------------------------------------------------------------------------------------------------
 
 \section{DWA overview}
 
-This section is basically a brief overview of the Dynamic Window Approach (DWA) as presented in the original paper\footnote{\href{https://www.ri.cmu.edu/pub_files/pub1/fox_dieter_1997_1/fox_dieter_1997_1.pdf}{D. Fox, W. Burgard, S. Thrun (1997) \textit{The Dynamic Window Approach to Collision Avoidance}}}.\\
+This section contains a brief overview of DWA as presented in the original paper\footnote{\href{https://www.ri.cmu.edu/pub_files/pub1/fox_dieter_1997_1/fox_dieter_1997_1.pdf}{D. Fox, W. Burgard, S. Thrun (1997) \textit{The Dynamic Window Approach to Collision Avoidance}}}.
+Basically, it is an approach to perform collision avoidance in mobile robots, while dealing with the constraints
+imposed by limited velocities and accelerations.\\
 
-DWA is an approach to perform collision avoidance in mobile robots, while dealing with the constraints imposed by limited velocities and accelerations.
+Given a certain goal point to be reached by the robot, DWA tries to find the optimal linear and angular velocities
+to go there. This is mainly done in two steps: search space reduction and objective function optimization.
 
-\subsection{Search Space}
+
+%------------------------------------------ SEARCH SPACE REDUCTION ------------------------------------------
+
+\subsection{Search space reduction}
 
 This approach consists in reducing the search space to those velocities which are reachable under the dynamic constraints and are safe with respect to obstacles.
 
-One of the core concepts of DWA is the so-called search space. It can be seen as a two-dimensional space where each point represents a tuple $(v, \omega)$ of velocities where $v$ is the linear velocity of the robot and $\omega$ is the angular velocity.\\
+One of the core concepts of DWA is the so-called search space. It can be seen as a two-dimensional space where
+each point represents a tuple $(v, \omega)$ of velocities where $v$ is the linear velocity of the robot and
+$\omega$ is the angular velocity.\\
 
-The search space of the possible velocities is further reduced in other two steps.
+An initial reduction of this space is obtained by searching only in circular trajectories of the robot.
 
-First, we consider only all the admissible velocities, which correspond to the velocities allowing the robot to stop before it reaches the closest obstacle on the corresponding curvature.
+In fact, at each time instant the velocities $(v, \omega)$ are considered constant for the next \textit{n}
+time intervals making up the simulated trajectory. The search is repeated after each time interval.\\
 
-Then, we leave out all the velocities that can't be reached within a short time interval
-given the limited accelerations of the robot.\\
+The search space is further reduced by considering only all the admissible velocities, which correspond to
+the velocities allowing the robot to stop before it reaches the closest obstacle.
 
-Starting from a sequence of n future time intervals, DWA performs a forward simulation of different values for the velocities keeping them constant for those time intervals.
+Finally, given the limited accelerations of the robot, all the velocities that can't be reached within a short
+time interval are left out too.\\
 
-As a result, the simulated trajectories are all circular arcs, and the most suitable one (we will go into details when talking about the cost function) is selected.
 
-\subsection{Optimization}
+%------------------------------------------ OBJECTIVE FUNCTION OPTIMIZATION ------------------------------------------
 
-The remaining velocities are fed into the following objective function to maximize it:
+\subsection{Objective function optimization}
+
+The remaining velocities are fed into the following objective function to be maximized:
 $$ G(v, \omega) = \sigma(\alpha \cdot heading(v, \omega) + \beta \cdot dist(v, \omega) + \gamma \cdot vel(v, \omega)) $$
 
 This function trades off the following aspects:
 \begin{itemize}
- \item \textit{heading}, which is a measure of progress towards the goal location;
- \item \textit{dist}, which is the distance to the closest obstacle on the trajectory;
- \item \textit{vel}, which is the forward velocity of the robot.\\
+    \item \textit{heading}, which is a measure of progress towards the goal location;
+    \item \textit{dist}, which is the distance to the closest obstacle on the trajectory;
+    \item \textit{vel}, which is the forward velocity of the robot.\\
 \end{itemize}
 
-Each one of the three quantities above is multiplied to its own weight ($\alpha$, $\beta$, $\gamma$), and the resulting quantity is passed to a smoothing function ($\sigma$).
+Each one of the three quantities above is multiplied to its own weight ($\alpha$, $\beta$, $\gamma$), and the resulting quantity is passed to a smoothing function ($\sigma$).\\
+
+At this point the tuple $(v, \omega)$ leading to the highest score is chosen and the robot picks those velocities.\\
 
 
-%-----------------------------------------------------------------------------
-%                               DWA IN ROS
-%-----------------------------------------------------------------------------
+
+
+%--------------------------------------------------------------------------------------------------------------
+%                                                DWA IN ROS
+%--------------------------------------------------------------------------------------------------------------
 
 \section{DWA in ROS}
 
+
+%------------------------------------------ FROM ROS WIKI ------------------------------------------
+
 \subsection{From ROS wiki}
 
-DWA is already implemented in ROS in the \texttt{dwa\_local\_planner}\footnote{\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}} package.
+DWA is already implemented in ROS in the \texttt{dwa\_local\_planner}\footnote{\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}} package.\\
 
 As stated in the ROS Wiki:
 \begin{quote}
- ``The dwa\_local\_planner package provides a controller that drives a mobile base in the plane. This controller serves to connect the path planner to the robot. Using a map, the planner creates a kinematic trajectory for the robot to get from a start to a goal location. Along the way, the planner creates, at least locally around the robot, a value function, represented as a grid map. This value function encodes the costs of traversing through the grid cells. The controller's job is to use this value function to determine dx,dy,dtheta velocities to send to the robot.''
+ ``This package provides a controller that drives a mobile base in the plane. This controller serves to connect the path planner to the robot. Using a map, the planner creates a kinematic trajectory for the robot to get from a start to a goal location. Along the way, the planner creates, at least locally around the robot, a value function, represented as a grid map. This value function encodes the costs of traversing through the grid cells. The controller's job is to use this value function to determine dx,dy,dtheta velocities to send to the robot.''
 \end{quote}
 
-This package is ought to be used as the planner for \texttt{move\_base}\footnote{\href{https://wiki.ros.org/move\_base}{https://wiki.ros.org/move\_base}} within the navigation stack.
+This package is ought to be used as the planner for \texttt{move\_base}\footnote{\href{https://wiki.ros.org/move\_base}{https://wiki.ros.org/move\_base}} (package providing an implementation of an action that, given a goal in the world,
+will attempt to reach it with a mobile base) within the navigation stack.\\
 
-In the Wiki there is the following cost function to score each trajectory:
-
+In the Wiki the following cost function to score each trajectory is presented:
 
 \begin{tcolorbox}[enhanced,width=6in,center,size=fbox]
 
@@ -212,55 +266,84 @@ cost \textbf{=} path\_distance\_bias \textbf{*} (distance to path from the endpo
 
 However, reading through the source code of the DWA ROS library, it is said that the above function is
 \textit{``used for visualization only, total\_costs are not really total costs''} \footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}}.
+This is because ROS uses a slightly different cost function that will be described in the next paragraph.
 
 
+%------------------------------------------ ROS LIBRARY SOURCE CODE ------------------------------------------
 
 \subsection{ROS libray source code}
 
 In order to use DWA in our experiment, we call the \texttt{DWAPlannerROS::computeVelocityCommands()} function which leads to the following cascading function calls:\\
 \begin{enumerate}
 
- \item \texttt{DWAPlannerROS::computeVelocityCommands(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
- called in our \texttt{diffdrive\_traj\_ctrl.cpp}, line 78;
+    \item \texttt{DWAPlannerROS::computeVelocityCommands()}\footnote
+    {\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
+    {https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
+    called by \texttt{diffdrive\_traj\_ctrl.cpp} at line 78;
 
- \item \texttt{DWAPlannerROS::dwaComputeVelocityCommands(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
- called from the function at step 1, line 302;
+    \item \texttt{DWAPlannerROS::dwaComputeVelocityCommands()}\footnote
+    {\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
+    {https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
+    called by function above at line 302;
 
- \item \texttt{DWAPlanner::findBestPath(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}}
- called from the function at step 2, line 209;
+    \item \texttt{DWAPlanner::findBestPath()}\footnote
+    {\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}
+    {https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}}
+    called by function above at line 209;
 
- \item \texttt{SimpleScoredSamplingPlanner::findBestTrajectory(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}}
- called from the function at step 3, line 317;
+    \item \texttt{SimpleScoredSamplingPlanner::findBestTrajectory()}\footnote
+    {\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}
+    {https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}}
+    called by function above at line 317;
 
- \item \texttt{SimpleScoredSamplingPlanner::scoreTrajectory(...)}\footnote{\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}}
- called from the function at step 4, line 105.\\
+    \item \texttt{SimpleScoredSamplingPlanner::scoreTrajectory()}\footnote
+    {\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}
+    {https://docs.ros.org/en/melodic/api/base\_local\_planner/html/simple\_\_scored\_\_sampling\_\_planner\_8cpp\_source.html}}
+    called by function above at line 105.\\
 
 \end{enumerate}
 
-At this point, inside \texttt{scoreTrajectory(...)} the different cost elements are evaluated to score the trajectory.
+At this point, inside \texttt{scoreTrajectory()} the different cost elements are evaluated to score the trajectory.
 
-Each cost element is an instance of the abstract \texttt{base\_local\_planner::TrajectoryCostFunction} class.
+Each cost element is an instance of the abstract \texttt{base\_local\_planner::TrajectoryCostFunction} class.\\
 
-These elements are contained in a \texttt{std::vector<TrajectoryCostFunction*>} vector, and in the case of DWA they are:
+These elements are contained in a \texttt{std::vector<TrajectoryCostFunction*>} vector and, in the case of DWA, they are
+7 in total:
+
 \begin{itemize}
- \item \texttt{base\_local\_planner::OscillationCostFunction oscillation\_costs\_}, which penalizes trajectories where the robot oscillates;
- \item \texttt{base\_local\_planner::ObstacleCostFunction obstacle\_costs\_}, which penalizes trajectories where the robot occupies illegal positions with its footprint;
- \item \texttt{base\_local\_planner::MapGridCostFunction goal\_front\_costs\_}, which prefers  trajectories that make the nose go towards (local) nose goal;
- \item \texttt{base\_local\_planner::MapGridCostFunction alignment\_costs\_}, which prefers trajectories that keep the robot nose on nose path;
- \item \texttt{base\_local\_planner::MapGridCostFunction path\_costs\_}, which prefers trajectories on global path;
- \item \texttt{base\_local\_planner::MapGridCostFunction goal\_costs\_}, which prefers trajectories that go towards (local) goal;
- \item \texttt{base\_local\_planner::TwirlingCostFunction twirling\_costs\_}, which prefers trajectories that don't spin.\\
+    \item \texttt{base\_local\_planner::OscillationCostFunction oscillation\_costs\_}, which penalizes trajectories where the robot oscillates;
+    \item \texttt{base\_local\_planner::ObstacleCostFunction obstacle\_costs\_}, which penalizes trajectories where the robot occupies illegal positions with its footprint;
+    \item \texttt{base\_local\_planner::MapGridCostFunction goal\_front\_costs\_}, which prefers  trajectories that make the nose go towards (local) nose goal;
+    \item \texttt{base\_local\_planner::MapGridCostFunction alignment\_costs\_}, which prefers trajectories that keep the robot nose on nose path;
+    \item \texttt{base\_local\_planner::MapGridCostFunction path\_costs\_}, which prefers trajectories on global path;
+    \item \texttt{base\_local\_planner::MapGridCostFunction goal\_costs\_}, which prefers trajectories that go towards (local) goal;
+    \item \texttt{base\_local\_planner::TwirlingCostFunction twirling\_costs\_}, which prefers trajectories that don't spin.\\
 \end{itemize}
 
 The considered trajectories by DWA are those taken from a equi-distant discretization of the velocities that the robot can assume. For this purpose ROS has a \texttt{base\_local\_planner::SimpleTrajectoryGenerator}\footnote{\href{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html}{https://docs.ros.org/en/melodic/api/base\_local\_planner/html/classbase\_\_local\_\_planner\_1\_1SimpleTrajectoryGenerator.html}} class.
 
 
+WEIGHTED SUM... (descrivi la funzione di costo implementata nella libreria)
 
-%-----------------------------------------------------------------------------
-%                             SETUP OF THE EXPERIMENT
-%-----------------------------------------------------------------------------
+
+
+%--------------------------------------------------------------------------------------------------------------
+%                                        TRAJECTORY TRACKING CONTROLLER
+%--------------------------------------------------------------------------------------------------------------
+
+\section{Trajectory tracking controller}
+
+...
+
+
+%--------------------------------------------------------------------------------------------------------------
+%                                           SETUP OF THE EXPERIMENT
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Setup of the experiment}
+
+
+%------------------------------------------ THE ROBOT ------------------------------------------
 
 \subsection{The robot}
 
@@ -268,13 +351,15 @@ In our experiment we chose to simulate a small differential drive robot.\\
 
 In particular, it is characterized by two main dimensions (specified as YAML parameters in the code):
 \begin{itemize}
- \item \texttt{d} = 15 cm, which is the distance between the two motorized wheels;
- \item \texttt{r} = 3 cm, which is the radius of the two motorized wheels.\\
+    \item \texttt{d} = 15 cm, which is the distance between the two motorized wheels;
+    \item \texttt{r} = 3 cm, which is the radius of the two motorized wheels.\\
 \end{itemize}
 
 The precise footprint is a pentagon, just for convenience, so that when looking at it we are able to determine the orientation of the robot.
 However, this is not a decisive detail since it has o influence on the robot's behavior.
 
+
+%------------------------------------------ THE MAP ------------------------------------------
 
 \subsection{The map}
 
@@ -282,14 +367,16 @@ Regarding the map, it is important to highlight the different setting we have wi
 
 There are two main differences:
 \begin{itemize}
- \item in our setting there are no obstacles, neither fixed nor moving;
- \item the robot does not have any sensor.\\
+    \item in our setting there are no obstacles, neither fixed nor moving;
+    \item the robot does not have any sensor.\\
 \end{itemize}
 
 As a consequence, we don't need both the local map and the global map, but only the local one.
 
 Moreover, this map needs to be empty so it is generated starting from a totally white image.
 
+
+%------------------------------------------ THE TRAJECTORY ------------------------------------------
 
 \subsection{The trajectory}
 
@@ -304,11 +391,15 @@ Each one of these points is passed to DWA as the current goal, and once it is re
 
 
 
-%-----------------------------------------------------------------------------
-%                               IMPLEMENTATION
-%-----------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------------------------------------------
+%                                           IMPLEMENTATION
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Implementation}
+
+
+%------------------------------------------ ARCHITECTURE OVERVIEW ------------------------------------------
 
 \subsection{Architecture overview}
 
@@ -326,6 +417,8 @@ As a result, the two vectors contained in the \texttt{GenerateDesiredPathService
 
 As soon as the service is called, during the initialization (in the \texttt{Prepare()} function) of both controllers, the complete trajectory is made available also to the controllers.
 
+
+%------------------------------------------ NODES ------------------------------------------
 
 \subsection{Nodes}
 
@@ -370,8 +463,8 @@ Lastly, the $(\omega_r,\omega_l)$ velocities are computed and published on the \
 
 The implementation of DWA and all the functions that have been used is provided by the following two files in the ROS library:
 \begin{itemize}
- \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{dwa\_planner.cpp}}
- \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}
+    \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_8cpp\_source.html}{\texttt{dwa\_planner.cpp}}
+    \item \href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{\texttt{dwa\_planner\_ros.cpp}}
 \end{itemize}
 
 \begin{figure}[H]
@@ -384,28 +477,31 @@ The implementation of DWA and all the functions that have been used is provided 
 
 This node is needed in order to link the \texttt{odom} and the \texttt{base\_link} coordinate frames through a simple dynamic tf.
 
+
+%------------------------------------------ FRAMES ------------------------------------------
+
 \subsection{Frames}
 
 Here is a list with a brief description of all the frames:
 \begin{itemize}
- \item \texttt{map}, which is the coordinate system where the empty map (provided by the map server) is;
- \item \texttt{odom}, which represent the global reference system, that in this particular case its origin matches the one of the \texttt{map} frame;
- \item \texttt{base\_link}, which represrents reference system moving around together with the robot.
+    \item \texttt{map}, which is the coordinate system where the empty map (provided by the map server) is;
+    \item \texttt{odom}, which represent the global reference system, that in this particular case its origin matches the one of the \texttt{map} frame;
+    \item \texttt{base\_link}, which represrents reference system moving around together with the robot.
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.3]{ros_tools/rqttftree_custom.png}
-    \caption{\texttt{rqt\_tf\_tree} of custom controller architecure.}
+    \subfloat[\texttt{rqt\_tf\_tree} of the custom controller.]{
+        \includegraphics[scale=0.28]{ros_tools/rqttftree_custom.png}
+    }
+    \subfloat[\texttt{rqt\_tf\_tree} of DWA standalone.]{
+        \includegraphics[scale=0.26]{ros_tools/rqttftree_dwa.png}
+    }
+    \caption[]{Frames in the two approaches.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.3]{ros_tools/rqttftree_dwa.png}
-    \caption{\texttt{rqt\_tf\_tree} of DWA architecure standalone.}
-\end{figure}
 
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
+%------------------------------------------ TOPICS ------------------------------------------
 
 \subsection{Topics}
 
@@ -467,6 +563,9 @@ Here is a list with a brief description of the topics that our nodes are subscri
 
 \end{itemize}
 
+
+%------------------------------------------ LAUNCH FILES ------------------------------------------
+
 \subsection{Launch files}
 
 Here is a list with a brief description of all the launch files:\\
@@ -492,27 +591,29 @@ Here is a list with a brief description of all the launch files:\\
         \end{itemize}
 \end{itemize}
 
-
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.2]{ros_tools/rqtgraph_custom.png}
-    \caption{\texttt{rqt\_graph} of custom controller architecure.}
+    \subfloat[\texttt{rqt\_graph} of the custom controller.]{
+        \includegraphics[scale=0.24]{ros_tools/rqtgraph_custom.png}
+    }
+    \quad
+    \subfloat[\texttt{rqt\_graph} of DWA standalone.]{
+        \includegraphics[scale=0.26]{ros_tools/rqtgraph_dwa.png}
+    }
+    \caption[]{Architecture of the two approaches.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.25]{ros_tools/rqtgraph_dwa.png}
-    \caption{\texttt{rqt\_graph} of DWA architecure standalone.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI RAGGRUPPATE]
 
 
-%-----------------------------------------------------------------------------
-%                               PARAMETERS
-%-----------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------------------------------------------
+%                                               PARAMETERS
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Parameters}
+
+
+%------------------------------------------ LIST OF PARAMETERS ------------------------------------------
 
 \subsection{List of parameters}
 
@@ -565,6 +666,8 @@ In this section the most relevant ones are explained:\\
 \end{itemize}
 
 
+%------------------------------------------ TUNING ------------------------------------------
+
 \subsection{Tuning}
 
 \subsubsection{Eight-shaped trajectory}
@@ -578,7 +681,7 @@ In the presented implementation they are set to \texttt{a} = 1 and \texttt{w} = 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.6]{different_params/dwa_a3/Trajectory.png}
+    \includegraphics[scale=0.5]{different_params/custom_a3/Trajectory.png}
     \caption{Trajectory when \texttt{a = 3.0}.}
 \end{figure}
 
@@ -588,7 +691,7 @@ The custom controller is a trajectory tracking one composed of an inner linearis
 The outer tracking law is based on a PID controller with tunable parameters: $K_p$, $K_i$, $K_d$.\\
 
 The step response when using a PID controller is computed as follows:
-$$ {\displaystyle u(t)=K_{\text{p}}e(t)+K_{\text{i}}\int _{0}^{t}e(\tau )\,\mathrm {d} \tau +K_{\text{d}}{\frac {\mathrm {d} e(t)}{\mathrm {d} t}}} $$ \\
+$$ {\displaystyle u(t)=K_{\text{p}}e(t)+K_{\text{i}}\int _{0}^{t}e(\tau )\,\mathrm {d} \tau +K_{\text{d}}{\frac {\mathrm {d} e(t)}{\mathrm {d} t}}} $$\\
 
 \begin{figure}[H]
     \centering
@@ -603,32 +706,25 @@ In the presented implementation they are set to $K_p = 0.8$, $K_i = 0.8$, $K_d =
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{different_params/custom_kp02/Trajectory.png}
-    \caption{Trajectory when $K_p=0.2, K_p=0.8, K_p=0.0$.}
+    \subfloat[Trajectory.]{
+        \includegraphics[scale=0.5]{different_params/custom_kp02/Trajectory.png}
+    }
+    \subfloat[Linear and angular velocities.]{
+        \includegraphics[scale=0.5]{different_params/custom_kp02/Linear_and_Angular_Velocities.png}
+    }
+    \caption[]{Behavior with $K_p=0.2, K_p=0.8, K_p=0.0$.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{different_params/custom_kp02/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities when $K_p=0.2, K_p=0.8, K_p=0.0$.}
+    \subfloat[Trajectory.]{
+        \includegraphics[scale=0.5]{different_params/custom_ki32kd10/Trajectory.png}
+    }
+    \subfloat[Linear and angular velocities.]{
+        \includegraphics[scale=0.5]{different_params/custom_ki32kd10/Linear_and_Angular_Velocities.png}
+    }
+    \caption[]{Behavior with $K_p=0.8, K_p=3.2, K_p=1.0$.}
 \end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{different_params/custom_ki32kd10/Trajectory.png}
-    \caption{Trajectory when $K_p=0.8, K_p=3.2, K_p=1.0$.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{different_params/custom_ki32kd10/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities when $K_p=0.8, K_p=3.2, K_p=1.0$.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
-
 
 \subsubsection{DWA}
 
@@ -640,43 +736,33 @@ This is accomplished through the \texttt{skipped\_goals} parameters, which is se
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals0/Trajectory.png}
-    \caption{Trajectory when \texttt{skipped\_goals = 0}.}
+    \subfloat[Trajectory.]{
+        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals0/Trajectory.png}
+    }
+    \subfloat[Position Error.]{
+        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals0/Position_Error.png}
+    }
+    \quad
+    \subfloat[Linear and angular velocities.]{
+        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals0/Linear_and_Angular_Velocities.png}
+    }
+    \caption[]{Behavior with \texttt{skipped\_goals = 0}.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.25]{different_params/dwa_skippedgoals0/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities when \texttt{skipped\_goals = 0}.}
+    \subfloat[Trajectory.]{
+        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals150/Trajectory.png}
+    }
+    \subfloat[Position Error.]{
+        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals150/Position_Error.png}
+    }
+    \quad
+    \subfloat[Linear and angular velocities.]{
+        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals150/Linear_and_Angular_Velocities.png}
+    }
+    \caption[]{Behavior with \texttt{skipped\_goals = 150}.}
 \end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals0/Position_Error.png}
-    \caption{Position error when \texttt{skipped\_goals = 0}.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals150/Trajectory.png}
-    \caption{Trajectory when \texttt{skipped\_goals = 150}.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals150/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities when \texttt{skipped\_goals = 150}.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{different_params/dwa_skippedgoals150/Position_Error.png}
-    \caption{Position error when \texttt{skipped\_goals = 150}.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 In order to simulate a differential drive robot, the following parameters have been set:
 
@@ -702,129 +788,128 @@ The latter has been set to \texttt{0.15} because it is a good deal between the d
 an approximation of the trajectory.
 
 
-%-----------------------------------------------------------------------------
-%                               EXPERIMENTAL RESULTS
-%-----------------------------------------------------------------------------
+
+
+%--------------------------------------------------------------------------------------------------------------
+%                                           EXPERIMENTAL RESULTS
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Experimental Results}
 
-- immagini commentate
-    - script singolo su bag controllore custom (fatto)
-    - script singolo su bag dwa (fatto)
-    - script confronto su bag1 + bag2 (fatto)
+%--------------------------------------- TUNED TRAJECTORY TRACKING CONTROLLER ---------------------------------------
 
+\subsection{Tuned trajectory tracking controller}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{kin_screenshots/Trajectory.png}
-    \caption{Trajectory in the custom controller.}
-\end{figure}
+Here are the final results obtained with the optimal parameters in the trajectory tracking controller:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{kin_screenshots/Pose.png}
-    \caption{Pose in the custom controller.}
+    \subfloat[Trajectory.]{
+        \includegraphics[scale=0.6]{kin_screenshots/Trajectory.png}
+    }
+    \quad
+    \subfloat[Linear and angular velocities.]{
+        \includegraphics[scale=0.5]{kin_screenshots/Linear_and_Angular_Velocities.png}
+    }
+    \subfloat[Wheels velocities.]{
+        \includegraphics[scale=0.5]{kin_screenshots/Wheels_Velocities.png}
+    }
+    \quad
+    \subfloat[Pose.]{
+        \includegraphics[scale=0.5]{kin_screenshots/Pose.png}
+    }
+    \subfloat[Position Error.]{
+        \includegraphics[scale=0.5]{kin_screenshots/Position_Error.png}
+    }
+    \caption[]{Behavior with the tuned custom controller.}
 \end{figure}
+
+%------------------------------------------ TUNED DWA ------------------------------------------
+
+\subsection{Tuned DWA}
+
+Here are the final results obtained with the optimal parameters in DWA:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{kin_screenshots/Position_Error.png}
-    \caption{Position error in the custom controller.}
+    \subfloat[Trajectory.]{
+        \includegraphics[scale=0.6]{dwa_screenshots/Trajectory.png}
+    }
+    \quad
+    \subfloat[Linear and angular velocities.]{
+        \includegraphics[scale=0.5]{dwa_screenshots/Linear_and_Angular_Velocities.png}
+    }
+    \subfloat[Wheels velocities.]{
+        \includegraphics[scale=0.5]{dwa_screenshots/Wheels_Velocities.png}
+    }
+    \quad
+    \subfloat[Pose.]{
+        \includegraphics[scale=0.5]{dwa_screenshots/Pose.png}
+    }
+    \subfloat[Position Error.]{
+        \includegraphics[scale=0.5]{dwa_screenshots/Position_Error.png}
+    }
+    \caption[]{Behavior with tuned DWA.}
 \end{figure}
+
+%------------------------------------------ COMPARISON ------------------------------------------
+
+\subsection{Comparison}
+
+Below there is a direct comparison between the behavior of the trajectory tracking controller and DWA.\\
+
+Generally, the custom controller performs better than DWA due to the sudden changes (spikes) in the velocities
+of the latter.
+On the other hand, the performance of the two controllorers is quite similar in following the eight-shaped trajectory.
+
+It is possible to achieve better smoothness in velocities by increasing the value of \texttt{skipped\_goals}.
+This is because when increasing the distance between two consecutive goals DWA tends to choose a velocity closer to
+the current one, while the trajectory would be followed in a less precise way.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{kin_screenshots/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities in the custom controller.}
+    \subfloat[Trajectory comparison.]{
+        \includegraphics[scale=0.5]{comparison/Trajectory.png}
+    }
+    \quad
+    \subfloat[Linear and angular velocities comparison.]{
+        \includegraphics[scale=0.4]{comparison/Linear_and_Angular_Velocities.png}
+    }
+    \subfloat[Wheels velocities comparison.]{
+        \includegraphics[scale=0.4]{comparison/Wheels_Velocities.png}
+    }
+    \quad
+    \subfloat[Pose comparison.]{
+        \includegraphics[scale=0.4]{comparison/Pose.png}
+    }
+    \subfloat[Position Error comparison.]{
+        \includegraphics[scale=0.4]{comparison/Position_Error.png}
+    }
+    \caption[]{Comparison between the two approaches.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{kin_screenshots/Wheels_Velocities.png}
-    \caption{Wheels velocities in the custom controller.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{dwa_screenshots/Trajectory.png}
-    \caption{Trajectory in DWA.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{dwa_screenshots/Pose.png}
-    \caption{Pose in DWA.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{dwa_screenshots/Position_Error.png}
-    \caption{Position error in DWA.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{dwa_screenshots/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities in DWA.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{dwa_screenshots/Wheels_Velocities.png}
-    \caption{Wheels velocities in DWA.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{comparison/Trajectory.png}
-    \caption{Trajectory comparison between the two approaches.}
-\end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{comparison/Pose.png}
-    \caption{Pose comparison between the two approaches.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{comparison/Position_Error.png}
-    \caption{Position error comparison between the two approaches.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{comparison/Linear_and_Angular_Velocities.png}
-    \caption{Linear and angular velocities comparison between the two approaches.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{comparison/Wheels_Velocities.png}
-    \caption{Wheels velocities comparison between the two approaches.}
-\end{figure}
-
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
-
-
-%-----------------------------------------------------------------------------
-%                               ENCOUNTERED PROBLEMS
-%-----------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------------------------------
+%                                           ENCOUNTERED PROBLEMS
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Encountered problems}
 
-\subsubsection{Deprecated parameters}
+
+%------------------------------------------ DEPRECATED PARAMETERS ------------------------------------------
+
+\subsection{Deprecated parameters}
 
 During the tuning phase of DWA a trial and error approach has been carried out, finding that
-a few parameters are named differently in the in the ROS library with respect to the ROS Wiki.
+a few parameters are named differently in the in the ROS library
+\footnote{\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
+with respect to the ROS Wiki
+\footnote{\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}}.
 
 Such renaming was not advertised by any error nor warning, so it was difficult to spot where the problem
-was when changing parameters and seeing no effect in the robot behaviour.
+was when changing parameters and seeing no effect in the robot behavior.
 
 In fact, the warning would be raised only if DWA was instantiated inside the \texttt{nav\_core} architecture,
 which is not the case when using DWA standalone.\\
@@ -837,19 +922,20 @@ The following pair of parameters is an example:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{other/deprecated_parameters_description.png}
-    \caption{ROS Wiki containing deprecated parameters.}
+    \subfloat[ROS Wiki description.]{
+        \includegraphics[scale=0.5]{other/deprecated_parameters_description.png}
+    }
+    \quad
+    \subfloat[ROS library source code warning.]{
+        \includegraphics[scale=0.5]{other/deprecated_parameters_warning.png}
+    }
+    \caption[]{Deprecated parameters.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.4]{other/deprecated_parameters_warning.png}
-    \caption{ROS library source code warning about deprecated parameters.}
-\end{figure}
 
-[TODO: METTERE LE IMMAGINI AFFIANCATE]
+%------------------------------------------ DWA USED STANDALONE ------------------------------------------
 
-\subsubsection{DWA used outside of ROS Navigation Stack}
+\subsection{DWA used standalone}
 
 Usually DWA is used inside a standard architecture which is the Navigation Stack in ROS.
 
@@ -864,10 +950,14 @@ supported one).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.4]{other/nav_core.png}
-    \caption{ROS \texttt{nav\_core} pachage architecture.}
+    \includegraphics[scale=0.6]{other/nav_core.png}
+    \caption{\texttt{nav\_core} package architecture.}
 \end{figure}
-\subsubsection{Multiple goals along the trajectory}
+
+
+%------------------------------------------ MULTIPLE GOALS ------------------------------------------
+
+\subsection{Multiple goals}
 
 In a standard scenario DWA needs only the one final goal and computes the trajectory on its own.
 
@@ -876,13 +966,17 @@ would go straight to the final point of the overall eight-shaped trajectory.
 
 
 
-%-----------------------------------------------------------------------------
-%                               USAGE OF THE CODE
-%-----------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------------------------------------------
+%                                           USAGE OF THE CODE
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Usage of the code}
 
-\subsection{Installation of required ROS packages}
+
+%------------------------------------------ INSTALLATION ------------------------------------------
+
+\subsection{Installation}
 
 First of all, all the software written in this project has been tested on \textit{Ubuntu 18.04 LTS} and \textit{ROS Melodic}.\\
 
@@ -894,7 +988,9 @@ sudo apt install ros-melodic-costmap-2d ros-melodic-base-local-planner ros-melod
 \end{lstlisting}
 
 
-\subsection{Initial set up and compilation}
+%------------------------------------------ SETUP AND COMPILATION ------------------------------------------
+
+\subsection{Setup and compilation}
 
 Clone or download the repository into your home ($\sim$) folder.\\
 
@@ -914,11 +1010,14 @@ cd ROS_trajectory_tracking_controller
 catkin_make
 \end{lstlisting}
 
-\subsection{Run simulation and plot results}
+
+%------------------------------------------ SIMULATION AND RESULTS ------------------------------------------
+
+\subsection{Simulation and results}
 
 The following instructions let you perform and visualize a simulation.
 
-\subsubsection{Trajectory control for differential drive}
+\subsubsection{Custom controller}
 
 This simulation shows the behavior of the custom controller when an 8-shaped trajectory is set.\\
 
@@ -945,7 +1044,7 @@ Wait about 30 seconds so that the simulation can be performed.\\
 python plot_results.py diffdrive_kin_trajctrl.bag
 \end{lstlisting}
 
-\subsubsection{DWA for differential drive}
+\subsubsection{DWA}
 
 This simulation shows the behavior of DWA when an 8-shaped trajectory is set.\\
 
@@ -971,20 +1070,21 @@ Wait about 30 seconds so that the simulation can be performed.\\
 python plot_results.py diffdrive_dwa_trajctrl.bag
 \end{lstlisting}
 
-
 \subsubsection{Compare two simulations}
 
 If you wish, you can also compare the results of two different simulations.
 
 Given the two bag files named diffdrive\_dwa\_trajctrl.bag and diffdrive\_kin\_trajctrl.bag, visualize the comparison:
 \begin{lstlisting}
-python plot_comparison.py diffdrive\_dwa\_trajctrl.bag diffdrive\_kin\_trajctrl.bag
+python plot_comparison.py diffdrive_dwa_trajctrl.bag diffdrive_kin_trajctrl.bag
 \end{lstlisting}
 
 
-%-----------------------------------------------------------------------------
-%                               CONCLUSIONS
-%-----------------------------------------------------------------------------
+
+
+%--------------------------------------------------------------------------------------------------------------
+%                                               CONCLUSIONS
+%--------------------------------------------------------------------------------------------------------------
 
 \section{Conclusions}
 

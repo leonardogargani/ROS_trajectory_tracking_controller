@@ -78,15 +78,17 @@ ax_dwa_vel_1.set_ylim(-0.01,0.2)
 ax_dwa_vel_1.set(xlabel='Time [s]', ylabel='Linear velocity [m/s]')
 ax_dwa_vel_2.plot(controllerState_time,controllerState_angularvelocity)
 ax_dwa_vel_2.set(xlabel='Time [s]', ylabel='Angular velocity [rad/s]')
-ax_dwa_vel_2.set_ylim(-0.8,0.8)
+ax_dwa_vel_2.set_ylim(-1.2,1.2)
 
 # Plot right and left wheels' velocities
 fig_wvel, (ax_wvel_1, ax_wvel_2) = plt.subplots(2)
 fig_wvel.canvas.set_window_title('Wheels Velocities')
 ax_wvel_1.plot(vehicleState_time,vehicleState_angularvelocity_r)
 ax_wvel_1.set(xlabel='Time [s]', ylabel='Right angular velocity [rad/s]')
+ax_wvel_1.set_ylim(-0.9, 7.0);
 ax_wvel_2.plot(vehicleState_time,vehicleState_angularvelocity_l)
 ax_wvel_2.set(xlabel='Time [s]', ylabel='Left angular velocity [rad/s]')
+ax_wvel_2.set_ylim(-0.9, 7.0);
 
 # Plot actual position of the robot and reference position
 fig_pose, (ax_pose_1, ax_pose_2, ax_pose_3) = plt.subplots(3)
