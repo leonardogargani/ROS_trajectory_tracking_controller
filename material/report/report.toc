@@ -1,0 +1,49 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Project overview}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Background on differential drive}{3}{subsection.1.2}%
+\contentsline {section}{\numberline {2}DWA overview}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Search space reduction}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Objective function optimization}{4}{subsection.2.2}%
+\contentsline {section}{\numberline {3}DWA in ROS}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}From ROS wiki}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}ROS libray source code}{5}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Trajectory tracking controller}{5}{section.4}%
+\contentsline {section}{\numberline {5}Setup of the experiment}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}The robot}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}The map}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}The trajectory}{6}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Implementation}{6}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Architecture overview}{6}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Services}{6}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}\texttt {generate\_desired\_path\_service}}{6}{subsubsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.3}Nodes}{6}{subsection.6.3}%
+\contentsline {subsubsection}{\numberline {6.3.1}\texttt {diffdrive\_kin\_sim\_node}}{6}{subsubsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.2}\texttt {diffdrive\_kin\_trajctrl\_node}}{7}{subsubsection.6.3.2}%
+\contentsline {subsubsection}{\numberline {6.3.3}\texttt {diffdrive\_dwa\_trajctrl\_node}}{7}{subsubsection.6.3.3}%
+\contentsline {subsubsection}{\numberline {6.3.4}\texttt {odom\_to\_baselink\_tf\_node}}{8}{subsubsection.6.3.4}%
+\contentsline {subsection}{\numberline {6.4}Frames}{8}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Topics}{8}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Launch files}{9}{subsection.6.6}%
+\contentsline {section}{\numberline {7}Parameters}{9}{section.7}%
+\contentsline {subsection}{\numberline {7.1}List of parameters}{9}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Parameters tuning}{10}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Eight-shaped trajectory}{10}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Custom controller}{11}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}DWA}{12}{subsubsection.7.2.3}%
+\contentsline {section}{\numberline {8}Experimental Results}{14}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Tuned trajectory tracking controller}{15}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Tuned DWA}{16}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Comparison}{17}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Encountered problems}{17}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Deprecated parameters}{18}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}DWA used standalone}{18}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Multiple goals}{19}{subsection.9.3}%
+\contentsline {section}{\numberline {10}Usage of the code}{19}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Installation}{19}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Setup and compilation}{19}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}Simulation and results}{20}{subsection.10.3}%
+\contentsline {subsubsection}{\numberline {10.3.1}Custom controller}{20}{subsubsection.10.3.1}%
+\contentsline {subsubsection}{\numberline {10.3.2}DWA}{20}{subsubsection.10.3.2}%
+\contentsline {subsubsection}{\numberline {10.3.3}Compare two simulations}{20}{subsubsection.10.3.3}%
+\contentsline {section}{\numberline {11}Conclusions}{20}{section.11}%
