@@ -993,7 +993,7 @@ Below there is a direct comparison between the behavior of the trajectory tracki
 %                                           ENCOUNTERED PROBLEMS
 %--------------------------------------------------------------------------------------------------------------
 
-\section{Encountered problems}
+\section{Faced issues}
 
 
 %------------------------------------------ DEPRECATED PARAMETERS ------------------------------------------
@@ -1001,23 +1001,26 @@ Below there is a direct comparison between the behavior of the trajectory tracki
 \subsection{Deprecated parameters}
 
 During the tuning phase of DWA a trial and error approach has been carried out, finding that
-a few parameters are named differently in the in the ROS library\footnote
+a few parameters are named differently in the ROS library\footnote
 {\href{https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}
 {https://docs.ros.org/en/melodic/api/dwa\_local\_planner/html/dwa\_\_planner\_\_ros\_8cpp\_source.html}}
-with respect to the ROS Wiki
-\footnote{\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}}.
+with respect to the ROS Wiki\footnote
+{\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}}.
 
-Such renaming was not advertised by any error nor warning, so it was difficult to spot where the problem
-was when changing parameters and seeing no effect in the robot behavior.
+Such renaming was not advertised by any error nor warning, so it was difficult to spot the root of the problem
+when tuning parameters and seeing no difference in the robot behavior.
 
 In fact, the warning would be raised only if DWA was instantiated inside the \texttt{nav\_core} architecture,
 which is not the case when using DWA standalone.\\
 
 The following pair of parameters is an example:
 \begin{itemize}
- \item \texttt{min\_rot\_vel} renamed into \texttt{min\_vel\_theta};
- \item \texttt{max\_rot\_vel} renamed into \texttt{max\_vel\_theta}.\\
+    \item \texttt{min\_rot\_vel}, which is now deprecated and has been renamed into \texttt{min\_vel\_theta};
+    \item \texttt{max\_rot\_vel}, which is now deprecated and has been renamed into \texttt{max\_vel\_theta}.\\
 \end{itemize}
+
+Looking at the ROS Wiki, the parameters still have the old (wrong) name, while the source code of the library
+contains some hints about the (unadvertised - outside of \texttt{nav\_core}) deprecation:
 
 \begin{figure}[H]
     \centering
@@ -1038,31 +1041,62 @@ The following pair of parameters is an example:
 
 Usually DWA is used inside a standard architecture which is the Navigation Stack in ROS.
 
-However the goal of this project was to integrate DWA in the architecture with the simulator used for
-the custom controller. Thereby DWA has been rearranged in a standalone mode.\\
+However, the goal of this project is to integrate DWA in the architecture with the simulator used for
+the custom controller. Thereby DWA has been rearranged in a ``standalone mode''.\\
 
 To accomplish this, it has been necessary to provide to DWA all the information it normally expects on
-certain topics such as \texttt{/odom}, \texttt{/goal}, and \texttt{/map}.\\
+certain topics, such as \texttt{/odom}, \texttt{/goal}, and \texttt{/map}.\\
 
-Unfortunately there is no documentation for this kind of setup on the ROS Wiki, and the few lines ofcode
-that are present refer to some deprecated libraries (i.e. \texttt{tf} is the one mentioned in the example,
-while \texttt{tf2} is the actual supported one).
+Unfortunately there is no documentation for this kind of setup on the ROS Wiki, and the few lines of code
+that are not working anymore due to the use of deprecated libraries (i.e. \texttt{tf} is the one mentioned
+in the example, while \texttt{tf2} is the actual supported one).\\
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.6]{other/nav_core.png}
-    \caption{\texttt{nav\_core} package architecture.}
-\end{figure}
+For instance, the following snippet is the one in the ROS Wiki (not working):
+
+\begin{lstlisting}
+#include <tf/transform_listener.h>
+#include <costmap_2d/costmap_2d_ros.h>
+#include <dwa_local_planner/dwa_planner_ros.h>
+
+...
+
+tf::TransformListener tf(ros::Duration(10));
+costmap_2d::Costmap2DROS costmap("my_costmap", tf);
+
+dwa_local_planner::DWAPlannerROS dp;
+dp.initialize("my_dwa_planner", &tf, &costmap);
+\end{lstlisting}
+
+Instead, the code above must be modified as follow to correctly work:
+
+\begin{lstlisting}
+#include <tf2_ros/transform_listener.h>
+#include <costmap_2d/costmap_2d_ros.h>
+#include <dwa_local_planner/dwa_planner_ros.h>
+
+...
+
+tf2_ros::Buffer tfBuffer(ros::Duration(10));
+tf2_ros::TransformListener tfListener(tfBuffer);
+costmap_2d::Costmap2DROS my_global_costmap("my_global_costmap", tfBuffer);
+my_global_costmap.start();
+
+dwa_local_planner::DWAPlannerROS dp;
+dp.initialize("my_dwa_planner", &tfBuffer, &my_global_costmap);
+\end{lstlisting}
 
 
 %------------------------------------------ MULTIPLE GOALS ------------------------------------------
 
 \subsection{Multiple goals}
 
-In a standard scenario DWA needs only the one final goal and computes the trajectory on its own.
+In a standard scenario DWA needs only a single final goal and computes the full trajectory on its own.
 
-In this project the trajectory is predefined and must be forced changing continuously the goal, otherwise
-the robot would go straight to the final point of the overall eight-shaped trajectory.
+In this project the trajectory is predefined and must be explicitely forced.
+This is done by continuously changing the goal, otherwise the robot would go straight to the final
+point of the overall eight-shaped trajectory skipping all the intermediate points.\\
+
+The issue here
 
 
 
@@ -1079,9 +1113,11 @@ the robot would go straight to the final point of the overall eight-shaped traje
 \subsection{Installation}
 
 First of all, all the software written in this project has been tested on \textit{Ubuntu 18.04 LTS}
-and \textit{ROS Melodic}.\\
+and \textit{ROS Melodic}.
 
-In order to install ROS and all the required packages, execute:
+For the following commands you are expected to already have Ubuntu 18.04 installed.\\
+
+First, install ROS and all the required packages:
 
 \begin{lstlisting}
 sudo apt instal ros-melodic-desktop-full
@@ -1093,14 +1129,14 @@ sudo apt install ros-melodic-costmap-2d ros-melodic-base-local-planner ros-melod
 
 \subsection{Setup and compilation}
 
-Clone or download the repository into your home ($\sim$) folder.\\
+Clone or download the repository into your home (\texttt{$\sim$/}) folder.\\
 
-If you use bash, add the following line to the end of your .bashrc:
+If using bash, add the following line to the end of your \texttt{$\sim$/.bashrc} file:
 \begin{lstlisting}
 source ~/ROS_trajectory_tracking_controller/devel/setup.bash
 \end{lstlisting}
 
-If you use zsh, add instead this other line to the end of your .zshrc:
+If using zsh instead, add this other line to the end of your \texttt{$\sim$/.zshrc} file:
 \begin{lstlisting}
 source ~/ROS_trajectory_tracking_controller/devel/setup.zsh
 \end{lstlisting}
@@ -1120,63 +1156,65 @@ The following instructions let you perform and visualize a simulation.
 
 \subsubsection{Custom controller}
 
-This simulation shows the behavior of the custom controller when an eight-shaped trajectory is set.\\
+This simulation shows the behavior of the custom controller when an eight-shaped trajectory is set.
 
-\textit{[terminal 1]} Start the simulation:
-\begin{lstlisting}
-roslaunch diffdrive_kin_ctrl diffdrive_kin_trajctrl.launch
-\end{lstlisting}
+You will need two open terminals: one for launching the project, the other to record and plot the data.\\
 
-
-\textit{[terminal 2]} Enter the \texttt{script/} folder and record the simulation:
+\textit{[terminal 1]} Enter the \texttt{script/} folder and start recording data:
 \begin{lstlisting}
 cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
 rosbag record -a -O diffdrive_kin_trajctrl.bag
 \end{lstlisting}
 
-Wait about 30 seconds so that the simulation can be performed.\\
+\textit{[terminal 2]} Start the simulation:
+\begin{lstlisting}
+roslaunch diffdrive_kin_ctrl diffdrive_kin_trajctrl.launch
+\end{lstlisting}
 
-\textit{[terminal 2]} Stop the recording with Ctrl-C.\\
+Wait until the end of the simulation (when the robot stops moving).\\
 
-\textit{[terminal 1]} Stop the simulation with Ctrl-C.\\
+\textit{[terminal 1]} Stop the recording with Ctrl-C.\\
 
-\textit{[terminal 2]} Visualize the results:
+\textit{[terminal 2]} Stop the simulation with Ctrl-C.\\
+
+\textit{[terminal 1]} Visualize the recorded data:
 \begin{lstlisting}
 python plot_results.py diffdrive_kin_trajctrl.bag
 \end{lstlisting}
 
 \subsubsection{DWA}
 
-This simulation shows the behavior of DWA when an eight-shaped trajectory is set.\\
+This simulation shows the behavior of DWA when an eight-shaped trajectory is set.
 
-\textit{[terminal 1]} Start the simulation:
-\begin{lstlisting}
-roslaunch diffdrive_dwa_ctrl diffdrive_dwa_trajctrl.launch
-\end{lstlisting}
+You will need two open terminals: one for launching the project, the other to record and plot the data.\\
 
-\textit{[terminal 2]} Enter the script/ folder and record the simulation:
+\textit{[terminal 1]} Enter the script/ folder and start recording data:
 \begin{lstlisting}
 cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
 rosbag record -a -O diffdrive_dwa_trajctrl.bag
 \end{lstlisting}
 
-Wait about 30 seconds so that the simulation can be performed.\\
+\textit{[terminal 2]} Start the simulation:
+\begin{lstlisting}
+roslaunch diffdrive_dwa_ctrl diffdrive_dwa_trajctrl.launch
+\end{lstlisting}
 
-\textit{[terminal 2]} Stop the recording with Ctrl-C.\\
+Wait until the end of the simulation (when the robot stops moving).\\
 
-\textit{[terminal 1]} Stop the simulation with Ctrl-C.\\
+\textit{[terminal 1]} Stop the recording with Ctrl-C.\\
 
-\textit{[terminal 2]} Visualize the results:
+\textit{[terminal 2]} Stop the simulation with Ctrl-C.\\
+
+\textit{[terminal 1]} Visualize the recorded data:
 \begin{lstlisting}
 python plot_results.py diffdrive_dwa_trajctrl.bag
 \end{lstlisting}
 
 \subsubsection{Compare two simulations}
 
-If you wish, you can also compare the results of two different simulations.
+If you wish, you can also compare the results of the two different simulations.\\
 
-Given the two bag files named diffdrive\_dwa\_trajctrl.bag and diffdrive\_kin\_trajctrl.bag,
-visualize the comparison:
+Given the two bag files already recorded as written above, visualize the comparison:
 \begin{lstlisting}
 python plot_comparison.py diffdrive_dwa_trajctrl.bag diffdrive_kin_trajctrl.bag
 \end{lstlisting}

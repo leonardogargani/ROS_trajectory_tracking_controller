@@ -78,7 +78,7 @@ for bag in [bag_1, bag_2]:
 	
 	# Plot eight-shaped reference trajectory and actual trajectory
 	fig_traj.canvas.set_window_title('Trajectory - comparison')
-	ax_traj.plot(vehicleState_x,vehicleState_y, label="actual " + bag_name)
+	ax_traj.plot(vehicleState_x,vehicleState_y, label=bag_name)
 	ax_traj.plot(vehicleState_x[0],vehicleState_y[0],'ro')
 	ax_traj.plot(vehicleState_x[len(vehicleState_x)-1],vehicleState_y[len(vehicleState_x)-1],'rx')
 	
