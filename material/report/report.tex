@@ -175,8 +175,8 @@ The kinematic model of a differential drive vehicle is:
 
 $$
 \begin{cases}
-    \dot{x} = \frac{\omega_r + \omega_l}{2} r \cos{\theta} \\
-    \dot{y} = \frac{\omega_r + \omega_l}{2} r \sin{\theta} \\
+    \dot{x} = \frac{\omega_r + \omega_l}{2} r \cos(\theta) \\
+    \dot{y} = \frac{\omega_r + \omega_l}{2} r \sin(\theta) \\
     \dot{\theta} = \frac{\omega_r - \omega_l}{d} r \\
 \end{cases}
 $$
@@ -378,7 +378,108 @@ the robot can assume.\\
 
 \section{Trajectory tracking controller}
 
-...
+
+%---------------------------------------- UNICYCLE MODEL CONTROL ----------------------------------------
+
+\subsection{Unicycle model control}
+
+When designing the controller it is possible to work on the unicycle (thus not differential) model, for simplicity:
+
+$$
+\begin{cases}
+    \dot{x} = v \cdot \cos(\theta) \\
+    \dot{y} = v \cdot \sin(\theta) \\
+    \dot{\theta} = \omega \\
+\end{cases}
+$$
+
+In fact, the differential model can be easily reduced to the unicycle one with the transformations:
+
+$$
+\begin{cases}
+    v = {\frac {\omega_R + \omega_L}{2} r} \\
+    \omega = {\frac {\omega_R - \omega_L}{2} r} \\
+\end{cases}
+$$
+
+With this simple substitution the the differential model is obtained:
+
+$$
+\begin{cases}
+    \dot{x} = \frac{\omega_r + \omega_l}{2} r \cos(\theta) \\
+    \dot{y} = \frac{\omega_r + \omega_l}{2} r \sin(\theta) \\
+    \dot{\theta} = \frac{\omega_r - \omega_l}{d} r \\
+\end{cases}
+$$
+
+Going back to the unicycle, which is simpler to work on, we must consider a point P on the robot chassis for
+control purposes, since the contact point of the wheel is affected by a nonholonomic constraint.\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{other/point_p.png}
+    \caption{Point P on the robot chassis.}
+\end{figure}
+
+Therefore all the goal points that the robot must reach will be translated into goals for the point P,
+as explained in the next few paragraphs.
+
+
+%---------------------------------------- CONTROLLER'S ARCHITECTURE ----------------------------------------
+
+\subsection{Controller's architecture}
+
+The developed controller works by taking only the reference points (making up the full trajectory),
+and then computing everything else on its own.\\
+
+A comprehensive schematic representation of the whole controller shown in the diagram below:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.16]{other/custom_controller.png}
+    \caption{Scheme of the custom controller.}
+\end{figure}
+
+Let's break down the operations performed by each one of the blocks in the diagram.\\
+
+The ``trajectory tracking'' block computes the linear velocity of point P:
+$$v_{Px} = dx_{ref} + K_p \cdot error_{Px} + K_i \cdot error_{Px} \cdot RunPeriod + K_d \cdot derivative\_x$$
+$$v_{Py} = dy_{ref} + K_p \cdot error_{Py} + K_i \cdot error_{Px} \cdot RunPeriod + K_d \cdot derivative\_y$$ \\
+
+The ``feedback linearisation'' block computes the linear and angular velocities of the robot:
+$$v = v_{Px} \cdot \cos(\theta)  +  v_{Py} \cdot \sin(\theta)$$
+$$\omega = \frac {v_{Py} \cdot \cos(\theta)  - v_{Px} \cdot \sin(\theta)}{P\_dist}$$ \\
+
+The ``robot model'' block computes the angular velocities of the wheels:
+$$\omega_R = \frac {v + \omega \cdot \frac{d}{2}}{r}$$
+$$\omega_L = \frac {v - \omega \cdot \frac{d}{2}}{r}$$ \\
+
+The ``output transformation'' block computes the new position of point P:
+$$x_P = x + P\_dist \cdot \cos(\theta)$$
+$$y_P = y + P\_dist \cdot \sin(\theta)$$ \\
+
+The ``next goal distance computation'' block computes the distance between the old goal and the new goal:
+$$dx_{ref} = x_{ref,t+1} - x_{ref,t} $$
+$$dy_{ref} = y_{ref,t+1} - y_{ref,t} $$ \\
+
+The ``reference transformation'' block computes the reference position for point P (goal for point P):
+$$x_{Pref} = x_{ref} + P\_dist \cdot \cos(\theta)$$
+$$y_{Pref} = y_{ref} + P\_dist \cdot \sin(\theta)$$ \\
+
+The ``PID derivative term computation'' block computes the derivative term for the PID controller:
+$$error\_x = x_{Pref} - x_P$$
+$$error\_y = y_{Pref} - y_P$$
+$$derivative\_x = \frac {error\_x - error\_x_{prev}}{RunPeriod}$$
+$$derivative\_y = \frac {error\_y - error\_y_{prev}}{RunPeriod}$$ \\
+
+In the scheme there are also two blocks that are outside of the controller:
+\begin{itemize}
+    \item the ``simulator'' block, which updates the pose of the robot given the angular velocities of the wheels;
+    \item the ``trajectory generator'' block, which creates a vector of reference positions for the robot
+            (goals for the center of the robot).
+\end{itemize}
+
+
 
 
 %--------------------------------------------------------------------------------------------------------------
@@ -456,9 +557,7 @@ are interchangeable and are meant to always be used together with the simulator,
 
 \subsection{Services}
 
-\subsubsection{\texttt{generate\_desired\_path\_service}}
-
-A ROS service, implemented in \texttt{eight\_traj\_gen.cpp}, is used to generate the eight-shaped
+A ROS service named \texttt{generate\_desired\_path\_service}, implemented in \texttt{eight\_traj\_gen.cpp}, is used to generate the eight-shaped
 trajectory that the robot must follow.\\
 
 First, the two vectors contained in the \texttt{GenerateDesiredPathService.srv} message are populated
