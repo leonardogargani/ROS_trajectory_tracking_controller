@@ -28,15 +28,15 @@
 \contentsline {subsection}{\numberline {6.6}Launch files}{11}{subsection.6.6}%
 \contentsline {section}{\numberline {7}Parameters}{12}{section.7}%
 \contentsline {subsection}{\numberline {7.1}List of parameters}{12}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Parameters tuning}{13}{subsection.7.2}%
-\contentsline {subsubsection}{\numberline {7.2.1}Eight-shaped trajectory}{13}{subsubsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2}Parameters tuning}{12}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Eight-shaped trajectory}{12}{subsubsection.7.2.1}%
 \contentsline {subsubsection}{\numberline {7.2.2}Custom controller}{13}{subsubsection.7.2.2}%
 \contentsline {subsubsection}{\numberline {7.2.3}DWA}{14}{subsubsection.7.2.3}%
 \contentsline {section}{\numberline {8}Experimental Results}{16}{section.8}%
 \contentsline {subsection}{\numberline {8.1}Tuned trajectory tracking controller}{17}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Tuned DWA}{18}{subsection.8.2}%
 \contentsline {subsection}{\numberline {8.3}Comparison}{19}{subsection.8.3}%
-\contentsline {section}{\numberline {9}Faced issues}{19}{section.9}%
+\contentsline {section}{\numberline {9}Faced issues}{20}{section.9}%
 \contentsline {subsection}{\numberline {9.1}Deprecated parameters}{20}{subsection.9.1}%
 \contentsline {subsection}{\numberline {9.2}DWA used standalone}{20}{subsection.9.2}%
 \contentsline {subsection}{\numberline {9.3}Multiple goals}{21}{subsection.9.3}%

@@ -402,7 +402,7 @@ $$
 \end{cases}
 $$
 
-With this simple substitution the the differential model is obtained:
+With this simple substitution the differential model is obtained:
 
 $$
 \begin{cases}
@@ -432,11 +432,11 @@ as explained in the next few paragraphs.
 The developed controller works by taking only the reference points (making up the full trajectory),
 and then computing everything else on its own.\\
 
-A comprehensive schematic representation of the whole controller shown in the diagram below:
+A comprehensive schematic representation of the whole controller shown in the diagram below:\\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.16]{other/custom_controller.png}
+    \includegraphics[scale=0.17]{other/custom_controller.png}
     \caption{Scheme of the custom controller.}
 \end{figure}
 
@@ -771,11 +771,11 @@ Here is a list of the two launch files, with a short description:\\
 \begin{figure}[H]
     \centering
     \subfloat[Architecture of the custom controller.]{
-        \includegraphics[scale=0.24]{ros_tools/rqtgraph_custom.png}
+        \includegraphics[scale=0.16]{ros_tools/rqtgraph_custom.png}
     }
     \quad
     \subfloat[Architecture of DWA standalone.]{
-        \includegraphics[scale=0.26]{ros_tools/rqtgraph_dwa.png}
+        \includegraphics[scale=0.25]{ros_tools/rqtgraph_dwa.png}
     }
     \caption[]{Architecture (obtained with \texttt{rqt\_graph}) of the two approaches.}
 \end{figure}
@@ -862,6 +862,8 @@ $$
 In the equations above it is possible to tune two parameters: \texttt{a} and \texttt{w}.
 In the presented implementation they are set to \texttt{a} = 1 and \texttt{w} = 1.\\
 
+\newpage
+
 Here is what happens when \texttt{a} is increased (the eight-shape becomes larger, look at the scale):
 
 \begin{figure}[H]
@@ -891,6 +893,8 @@ Various tests have been carried out to achieve the optimal behavior, in particul
 the overshoot and the settling time while keeping an overall good stability in the PID response.\\
 
 In the presented implementation they are set to $K_p = 0.8$, $K_i = 0.8$, $K_d = 0$.\\
+
+\newpage
 
 Here are two examples of poor performance when the PID parameters are not correctly tuned:
 
@@ -926,34 +930,38 @@ For this reason it is best to skip some of the points in the trajectory.
 
 This is accomplished through the \texttt{skipped\_goals} parameters, which is set to 15.\\
 
+\newpage
+
 If \texttt{skipped\_goals = 0} is set, then the number of spikes in the velocities of the robot increases:
 \begin{figure}[H]
     \centering
     \subfloat[Trajectory.]{
-        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals0/Trajectory.png}
+        \includegraphics[scale=0.44]{different_params/dwa_skippedgoals0/Trajectory.png}
     }
     \quad
     \subfloat[Position Error.]{
-        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals0/Position_Error.png}
+        \includegraphics[scale=0.35]{different_params/dwa_skippedgoals0/Position_Error.png}
     }
     \subfloat[Linear and angular velocities.]{
-        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals0/Linear_and_Angular_Velocities.png}
+        \includegraphics[scale=0.35]{different_params/dwa_skippedgoals0/Linear_and_Angular_Velocities.png}
     }
     \caption[]{Behavior with \texttt{skipped\_goals = 0}.}
 \end{figure}
+
+%\newpage
 
 If instead \texttt{skipped\_goals = 150} is set, then the error in the position while following the trajectory increases:
 \begin{figure}[H]
     \centering
     \subfloat[Trajectory.]{
-        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals150/Trajectory.png}
+        \includegraphics[scale=0.44]{different_params/dwa_skippedgoals150/Trajectory.png}
     }
     \quad
     \subfloat[Position Error.]{
-        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals150/Position_Error.png}
+        \includegraphics[scale=0.35]{different_params/dwa_skippedgoals150/Position_Error.png}
     }
     \subfloat[Linear and angular velocities.]{
-        \includegraphics[scale=0.5]{different_params/dwa_skippedgoals150/Linear_and_Angular_Velocities.png}
+        \includegraphics[scale=0.35]{different_params/dwa_skippedgoals150/Linear_and_Angular_Velocities.png}
     }
     \caption[]{Behavior with \texttt{skipped\_goals = 150}.}
 \end{figure}
@@ -989,6 +997,26 @@ an approximation of the trajectory.
 %--------------------------------------------------------------------------------------------------------------
 
 \section{Experimental Results}
+
+While running the project, the movement of the robot can be visualized in real time in an Rviz window.
+
+However, more detailed results can be obtained by first recording all the data while the robot moves
+and then executing a custom Python script.\\
+
+The script is able to plot the followings:
+\begin{itemize}
+    \item the full eight-shaped trajectory of the robot, together with the reference;
+    \item the linear and angular velocities of the robot;
+    \item the angular velocities of the two wheels;
+    \item the pose of the robot, so its coordinates and its heading;
+    \item the position error with respect to the reference trajectory.\\
+\end{itemize}
+
+In addition to that, there is a second script that compares the data from two different recordings
+by displayig the two results in the same plots.
+
+\newpage
+
 
 %------------------------------------ TUNED TRAJECTORY TRACKING CONTROLLER -----------------------------------
 
@@ -1059,28 +1087,28 @@ the eight-shaped trajectory.
 It is possible to achieve better smoothness in velocities by increasing the value
 of \texttt{skipped\_goals}.
 This is because when increasing the distance between two consecutive goals DWA tends to choose
-a velocity closer to the current one, while the trajectory is followed in a less precise way.
+a velocity closer to the current one, while the trajectory is followed in a less precise way.\\
 
-Below there is a direct comparison between the behavior of the trajectory tracking controller and DWA.\\
+Below there is a direct comparison between the behavior of the trajectory tracking controller and DWA.
 
 \begin{figure}[H]
     \centering
     \subfloat[Trajectory: comparison.]{
-        \includegraphics[scale=0.5]{comparison/Trajectory.png}
+        \includegraphics[scale=0.55]{comparison/Trajectory.png}
     }
     \quad
     \subfloat[Linear and angular velocities: comparison.]{
-        \includegraphics[scale=0.4]{comparison/Linear_and_Angular_Velocities.png}
+        \includegraphics[scale=0.45]{comparison/Linear_and_Angular_Velocities.png}
     }
     \subfloat[Wheels velocities: comparison.]{
-        \includegraphics[scale=0.4]{comparison/Wheels_Velocities.png}
+        \includegraphics[scale=0.45]{comparison/Wheels_Velocities.png}
     }
     \quad
     \subfloat[Pose: comparison.]{
-        \includegraphics[scale=0.4]{comparison/Pose.png}
+        \includegraphics[scale=0.45]{comparison/Pose.png}
     }
     \subfloat[Position Error: comparison.]{
-        \includegraphics[scale=0.4]{comparison/Position_Error.png}
+        \includegraphics[scale=0.45]{comparison/Position_Error.png}
     }
     \caption[]{Comparison between the two approaches.}
 \end{figure}
@@ -1107,7 +1135,7 @@ with respect to the ROS Wiki\footnote
 {\href{https://wiki.ros.org/dwa\_local\_planner}{https://wiki.ros.org/dwa\_local\_planner}}.
 
 Such renaming was not advertised by any error nor warning, so it was difficult to spot the root of the problem
-when tuning parameters and seeing no difference in the robot behavior.
+when tuning parameters and seeing no difference in the robot's behavior.
 
 In fact, the warning would be raised only if DWA was instantiated inside the \texttt{nav\_core} architecture,
 which is not the case when using DWA standalone.\\
@@ -1124,7 +1152,7 @@ contains some hints about the (unadvertised - outside of \texttt{nav\_core}) dep
 \begin{figure}[H]
     \centering
     \subfloat[ROS Wiki description.]{
-        \includegraphics[scale=0.5]{other/deprecated_parameters_description.png}
+        \includegraphics[scale=0.42]{other/deprecated_parameters_description.png}
     }
     \quad
     \subfloat[ROS library source code warning.]{
@@ -1259,6 +1287,8 @@ This simulation shows the behavior of the custom controller when an eight-shaped
 
 You will need two open terminals: one for launching the project, the other to record and plot the data.\\
 
+\newpage
+
 \textit{[terminal 1]} Enter the \texttt{script/} folder and start recording data:
 \begin{lstlisting}
 cd ~/ROS_trajectory_tracking_controller/src/diffdrive_kin_ctrl/script
@@ -1327,12 +1357,23 @@ python plot_comparison.py diffdrive_dwa_trajctrl.bag diffdrive_kin_trajctrl.bag
 
 \section{Conclusions}
 
+The project compares two approaches to make a robot follow a predefined trajectory: a custom controller,
+which uses a PID and a linearisation law, and DWA in its ROS implementation.\\
 
+It has been shown how the two techniques behave in the particular case of following an eight-shaped trajectory
+in an ideal flat map with no obstacles.
+The presented results are the output of an optimal parameters configuration.
+Vastly different (worse) results can be obtained by changing, even slightly, those parameters.\\
 
+Regarding the trajectory tracking aspect only, the two methods behave in a similar way even though the custom
+controller performs moderately better than DWA.
+However, the most noticeable difference is in the smoothness of the plots of linear and angular velocities:
+the custom controller produces velocities that are much smoother and realistic than those produced by DWA.\\
 
-
-
-
+In conclusion, this project allows the user to simulate two different approaches in a quick and easy way,
+while also exposing a lot of tunable parameters.
+This way the user is able to try out different behaviors at the change of those parameters, which have
+been extensively documented above.
 
 
 
