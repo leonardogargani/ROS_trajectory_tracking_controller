@@ -1,0 +1,504 @@
+\documentclass{beamer}
+\usepackage{tikz}
+\usetheme{Frankfurt}
+\usecolortheme{seahorse}
+
+\addtobeamertemplate{navigation symbols}{}{
+    \usebeamerfont{footline}
+    \usebeamercolor[fg]{footline}
+    \hspace{1em}
+    \raisebox{1.2pt}[0pt][0pt]{\insertframenumber/\inserttotalframenumber}
+}
+
+\setbeamertemplate{frametitle continuation}{%
+    (\insertcontinuationcount)%
+}
+
+\title{DWA vs custom trajectory tracking controller}
+\subtitle{A comparison in ROS}
+
+\author[Chiari, Gargani, Salvi] {G. Chiari \and L. Gargani \and S. Salvi}
+\institute {Politecnico di Milano}
+\date {Academic Year 2022/2023}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Table of Contents}
+\tableofcontents
+\end{frame}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+
+%-----------------------------------------------------------------------------
+%                               INTRODUCTION
+%-----------------------------------------------------------------------------
+
+\section{Introduction}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Frame title}
+
+In this slide, some important text will be \alert{highlighted} because it's important.
+Please, don't abuse it.
+
+\begin{block}{Remark}
+Sample text
+\end{block}
+
+\begin{alertblock}{Important theorem}
+Sample text in red box
+\end{alertblock}
+
+\begin{examples}
+Sample text in green box. The title of the block is ``Examples".
+\end{examples}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Frame title}
+
+\begin{columns}
+
+\column{0.5\textwidth}
+This is a text in first column.
+$$E=mc^2$$
+\begin{itemize}
+	\item First item
+	\item Second item
+\end{itemize}
+
+\column{0.5\textwidth}
+This text will be in the second column and on a second thoughts, this is a nice looking layout in some cases.
+
+\end{columns}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Project overview}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Differential drive}
+
+Test...
+
+\end{frame}
+
+
+%-----------------------------------------------------------------------------
+%                                   DWA
+%-----------------------------------------------------------------------------
+
+\section{DWA}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Paper formulation}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{ROS implementation}
+
+Test...
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------
+%                               CUSTOM CONTROLLER
+%-----------------------------------------------------------------------------
+
+\section{Custom controller}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Unicycle model control}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Controller's architecture}
+
+Test...
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------
+%                                   THE EXPERIMENT
+%-----------------------------------------------------------------------------
+
+\section{The experiment}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Experiment setup - the robot}
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+The robot:
+\begin{itemize}
+  \item differential drive
+  \item \texttt{d} = 15 cm (wheels distance)
+  \item \texttt{r} = 3 cm (wheels radius)
+  \item pentagonal footprint
+\end{itemize}
+
+
+\column{0.5\textwidth}
+
+[IMAGE FROM RVIZ]
+
+\end{columns}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Experiment setup - the map}
+
+\begin{columns}
+
+\column{0.6\textwidth}
+
+The map:
+\begin{itemize}
+  \item empty, no obstacles around
+  \item global, no need for a local one
+\end{itemize}
+
+
+\column{0.4\textwidth}
+
+[IMAGE FROM RVIZ]
+
+\end{columns}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Experiment setup - the trajectory}
+
+\begin{columns}
+
+\column{0.6\textwidth}
+
+The trajectory:
+\begin{itemize}
+  \item eight-shaped
+  \item 2 x 1 meters
+  \item discretized into multiple goals
+\end{itemize}
+
+
+\column{0.4\textwidth}
+
+[IMAGE FROM RVIZ]
+
+\end{columns}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{ROS architecture - overview}
+
+Three packages:
+\begin{itemize}
+  \item \texttt{diffdrive\_kin\_sim} $\rightarrow$ simulator
+  \item \texttt{diffdrive\_kin\_ctrl} $\rightarrow$ custom controller
+  \item \texttt{diffdrive\_dwa\_ctrl} $\rightarrow$ DWA controller
+\end{itemize}
+
+\vspace{2em}
+
+The two controllers are interchangeable and are meant to always be used together
+with the simulator, one at a time.
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{ROS architecture - service \& frames}
+
+One service:
+\begin{itemize}
+  \item \texttt{generate\_desired\_path\_service} $\rightarrow$ used to generate the eight-shaped trajectory as soon as it is invoked by one of the two controllers
+\end{itemize}
+
+\vspace{2em}
+
+Three fames:
+\begin{itemize}
+  \item \texttt{map} $\rightarrow$ for the empty map provided by the map server
+  \item \texttt{odom} $\rightarrow$ representing the global reference system
+  \item \texttt{base\_link} $\rightarrow$ representing the moving reference system
+\end{itemize}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{ROS architecture - nodes}
+
+Four nodes:
+\begin{itemize}
+  \item \texttt{diffdrive\_kin\_sim\_node}, $\rightarrow$ integration logic to update the robot pose given ($\omega_r$,$\omega_l$)
+  \item \texttt{diffdrive\_kin\_trajctrl\_node}, $\rightarrow$ computation of ($\omega_r$,$\omega_l$) to reach the next point in the trajectory, using the custom controller
+  \item \texttt{diffdrive\_dwa\_trajctrl\_node}, $\rightarrow$ interface between DWA library and simulator to compute ($\omega_r$,$\omega_l$)
+  \item \texttt{odom\_to\_baselink\_tf\_node}, link between the \texttt{odom} and the \texttt{base\_link} coordinate frames through a dynamic tf
+\end{itemize}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{ROS architecture - topics}
+
+Four nodes:
+\begin{itemize}
+  \item \texttt{/clock}, $\rightarrow$ synchronization of all the nodes in the simulation
+  \item \texttt{/odom}, $\rightarrow$ communication of the odometry information of the robot to DWA
+  \item \texttt{/robot\_state}, $\rightarrow$ communication of the odometry information of the robot to the custom controller
+  \item \texttt{/controller\_state}, $\rightarrow$ for visualization purposes
+  \item \texttt{/robot\_input}, $\rightarrow$ communication of ($\omega_r$,$\omega_l$) computed by the controllers
+\end{itemize}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{ROS architecture - launch files}
+
+Two launch files:
+\begin{itemize}
+  \item \texttt{diffdrive\_kin\_trajctrl.launch} $\rightarrow$ start the simulation of the robot's behavior with the custom controller
+  \item \texttt{diffdrive\_dwa\_trajctrl.launch} $\rightarrow$ start the simulation of the robot's behavior with DWA
+\end{itemize}
+
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Parameters tuning - trajectory}
+
+$$
+\begin{cases}
+    x = \texttt{a} \cdot \sin (\texttt{w} \cdot t)\\
+    y = \texttt{a} \cdot \sin (\texttt{w} \cdot t)\cdot \cos (\texttt{w} \cdot t)\\
+\end{cases}
+$$
+
+\vspace{2em}
+
+Two main parameters:
+\begin{itemize}
+ \item \texttt{a} $\rightarrow$ amplitude of the eight-shaped trajectory
+ \item \texttt{w} $\rightarrow$ ratio $\frac{2 \cdot \pi}{T}$ where T is the time duration of each lap
+\end{itemize}
+
+\vspace{2em}
+
+\begin{block}{Assigned values}
+\centering
+\texttt{a} = 1
+\hspace{3em}
+\texttt{w} = 1
+\end{block}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Parameters tuning - custom controller}
+
+$$
+u(t)=K_{\text{p}}e(t)+K_{\text{i}}\int _{0}^{t}e(\tau )\,\mathrm {d} \tau +K_{\text{d}}{\frac {\mathrm {d} e(t)}{\mathrm {d} t}}
+$$
+
+\vspace{2em}
+
+Three main parameters:
+\begin{itemize}
+ \item $K_p$ $\rightarrow$ proportional gain of the PID controller
+ \item $K_i$ $\rightarrow$ integral gain of the PID controller
+ \item $K_d$ $\rightarrow$ derivative gain of the PID controller
+\end{itemize}
+
+\vspace{2em}
+
+\begin{block}{Assigned values}
+\centering
+$K_p$ = 0.8
+\hspace{3em}
+$K_i$ = 0.8
+\hspace{3em}
+$K_d$ = 0.0
+\end{block}
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Parameters tuning - DWA}
+
+One main parameter:
+\begin{itemize}
+ \item \texttt{skipped\_goals} $\rightarrow$ number of points to skip when feeding the trajectory to DWA
+\end{itemize}
+
+\vspace{2em}
+
+\begin{block}{Assigned values}
+\centering
+\texttt{skipped\_goals} = 1
+\end{block}
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------
+%                             EXPERIMENTAL RESULTS
+%-----------------------------------------------------------------------------
+
+\section{Experimental results}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Trajectory tracking controller}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{DWA}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Comparison}
+
+Test...
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------
+%                                 FACED ISSUES
+%-----------------------------------------------------------------------------
+
+\section{Faced issues}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Deprecated parameters}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{DWA used standalone}
+
+Test...
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Multiple goals}
+
+Test...
+
+\end{frame}
+
+
+
+%-----------------------------------------------------------------------------
+%                                   CONCLUSION
+%-----------------------------------------------------------------------------
+
+\section{Conclusion}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}
+\frametitle{Frame title}
+
+Test...
+
+\end{frame}
+
+
+
+\end{document}
+
