@@ -1,5 +1,6 @@
 \documentclass{beamer}
 \usepackage{tikz}
+\usepackage[font=scriptsize, labelfont=bf]{caption}
 \usetheme{Frankfurt}
 \usecolortheme{seahorse}
 
@@ -49,56 +50,29 @@
 
 \section{Introduction}
 
-% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-\begin{frame}
-\frametitle{Frame title}
-
-In this slide, some important text will be \alert{highlighted} because it's important.
-Please, don't abuse it.
-
-\begin{block}{Remark}
-Sample text
-\end{block}
-
-\begin{alertblock}{Important theorem}
-Sample text in red box
-\end{alertblock}
-
-\begin{examples}
-Sample text in green box. The title of the block is ``Examples".
-\end{examples}
-
-\end{frame}
-
-% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-\begin{frame}
-\frametitle{Frame title}
-
-\begin{columns}
-
-\column{0.5\textwidth}
-This is a text in first column.
-$$E=mc^2$$
-\begin{itemize}
-	\item First item
-	\item Second item
-\end{itemize}
-
-\column{0.5\textwidth}
-This text will be in the second column and on a second thoughts, this is a nice looking layout in some cases.
-
-\end{columns}
-
-\end{frame}
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 \begin{frame}
 \frametitle{Project overview}
 
-Test...
+Goals of the project:
+\begin{itemize}
+  \item implement a custom trajectory tracking controller
+  \item use DWA standalone to control the robot
+  \item compare the results of the two approaches above
+\end{itemize}
+
+\vspace{2em}
+
+The simulation is performed on a differential drive robot, using its kinematic
+model.
+
+\vspace{2em}
+
+\begin{block}{Environment}
+Everything runs on \textit{ROS Melodic} on \textit{Ubuntu 18.04}.
+\end{block}
 
 \end{frame}
 
@@ -107,7 +81,28 @@ Test...
 \begin{frame}
 \frametitle{Differential drive}
 
-Test...
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{img/other/differential_drive.png}
+\end{figure}
+
+\column{0.5\textwidth}
+
+Kinematic model of the robot:
+$$
+\begin{cases}
+    \dot{x} = \frac{\omega_r + \omega_l}{2} r \cos(\theta) \\
+    \dot{y} = \frac{\omega_r + \omega_l}{2} r \sin(\theta) \\
+    \dot{\theta} = \frac{\omega_r - \omega_l}{d} r \\
+\end{cases}
+$$
+
+\end{columns}
+
 
 \end{frame}
 
@@ -120,19 +115,98 @@ Test...
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{Paper formulation}
 
-Test...
+Given a certain goal point to be reached by the robot, DWA tries to find the optimal linear and angular velocities to go there.
+
+\vspace{2em}
+
+This is mainly done in two sequential steps:
+\begin{enumerate}
+  \item search space reduction
+  \item objective function optimization
+\end{enumerate}
+
+\framebreak
+
+Search-space: all the possible ($v,\omega$) tuples.
+
+\vspace{2em}
+
+Search-space reduction steps:
+\begin{enumerate}
+  \item consider only circular trajectories
+  \item consider only admissible velocities (stop before obstacles)
+  \item exclude velocities that cannot be reached given the limited accelerations
+  of the robot
+\end{enumerate}
+
+\framebreak
+
+The remaining velocities are fed into the following objective function to
+be maximized:
+$$
+G(v, \omega) = \sigma(\alpha \cdot heading(v, \omega)
++ \beta \cdot dist(v, \omega) + \gamma \cdot vel(v, \omega))
+$$
+
+\vspace{2em}
+
+At this point the tuple ($v,\omega$) leading to the highest score is chosen
+and the robot picks those velocities.
 
 \end{frame}
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{ROS implementation}
 
-Test...
+DWA is already implemented in ROS in the \texttt{dwa\_local\_planner} package.
+
+\vspace{2em}
+
+This package is ought to be used as the planner for \texttt{move\_base}
+within the navigation stack.
+
+\framebreak
+
+Cost function from ROS Wiki:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.32]{img/other/cost_function_ros_wiki.png}
+\end{figure}
+
+\vspace{1em}
+
+However, this function is used only for visualization purposes.
+
+\vspace{2em}
+
+The real cost is computed instead as a weighted sum of the following terms:
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\begin{itemize}
+  \item \texttt{oscillation\_costs\_}
+  \item \texttt{obstacle\_costs\_}
+  \item \texttt{goal\_front\_costs\_}
+  \item \texttt{alignment\_costs\_}
+\end{itemize}
+
+\column{0.5\textwidth}
+
+\begin{itemize}
+  \item \texttt{path\_costs\_}
+  \item \texttt{goal\_costs\_}
+  \item \texttt{twirling\_costs\_}
+\end{itemize}
+
+\end{columns}
 
 \end{frame}
 
@@ -149,16 +223,49 @@ Test...
 \begin{frame}
 \frametitle{Unicycle model control}
 
-Test...
+When designing the controller it is possible to work on the unicycle (thus not differential) model, for simplicity:
+
+$$
+\begin{cases}
+    \dot{x} = v \cdot \cos(\theta) \\
+    \dot{y} = v \cdot \sin(\theta) \\
+    \dot{\theta} = \omega \\
+\end{cases}
+$$
+
+\vspace{2em}
+
+In fact, the differential model can be easily reduced to the unicycle one with the transformations:
+
+$$
+\begin{cases}
+    v = {\frac {\omega_r + \omega_l}{2} r} \\
+    \omega = {\frac {\omega_r - \omega_l}{2} r} \\
+\end{cases}
+$$
 
 \end{frame}
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{Controller's architecture}
 
-Test...
+The developed controller works by taking only the reference points (making up
+the full trajectory), and then computing everything else on its own.
+
+\vspace{2em}
+
+The controller is composed of an inner linearisation law (based on the kinematic
+model) and an outer tracking law (based on a proportional integral controller
+with velocity feed-forward).
+
+\framebreak
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.12]{img/other/custom_controller.png}
+\end{figure}
 
 \end{frame}
 
@@ -190,7 +297,10 @@ The robot:
 
 \column{0.5\textwidth}
 
-[IMAGE FROM RVIZ]
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/rviz/footprint.png}
+\end{figure}
 
 \end{columns}
 
@@ -203,7 +313,7 @@ The robot:
 
 \begin{columns}
 
-\column{0.6\textwidth}
+\column{0.5\textwidth}
 
 The map:
 \begin{itemize}
@@ -212,9 +322,12 @@ The map:
 \end{itemize}
 
 
-\column{0.4\textwidth}
+\column{0.5\textwidth}
 
-[IMAGE FROM RVIZ]
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.2]{img/rviz/map.png}
+\end{figure}
 
 \end{columns}
 
@@ -227,7 +340,7 @@ The map:
 
 \begin{columns}
 
-\column{0.6\textwidth}
+\column{0.55\textwidth}
 
 The trajectory:
 \begin{itemize}
@@ -237,9 +350,12 @@ The trajectory:
 \end{itemize}
 
 
-\column{0.4\textwidth}
+\column{0.45\textwidth}
 
-[IMAGE FROM RVIZ]
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.32]{img/other/reference_trajectory.png}
+\end{figure}
 
 \end{columns}
 
@@ -369,6 +485,7 @@ Two launch files:
 \begin{frame}
 \frametitle{Parameters tuning - trajectory}
 
+Equations describing the eight-shaped trajectory:
 $$
 \begin{cases}
     x = \texttt{a} \cdot \sin (\texttt{w} \cdot t)\\
@@ -376,7 +493,7 @@ $$
 \end{cases}
 $$
 
-\vspace{2em}
+\vspace{1em}
 
 Two main parameters:
 \begin{itemize}
@@ -384,7 +501,7 @@ Two main parameters:
  \item \texttt{w} $\rightarrow$ ratio $\frac{2 \cdot \pi}{T}$ where T is the time duration of each lap
 \end{itemize}
 
-\vspace{2em}
+\vspace{1em}
 
 \begin{block}{Assigned values}
 \centering
@@ -400,11 +517,12 @@ Two main parameters:
 \begin{frame}
 \frametitle{Parameters tuning - custom controller}
 
+Step response of a PID controller:
 $$
 u(t)=K_{\text{p}}e(t)+K_{\text{i}}\int _{0}^{t}e(\tau )\,\mathrm {d} \tau +K_{\text{d}}{\frac {\mathrm {d} e(t)}{\mathrm {d} t}}
 $$
 
-\vspace{2em}
+\vspace{1em}
 
 Three main parameters:
 \begin{itemize}
@@ -413,7 +531,7 @@ Three main parameters:
  \item $K_d$ $\rightarrow$ derivative gain of the PID controller
 \end{itemize}
 
-\vspace{2em}
+\vspace{1em}
 
 \begin{block}{Assigned values}
 \centering
@@ -682,6 +800,7 @@ standalone are no longer working:
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.22]{img/other/old_dwa_snippet.png}
+    \caption{Snippet in the ROS Wiki}
 \end{figure}
 
 \column{0.6\textwidth}
@@ -689,6 +808,7 @@ standalone are no longer working:
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.22]{img/other/new_dwa_snippet.png}
+    \caption{Modified snippet}
 \end{figure}
 
 \end{columns}
