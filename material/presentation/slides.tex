@@ -247,7 +247,7 @@ The trajectory:
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{ROS architecture - overview}
 
 Three packages:
@@ -262,11 +262,31 @@ Three packages:
 The two controllers are interchangeable and are meant to always be used together
 with the simulator, one at a time.
 
+\framebreak
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.26]{img/ros_tools/rqttftree_custom.png}
+\end{figure}
+
+\column{0.5\textwidth}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.28]{img/ros_tools/rqttftree_dwa.png}
+\end{figure}
+
+\end{columns}
+
 \end{frame}
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{ROS architecture - service \& frames}
 
 One service:
@@ -276,12 +296,26 @@ One service:
 
 \vspace{2em}
 
-Three fames:
+Three frames:
 \begin{itemize}
   \item \texttt{map} $\rightarrow$ for the empty map provided by the map server
   \item \texttt{odom} $\rightarrow$ representing the global reference system
   \item \texttt{base\_link} $\rightarrow$ representing the moving reference system
 \end{itemize}
+
+\framebreak
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.14]{img/ros_tools/rqtgraph_custom.png}
+\end{figure}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.17]{img/ros_tools/rqtgraph_dwa.png}
+\end{figure}
 
 \end{frame}
 
@@ -399,14 +433,14 @@ $K_d$ = 0.0
 
 One main parameter:
 \begin{itemize}
- \item \texttt{skipped\_goals} $\rightarrow$ number of points to skip when feeding the trajectory to DWA
+  \item \texttt{skipped\_goals} $\rightarrow$ number of points to skip when feeding the trajectory to DWA
 \end{itemize}
 
 \vspace{2em}
 
 \begin{block}{Assigned values}
 \centering
-\texttt{skipped\_goals} = 1
+\texttt{skipped\_goals} = 15
 \end{block}
 
 \end{frame}
@@ -419,30 +453,178 @@ One main parameter:
 
 \section{Experimental results}
 
+
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 \begin{frame}
+\frametitle{Python scripts}
+
+To visualize the experimental results of the experiment, two Python scripts can
+be used to analyze the recorded \textit{bag} files:
+\begin{itemize}
+  \item \texttt{plot\_result.py} $\rightarrow$ plot the result of a single \textit{bag} file
+  \item \texttt{plot\_comparison.py} $\rightarrow$ compare the results of two \textit{bag} files
+\end{itemize}
+
+\vspace{2em}
+
+The following plots are obtained with an optimal parameters choice.
+
+\end{frame}
+
+% * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+\begin{frame}[allowframebreaks]
 \frametitle{Trajectory tracking controller}
 
-Test...
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/kin_screenshots/Trajectory.png}
+\end{figure}
+
+\framebreak
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/kin_screenshots/Linear_and_Angular_Velocities.png}
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/kin_screenshots/Pose.png}
+\end{figure}
+
+\column{0.5\textwidth}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/kin_screenshots/Wheels_Velocities.png}
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/kin_screenshots/Position_Error.png}
+\end{figure}
+
+\end{columns}
 
 \end{frame}
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{DWA}
 
-Test...
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/dwa_screenshots/Trajectory.png}
+\end{figure}
+
+\framebreak
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/dwa_screenshots/Linear_and_Angular_Velocities.png}
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/dwa_screenshots/Pose.png}
+\end{figure}
+
+\column{0.5\textwidth}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/dwa_screenshots/Wheels_Velocities.png}
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/dwa_screenshots/Position_Error.png}
+\end{figure}
+
+\end{columns}
 
 \end{frame}
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{Comparison}
 
-Test...
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{img/comparison/Trajectory.png}
+\end{figure}
+
+\framebreak
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/comparison/Linear_and_Angular_Velocities.png}
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/comparison/Pose.png}
+\end{figure}
+
+\column{0.5\textwidth}
+
+\vspace{-2em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/comparison/Wheels_Velocities.png}
+\end{figure}
+
+\vspace{-1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{img/comparison/Position_Error.png}
+\end{figure}
+
+\end{columns}
 
 \end{frame}
 
@@ -459,7 +641,21 @@ Test...
 \begin{frame}
 \frametitle{Deprecated parameters}
 
-Test...
+There are some DWA parameters that are named differently between the ROS Wiki and
+the library source code.
+
+\vspace{1em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{img/other/deprecated_parameters_warning.png}
+\end{figure}
+
+\vspace{1em}
+
+\begin{alertblock}{Unadvertised warning!}
+Without using \texttt{nav\_core}, the warnings are not raised.
+\end{alertblock}
 
 \end{frame}
 
@@ -468,7 +664,34 @@ Test...
 \begin{frame}
 \frametitle{DWA used standalone}
 
-Test...
+DWA expects information on certain topics (\texttt{/odom}, \texttt{/goal},
+\texttt{/map}).
+When used standalone, we must provide such information manually.
+
+\vspace{2em}
+
+Moreover, the few lines of code in the ROS Wiki explaining how to setup DWA
+standalone are no longer working:
+
+\begin{columns}
+
+\column{0.4\textwidth}
+
+\vspace{-1.5em}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.22]{img/other/old_dwa_snippet.png}
+\end{figure}
+
+\column{0.6\textwidth}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.22]{img/other/new_dwa_snippet.png}
+\end{figure}
+
+\end{columns}
 
 \end{frame}
 
@@ -477,7 +700,21 @@ Test...
 \begin{frame}
 \frametitle{Multiple goals}
 
-Test...
+Generally, DWA takes only a single final goal and computes the full trajectory
+on its own.
+
+\vspace{2em}
+
+In this project the trajectory is predefined and must be explicitly forced.
+This is done by continuously changing the goal.
+
+\vspace{2em}
+
+We must find a suitable 'density' for the goals vector:
+\begin{itemize}
+  \item too many goals $\Rightarrow$ unsteady profile in the velocities
+  \item too few goals $\Rightarrow$ large deviation from the reference trajectory
+\end{itemize}
 
 \end{frame}
 
@@ -492,9 +729,17 @@ Test...
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 \begin{frame}
-\frametitle{Frame title}
+\frametitle{Conclusion}
 
-Test...
+Regarding the trajectory tracking aspect only, the two control methods behave
+in a similar way even though the custom controller performs moderately better
+than DWA.
+
+\vspace{2em}
+
+However, the most noticeable difference is in the smoothness of the plots of
+linear and angular velocities: the custom controller produces velocities that
+are much smoother and realistic than those produced by DWA.
 
 \end{frame}
 
