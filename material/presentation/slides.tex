@@ -380,23 +380,17 @@ with the simulator, one at a time.
 
 \framebreak
 
-\begin{columns}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.14]{img/ros_tools/rqtgraph_custom.png}
+\end{figure}
 
-\column{0.5\textwidth}
+\vspace{-2em}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.26]{img/ros_tools/rqttftree_custom.png}
+    \includegraphics[scale=0.17]{img/ros_tools/rqtgraph_dwa.png}
 \end{figure}
-
-\column{0.5\textwidth}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.28]{img/ros_tools/rqttftree_dwa.png}
-\end{figure}
-
-\end{columns}
 
 \end{frame}
 
@@ -421,17 +415,23 @@ Three frames:
 
 \framebreak
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.14]{img/ros_tools/rqtgraph_custom.png}
-\end{figure}
+\begin{columns}
 
-\vspace{-2em}
+\column{0.5\textwidth}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale=0.17]{img/ros_tools/rqtgraph_dwa.png}
+    \includegraphics[scale=0.26]{img/ros_tools/rqttftree_custom.png}
 \end{figure}
+
+\column{0.5\textwidth}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.28]{img/ros_tools/rqttftree_dwa.png}
+\end{figure}
+
+\end{columns}
 
 \end{frame}
 
@@ -455,7 +455,7 @@ Four nodes:
 \begin{frame}
 \frametitle{ROS architecture - topics}
 
-Four nodes:
+Five topics:
 \begin{itemize}
   \item \texttt{/clock}, $\rightarrow$ synchronization of all the nodes in the simulation
   \item \texttt{/odom}, $\rightarrow$ communication of the odometry information of the robot to DWA
@@ -546,10 +546,27 @@ $K_d$ = 0.0
 
 % * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{Parameters tuning - DWA}
 
-One main parameter:
+Two of the many predefined parameters:
+\begin{itemize}
+  \item \texttt{vth\_samples} $\rightarrow$ number of the evaluated samples for $\omega$
+  \item \texttt{vx\_samples} $\rightarrow$ number of the evaluated samples for $v$
+\end{itemize}
+
+\vspace{2em}
+
+\begin{block}{Assigned values}
+\centering
+\texttt{vth\_samples} = 100
+\hspace{2em}
+\texttt{vx\_samples} = 30
+\end{block}
+
+\framebreak
+
+One custom parameter:
 \begin{itemize}
   \item \texttt{skipped\_goals} $\rightarrow$ number of points to skip when feeding the trajectory to DWA
 \end{itemize}
